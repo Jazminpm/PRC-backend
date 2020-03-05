@@ -1,11 +1,12 @@
 # -*- encoding: utf-8 -*-
 
-# Flask modules
-from flask import Flask, jsonify, request, abort
 from http import HTTPStatus
 
+# Flask modules
+from flask import jsonify, request, abort
+
 # App modules
-from analysis.utils import textblob_analysis, vader_analysis
+from analysis.utils import textblob_analysis, vader_analysis, translate
 from flaskr import app
 
 
@@ -47,4 +48,16 @@ def get_analysis():
     return jsonify({
         'polarity': sentiment[0],
         'subjectivity': sentiment[1]
+    }), HTTPStatus.OK
+
+
+@app.route('/translate', methods=['POST'])
+def get_translate():
+    if not request.json or not 'msg' in request.json:
+        abort(HTTPStatus.BAD_REQUEST)
+
+    translation = translate(request.json['msg'])
+
+    return jsonify({
+        'translation': translation
     }), HTTPStatus.OK
