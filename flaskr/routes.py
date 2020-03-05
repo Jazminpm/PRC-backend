@@ -1,8 +1,9 @@
 # -*- encoding: utf-8 -*-
 
-# Flask modules
-from flask import Flask, jsonify, request, abort
 from http import HTTPStatus
+
+# Flask modules
+from flask import jsonify, request, abort
 
 # App modules
 from analysis.utils import textblob_analysis, vader_analysis, translate
@@ -48,6 +49,7 @@ def get_analysis():
         'polarity': sentiment[0],
         'subjectivity': sentiment[1]
     }), HTTPStatus.OK
+
 
 @app.route('/translate', methods=['POST'])
 def get_translate():
