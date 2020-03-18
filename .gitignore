@@ -21,9 +21,6 @@ yarn-error.log
 .DS_Store
 
 ### Python
-# Dont ignore python scripts
-!/vendor/python/src/**
-
 # Vagrant
 .vagrant/
 
