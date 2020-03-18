@@ -24,7 +24,7 @@ class CreateUsersTable extends Migration
 
             $table->string('flight_id');
             $table->dateTime('date');
-            $table->foreign(array('flight_id', 'date'))->references(array('id', 'date'))->on('flight');
+            $table->foreign(array('flight_id', 'date'))->references(array('id', 'date'))->on('flights');
 
         });
     }

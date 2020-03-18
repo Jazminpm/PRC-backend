@@ -13,9 +13,10 @@ class CreateWindDirectionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('windDirections', function (Blueprint $table) {
+        Schema::create('wind_directions', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('direction');
+            $table->string('direction', 32);
+            $table->string('diminutive', 2);
         });
     }
 
@@ -26,6 +27,6 @@ class CreateWindDirectionsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('wind-directions');
+        Schema::dropIfExists('wind_directions');
     }
 }
