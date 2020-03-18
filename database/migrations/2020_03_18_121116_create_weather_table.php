@@ -13,12 +13,14 @@ class CreateWeatherTable extends Migration
      */
     public function up()
     {
-        Schema::create('weather', function (Blueprint $table) {
+        Schema::create('weather', function (Blueprint $table) {//wind_directions-id, direction
             $table->dateTime('dateTime');
             $table->integer('temperature');
             $table->integer('humidity');
             $table->integer('pressure');
-            $table->string('wind_direction');
+            $table->integer('wind_direction')->unsigned();
+            $table->foreign('wind_direction')
+                ->references('id')->on('windDirections');
             $table->integer('wind');
             $table->integer('airport_id')->unsigned();
             $table->foreign('airport_id')
