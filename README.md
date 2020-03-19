@@ -1,24 +1,43 @@
-# PRCBackend
-## Description
-This repository allows the code api.
-## Configuration
-### Local configuration
+# PRC-BACKEND
+PRC-backend is a server side application that works as a RESTful API to the PRC-frontend application.
+
+## Configurations
+To configure the project we need to follow the next steps:
+
+### Clone the repository and access
 ```shell script
-# create the virtual environment
-$ virtualenv --no-site-packages venv
+git clone https://github.com/rcebrian/PRC-backend.git
+```
+```shell script
+cd PRC-backend
+``` 
 
-# set the enironment
-# UNIX
-$ source venv/bin/activate
-
-# Windows
-$ venv/Scripts/activate.bat
-
-# install requierements
-$ python -m pip install -r requirements.txt
+### Laravel configuration
+##### Install composer
+```shell script
+composer install
 ```
 
-## Run
+##### Create a .env file
 ```shell script
-$ python run.py
+cp .env.example .env
+```
+
+##### Generate a new key
+```shell script
+php artisan key:generate
+```
+
+##### Run npm dependencies
+```shell script
+npm install
+```
+
+### Python configuration
+```shell script
+# create the virtual environment
+virtualenv -p python3 --no-site-packages vendor/python/venv
+
+# install requirements
+$ vendor/python/venv/bin/python -m pip install -r vendor/python/requirements.txt
 ```
