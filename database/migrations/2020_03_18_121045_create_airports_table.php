@@ -18,8 +18,10 @@ class CreateAirportsTable extends Migration
             $table->string('name');
             $table->string('iata');
             $table->string('icao');
-            $table->decimal('latitude', 10, 8);
-            $table->decimal('longitude', 11, 8);
+            $table->float('latitude', 8, 6);
+            $table->float('longitude', 8,5);
+            $table->string('country');
+            $table->integer('altitude');
         });
     }
 
