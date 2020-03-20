@@ -20,8 +20,8 @@ class CreateUsersTable extends Migration
             $table->string('dni')->unique();
             $table->string('phoneNumber');
             $table->string('email')->unique();
-            $table->string('role');
-
+            $table->integer('role')->unsigned();
+            $table->foreign('role')->references('id')->on('roles');
             $table->string('flight_id');
             $table->dateTime('date');
             $table->foreign(array('flight_id', 'date'))->references(array('id', 'date'))->on('flights');

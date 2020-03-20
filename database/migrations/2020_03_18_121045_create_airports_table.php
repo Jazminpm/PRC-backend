@@ -20,7 +20,8 @@ class CreateAirportsTable extends Migration
             $table->string('icao');
             $table->float('latitude', 8, 6);
             $table->float('longitude', 8,5);
-            $table->string('country');
+            $table->integer('country_id')->unsigned();
+            $table->foreign('country_id')->references('id')->on('countries');
             $table->integer('altitude');
         });
     }
