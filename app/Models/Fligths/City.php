@@ -4,10 +4,10 @@ namespace App\Models\Fligths;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Airport extends Model
+class City extends Model
 {
     protected $fillable = [
-        'id', 'name', 'city_id', 'iata', 'icao', 'latitude','longitude', 'altitude','timezone','dst','tz'
+        'id', 'name', 'country_id'
     ];
 
     // disable timestamps created_at & updated_at
