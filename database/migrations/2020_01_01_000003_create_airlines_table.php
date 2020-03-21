@@ -16,6 +16,13 @@ class CreateAirlinesTable extends Migration
         Schema::create('airlines', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
+            $table->string('alias')->nullable();
+            $table->string('iata')->nullable();
+            $table->string('icao')->nullable();
+            $table->string('callsign')->nullable();
+
+            $table->integer('country_id')->unsigned();
+            $table->foreign('country_id')->references('id')->on('countries');
         });
     }
 
