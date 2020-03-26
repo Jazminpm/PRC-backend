@@ -2,7 +2,7 @@
 
 function getPath()
 {
-    $path = storage_path('app' . DIRECTORY_SEPARATOR . 'python' . DIRECTORY_SEPARATOR . 'venv' . DIRECTORY_SEPARATOR);
+    $path = base_path('vendor' . DIRECTORY_SEPARATOR . 'python' . DIRECTORY_SEPARATOR . 'venv' . DIRECTORY_SEPARATOR);
 
     if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
         $python_path = $path . 'Scripts' . DIRECTORY_SEPARATOR . 'python.exe';
