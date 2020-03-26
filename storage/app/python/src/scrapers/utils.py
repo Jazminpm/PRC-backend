@@ -49,7 +49,6 @@ def get_tweets_by_hashtag(hashtag, date, lang='en'):
         hashtag (str): some hashtag to search in twitter
         date (str): date in YYYY-mm-dd format
         lang (str):
-
     """
     query = '#' + hashtag + ' AND #travel OR #viaje -filter:retweets'
     for tweet in tweepy.Cursor(api.search, q=query, since=date, lang=lang, tweet_mode='extended').items():
