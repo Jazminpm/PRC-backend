@@ -17,7 +17,7 @@ api = tweepy.API(auth, wait_on_rate_limit=True)
 
 
 def remove_emoji(msg):
-    """Remove emojis characters from an input str.
+    """Remove emojis characters from an input string.
 
     Note:
         Code obtained from https://stackoverflow.com/questions/33404752/removing-emojis-from-a-string-in-python
@@ -46,9 +46,9 @@ def get_tweets_by_hashtag(hashtag, date, lang='en'):
         The hashtag parameter is for search a city.
 
     Args:
-        hashtag (str): some hashtag to search in twitter
-        date (str): date in YYYY-mm-dd format
-        lang (str):
+        hashtag (str): Some hashtag to search in twitter.
+        date (str): Date in YYYY-mm-dd format.
+        lang (str): Restricts tweets to the given language, given by an ISO 639-1 code.
     """
     query = '#' + hashtag + ' AND #travel OR #viaje -filter:retweets'
     for tweet in tweepy.Cursor(api.search, q=query, since=date, lang=lang, tweet_mode='extended').items():
