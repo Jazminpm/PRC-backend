@@ -35,9 +35,12 @@ npm install
 
 ### Python configuration
 ```shell script
-# create the virtual environment
+# create the virtual environment for Linux
 virtualenv -p python3 --no-site-packages vendor/python/venv
-
 # install requirements
 $ vendor/python/venv/bin/python -m pip install -r storage/app/python/requirements.txt
+
+# create the virtual environment for Windows
+virtualenv -p python3 vendor/python/venv
+vendor\python\venv\Scripts\python -m pip install -r storage/app/python/requirements.txt
 ```
