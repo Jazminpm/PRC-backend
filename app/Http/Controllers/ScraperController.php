@@ -16,4 +16,12 @@ class ScraperController extends Controller
 
         return response($result, 200);
     }
+    function futureWeather () {
+        // get requested parameters & set scripts
+        $cmd = config('python.exec');
+        $script = config('python.scripts') . 'scraper_el_tiempo.py';
+        $result = executePythonNoRequest($cmd, $script);
+
+        return response($result, 200);
+    }
 }

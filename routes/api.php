@@ -21,3 +21,4 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::post('/analysis', 'AnalysisController@analyze');
 Route::post('/translate', 'AnalysisController@translate');
 Route::post('/tuTiempo', 'ScraperController@historicalWeather');
+Route::get('/elTiempo', 'ScraperController@futureWeather');
