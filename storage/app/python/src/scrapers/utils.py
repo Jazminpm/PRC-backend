@@ -2,13 +2,16 @@
 
 import json
 import re
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 
 import tweepy
 
 import requests
 from bs4 import BeautifulSoup
 import numpy as np
+
+import asyncio
+from pyppeteer import launch
 
 consumer_key = "F2pIrutjymGr9vZuqTeViAymw"
 consumer_secret = "QFLTXwFJZNuR6i00IswAZIgaKsKl5AtmPufoSaRnR57ER2yVxS"
@@ -64,25 +67,16 @@ def get_tweets_by_hashtag(hashtag, date, lang='en'):
 
 
 def select_date_tu_tiempo(day, month, year):
-    actual_day = date.today().day
-    actual_month = date.today().month
-    actual_year = date.today().year
+    today = date.today()
+    select_date = date(year, month, day)
 
-    days_in_month = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-    if year % 4 == 0:  # año bisiesto
-        days_in_month[1] = 29
+    if (today - select_date).days > 0:
+        date_list = [(select_date + timedelta(days=d)).strftime("%Y-%m-%d")
+                        for d in range((today - select_date).days)]
 
-    while day != actual_day or month != actual_month - 1 or year != actual_year:
-        tu_tiempo(str(day), month, str(year))
-        if day != days_in_month[month]:
-            day = day + 1
-        elif month != 11:
-            month = month + 1
-            day = 1
-        else:
-            month = 0
-            day = 1
-            year = year + 1
+    for dat in date_list:
+        tu_tiempo(int(dat[8:10]), int(dat[5:7]), int(dat[0:4]))
+
 
 
 def tu_tiempo(day, month, year):
@@ -91,8 +85,8 @@ def tu_tiempo(day, month, year):
     wind_directions = np.array(
         ['En calma', 'Norte', 'Nordeste', 'Este', 'Sureste', 'Sur', 'Suroeste', 'Oeste', 'Noroeste', 'Variable'])
 
-    page = requests.get('https://www.tutiempo.net/registros/lemd/' + day + '-' + months[month] + '-' +
-                        year + '.html')
+    page = requests.get('https://www.tutiempo.net/registros/lemd/' + str(day) + '-' + months[month] + '-' +
+                        str(year) + '.html')
 
     soup = BeautifulSoup(page.content, 'html.parser')
     tr = soup.find('div', class_='last24 thh mt10').findAll('tr')
@@ -115,6 +109,7 @@ def tu_tiempo(day, month, year):
                 'pressure': re.findall(r"[\d]+", td[5].getText())[0]
             }
             print(response)
+
 def el_tiempo():
     page = requests.get("https://www.eltiempo.es/madrid.html?v=por_hora")
     soup = BeautifulSoup(page.content, 'html.parser')
@@ -204,6 +199,62 @@ def el_tiempo():
         test_str = str(response)
         print(re.findall(regex, test_str))
 
+def select_historical_date(day, month, year):
+    today = date.today()
+    select_date = date(year, month, day)
+
+    if (today - select_date).days > 5:
+        select_date = today - timedelta(days=5)
+        date_list = [(select_date + timedelta(days=d)).strftime("%Y-%m-%d")
+                        for d in range((today - select_date).days)]
+    else:
+        date_list = [(select_date + timedelta(days=d)).strftime("%Y-%m-%d")
+                        for d in range((today - select_date).days)]
+
+    for dat in date_list:
+        asyncio.get_event_loop().run_until_complete(select_url(dat[8:10], dat[5:7], dat[0:4]))
+
+async def select_url(day, month, year):
+    browser = await launch()
+    page = await browser.newPage()
+    await page.goto('https://www.airportia.com/spain/madrid-barajas-international-airport/departures/')
+    await page.select('.flightsFilter-select--date', year + month + day)
+    await page.select('.flightsFilter-select--fromTime', '0000')
+    await page.select('.flightsFilter-select--toTime', '2359')
+
+    await page.click('.flightsFilter-submit')
+    await page.waitFor(4000)
+    html = await page.evaluate('new XMLSerializer().serializeToString(document.doctype) + '
+                               'document.documentElement.outerHTML')
+    scraper_airportia(html, day, month, year)
+    await browser.close()
+
+def scraper_airportia(html, day, month, year):
+    soup = BeautifulSoup(html, 'html.parser')
+    trs = soup.find('table', class_='flightsTable').findAll('tr')
+    i = 0
+    for tr in trs:
+        if i != 0:
+            identifier = tr.find('td', class_='flightsTable-number')
+            if identifier is not None:
+                td = tr.findAll('td')
+                delay = 0
+                if td[5].find('div') is not None:
+                    if td[5].find('div').getText() == 'Cancelled' or td[5].find('div').getText() == 'Unknown':
+                        delay = 2
+                    elif td[5].find('div').getText() == 'Landed Late':
+                        delay = 0
+
+                response = {
+                    'id': identifier.find('a').getText(),
+                    'date': str(int(day)) + '/' + str(int(month)) + '/' + str(int(year)),
+                    'airline': td[2].getText(),
+                    'destination': td[1].find('span').getText(),
+                    'delay': delay,  # 0->ok, 1->late, 2->cancelled
+                    'expected_departure_time': td[3].getText(),
+                }
+                print(response)
+        i = i + 1
 
 if __name__ == "__main__":
     today = datetime.now().strftime("%Y-%m-%d")
