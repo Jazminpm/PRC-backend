@@ -3,15 +3,13 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Symfony\Component\Process\Exception\ProcessFailedException;
-use Symfony\Component\Process\Process;
 
 class ScraperController extends Controller
 {
-    function historicalWeather (Request $request) {
+    /*function historicalWeather (Request $request) {
         // get requested parameters & set scripts
         $cmd = config('python.exec');
-        $script = config('python.scripts') . 'scraper_tu_tiempo.py';
+        $script = config('python.scripts') . 'scraper_2.py';
         $result = executePython($cmd, $script, $request);
 
         return response($result, 200);
@@ -20,7 +18,7 @@ class ScraperController extends Controller
     function futureWeather () {
         // get requested parameters & set scripts
         $cmd = config('python.exec');
-        $script = config('python.scripts') . 'scraper_el_tiempo.py';
+        $script = config('python.scripts') . 'scraper_.py';
         $result = executePythonNoRequest($cmd, $script);
 
         return response($result, 200);
@@ -29,9 +27,16 @@ class ScraperController extends Controller
     function historicalAirportia (Request $request) {
         // get requested parameters & set scripts
         $cmd = config('python.exec');
-        $script = config('python.scripts') . 'scraper_historical_airportia.py';
+        $script = config('python.scripts') . 'scraper_3.py';
         $result = executePython($cmd, $script, $request);
 
+        return response($result, 200);
+    }*/
+
+    function scrapers(Request $request){
+        $cmd = config('python.exec');
+        $script = config('python.scripts') . 'scraper_'.$request->id.'.py';
+        $result = executePython($cmd, $script, $request);
         return response($result, 200);
     }
 }
