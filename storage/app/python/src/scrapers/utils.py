@@ -75,18 +75,18 @@ def select_date_tu_tiempo(day, month, year):
                         for d in range((today - select_date).days)]
 
     for dat in date_list:
-        tu_tiempo(int(dat[8:10]), int(dat[5:7]), int(dat[0:4]))
+        tu_tiempo(dat[8:10], dat[5:7], dat[0:4])
 
 
 
 def tu_tiempo(day, month, year):
-    months = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre',
+    months = ['', 'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre',
               'noviembre', 'diciembre']
     wind_directions = np.array(
         ['En calma', 'Norte', 'Nordeste', 'Este', 'Sureste', 'Sur', 'Suroeste', 'Oeste', 'Noroeste', 'Variable'])
 
-    page = requests.get('https://www.tutiempo.net/registros/lemd/' + str(day) + '-' + months[month] + '-' +
-                        str(year) + '.html')
+    page = requests.get('https://www.tutiempo.net/registros/lemd/' + day + '-' + months[int(month)] + '-' +
+                        year + '.html')
 
     soup = BeautifulSoup(page.content, 'html.parser')
     tr = soup.find('div', class_='last24 thh mt10').findAll('tr')
@@ -101,6 +101,7 @@ def tu_tiempo(day, month, year):
                 speed = re.findall(r"[\d]+", td[3].getText())[0]
 
             response = {
+                'date': day + '-' + month + '-' + year,
                 'hour': td[0].getText(),
                 'temperature': re.findall(r"[-]*[\d]+", td[2].getText())[0],
                 'wind_speed': speed,
@@ -111,6 +112,7 @@ def tu_tiempo(day, month, year):
             print(response)
 
 def el_tiempo():
+    today = str(date.today())
     page = requests.get("https://www.eltiempo.es/madrid.html?v=por_hora")
     soup = BeautifulSoup(page.content, 'html.parser')
 
@@ -186,18 +188,19 @@ def el_tiempo():
 
     for i in range(len(array_hour)): #24
         response = {
+            'date': today[8:10] + '-' + today[5:7] + '-' + today[0:4],
             'hour': array_hour[i],
-            'temperature': array_temperature[i],
-            'wind_speed': array_wind_speed[i],
+            'temperature': re.findall(r"[-]*[\d]+",array_temperature[i])[0],
+            'wind_speed': re.findall(r"[\d]+",array_wind_speed[i])[0],
             'wind_direction': array_wind_direction[i],
-            'humidity': array_humidity[i],
-            'pressure': array_pressure[i]
+            'humidity': re.findall(r"[\d]+",array_humidity[i])[0],
+            'pressure': re.findall(r"[\d]+",array_pressure[i])[0]
         }
-        #print(response)
+        print(response)
         # --------------------------------------------------------------regex----------------------------------------------------------
-        regex = r".+(hour).+([0-9]{2}:[0-9]{2}).+(temperature).+([0-9])°.+(wind_speed).+([0-9])\skm\/h.+(wind_direction)..\s([0-9]{1,}).+(humidity)..\s.([0-9]{1,})%.+(pressure)..\s.([0-9]{1,})\shPa"
-        test_str = str(response)
-        print(re.findall(regex, test_str))
+        #regex = r"(date).+(hour).+([0-9]{2}:[0-9]{2}).+(temperature).+([0-9])°.+(wind_speed).+([0-9])\skm\/h.+(wind_direction)..\s([0-9]{1,}).+(humidity)..\s.([0-9]{1,})%.+(pressure)..\s.([0-9]{1,})\shPa"
+        #test_str = str(response)
+        #print(re.findall(regex, test_str)[0])
 
 def select_historical_date(day, month, year):
     today = date.today()
@@ -251,7 +254,7 @@ def scraper_airportia(html, day, month, year):
 
                 response = {
                     'id': identifier.find('a').getText(),
-                    'date': str(int(day)) + '/' + str(int(month)) + '/' + str(int(year)),
+                    'date': day + '-' + month + '-' + year,
                     'airline': td[2].getText(),
                     'destination': td[1].find('span').getText(),
                     'delay': delay,  # 0->ok, 1->late, 2->cancelled
