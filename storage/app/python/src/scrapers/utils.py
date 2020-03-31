@@ -214,6 +214,10 @@ def select_historical_date(day, month, year):
     for dat in date_list:
         asyncio.get_event_loop().run_until_complete(select_url(dat[8:10], dat[5:7], dat[0:4]))
 
+def select_future_date():
+    today = str(date.today())
+    asyncio.get_event_loop().run_until_complete(select_url(today[8:10], today[5:7], today[0:4]))
+
 async def select_url(day, month, year):
     browser = await launch()
     page = await browser.newPage()
