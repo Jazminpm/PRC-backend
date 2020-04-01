@@ -1,6 +1,6 @@
 <?php
 
-use App\Weather\WindDirection;
+use App\Models\Weather\WindDirection;
 use Illuminate\Database\Seeder;
 
 class WindDirectionsTableSeeder extends Seeder

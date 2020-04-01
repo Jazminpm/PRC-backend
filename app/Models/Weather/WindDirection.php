@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Weather;
+namespace App\Models\Weather;
 
 use Illuminate\Database\Eloquent\Model;
 
