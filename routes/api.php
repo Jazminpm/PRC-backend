@@ -27,5 +27,6 @@ Route::get('/location/city', 'LocationController@getCity');
 Route::get('/location/country', 'LocationController@getCountry');
 
 Route::post('/weather', 'WeatherController@insert');
+Route::post('/comment', 'CommentController@insert');
 
 

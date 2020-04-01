@@ -15,14 +15,13 @@ class CreateCommentsTable extends Migration
     {
         Schema::create('comments', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('author');
-            $table->string('sentiment');
-            $table->decimal('polarity', 8, 2);
+            $table->string('sentiment')->nullable();
+            $table->decimal('polarity', 8, 2)->nullable();
             $table->string('message');
-            $table->string('library');
+            $table->string('library')->nullable();
             $table->dateTime('date');
-            $table->integer('airline_id')->unsigned();
-            $table->foreign('airline_id')->references('id')->on('airlines')->onDelete('cascade');
+            $table->integer('city_id')->unsigned();
+            $table->foreign('city_id')->references('id')->on('cities')->onDelete('cascade');
             $table->integer('user_id')->unsigned();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
