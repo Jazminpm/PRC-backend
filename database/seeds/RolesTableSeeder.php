@@ -21,5 +21,10 @@ class RolesTableSeeder extends Seeder
             'id' => 2,
             'type' => 'client'
         ]);
+
+        Role::create([
+            'id' => 3,
+            'type' => 'scraper'
+        ]);
     }
 }
