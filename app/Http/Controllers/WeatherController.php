@@ -11,7 +11,6 @@ class WeatherController extends Controller
      * INSERT weather data if possible. UPDATE otherwise.
      *
      * @param Request $request json encoded data
-     * @return \Illuminate\Contracts\Routing\ResponseFactory code status
      */
     function insert(Request $request)
     {
@@ -20,6 +19,5 @@ class WeatherController extends Controller
             'date_time' => $json['date_time'],
             'airport_id' => $json['airport_id']
         ], $json);
-        return response()->setStatusCode(200);
     }
 }
