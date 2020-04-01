@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 class WeatherController extends Controller
 {
     /**
-     * INSERT weather data. UPDATE otherwise.
+     * INSERT weather data if possible. UPDATE otherwise.
      *
      * @param Request $request json encoded data
      * @return \Illuminate\Contracts\Routing\ResponseFactory code status
