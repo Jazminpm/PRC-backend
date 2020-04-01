@@ -23,3 +23,9 @@ Route::post('/translate', 'AnalysisController@translate');
 Route::get('/scraper/{id}', 'ScraperController@scrapers');
 Route::get('/model/{id}', 'ModelController@models');
 
+Route::get('/location/city', 'LocationController@getCity');
+Route::get('/location/country', 'LocationController@getCountry');
+
+Route::post('/weather', 'WeatherController@insert');
+
+
