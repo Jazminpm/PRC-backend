@@ -1,17 +1,27 @@
 # -*- encoding: utf-8 -*-
 
+import asyncio
 import json
 import re
 from datetime import datetime, date, timedelta
 
-import tweepy
-
-import requests
-from bs4 import BeautifulSoup
 import numpy as np
-
-import asyncio
+import requests
+import tweepy
+from bs4 import BeautifulSoup
 from pyppeteer import launch
+
+API = "http://127.0.0.1:8000/api/"
+ENDPOINT = {
+    'weather': API + 'weather'
+}
+
+
+URL_TUTIEMPO = "https://www.tutiempo.net/registros/"
+LEMD_ID = 5327
+LEMD = "lemd"
+
+
 
 consumer_key = "F2pIrutjymGr9vZuqTeViAymw"
 consumer_secret = "QFLTXwFJZNuR6i00IswAZIgaKsKl5AtmPufoSaRnR57ER2yVxS"
@@ -66,30 +76,27 @@ def get_tweets_by_hashtag(hashtag, date, lang='en'):
         print(json.dumps(ee, ensure_ascii=False))
 
 
-def select_date_tu_tiempo(day, month, year):
-    today = date.today()
-    select_date = date(year, month, day)
+def tu_tiempo(str_date, airport=LEMD):
+    """Get weather data from URL_TUTIEMPO and post in an endpoint.
 
-    if (today - select_date).days > 0:
-        date_list = [(select_date + timedelta(days=d)).strftime("%Y-%m-%d")
-                        for d in range((today - select_date).days)]
+    Args:
+        str_date (str): Date in YYYY-mm-dd format.
+        airport (str): Airport ICAO code.
+    """
+    months = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
+    wind_directions = np.array(['En calma', 'Norte', 'Nordeste', 'Este', 'Sureste', 'Sur', 'Suroeste', 'Oeste', 'Noroeste', 'Variable'])
 
-    for dat in date_list:
-        tu_tiempo(dat[8:10], dat[5:7], dat[0:4])
+    str_date = datetime.strptime(str_date, '%Y-%m-%d')
 
+    day = int(str_date.strftime('%d'))
+    month = months[int(str_date.strftime('%d'))]
+    year = str_date.strftime('%Y')
 
+    url_tutiempo_airport = URL_TUTIEMPO + airport + '/' + str(day) + '-' + month + '-' + year + '.html'
 
-def tu_tiempo(day, month, year):
-    months = ['', 'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre',
-              'noviembre', 'diciembre']
-    wind_directions = np.array(
-        ['En calma', 'Norte', 'Nordeste', 'Este', 'Sureste', 'Sur', 'Suroeste', 'Oeste', 'Noroeste', 'Variable'])
-
-    page = requests.get('https://www.tutiempo.net/registros/lemd/' + day + '-' + months[int(month)] + '-' +
-                        year + '.html')
-
+    page = requests.get(url_tutiempo_airport)
     soup = BeautifulSoup(page.content, 'html.parser')
-    tr = soup.find('div', class_='last24 thh mt10').findAll('tr')
+    tr = soup.find('div', class_='last24 thh mt10').find_all('tr')
 
     for i in range(len(tr)):
         if 1 < i < len(tr) - 2 and i % 2 == 0:
@@ -100,16 +107,19 @@ def tu_tiempo(day, month, year):
             if td[3].getText() != 'En calma':
                 speed = re.findall(r"[\d]+", td[3].getText())[0]
 
-            response = {
-                'date': day + '-' + month + '-' + year,
-                'hour': td[0].getText(),
-                'temperature': re.findall(r"[-]*[\d]+", td[2].getText())[0],
-                'wind_speed': speed,
-                'wind_direction': str(wind_direction[0]),
-                'humidity': re.findall(r"[\d]+", td[4].getText())[0],
-                'pressure': re.findall(r"[\d]+", td[5].getText())[0]
+            dt = str_date.strftime('%Y-%m-%d') + ' ' + td[0].getText() + ':00'
+
+            body = {
+                'date_time': dt,
+                'temperature': int(re.findall(r"[-]*[\d]+", td[2].getText())[0]),
+                'wind_speed': int(speed),
+                'wind_direction': int(wind_direction[0]),
+                'humidity': int(re.findall(r"[\d]+", td[4].getText())[0]),
+                'pressure': int(re.findall(r"[\d]+", td[5].getText())[0]),
+                'airport_id': LEMD_ID  # TODO: implements all airports
             }
-            print(response)
+            r = requests.post(url=ENDPOINT['weather'], data=json.dumps(body))
+
 
 def el_tiempo():
     today = str(date.today())
@@ -262,7 +272,3 @@ def scraper_airportia(html, day, month, year):
                 }
                 print(response)
         i = i + 1
-
-if __name__ == "__main__":
-    today = datetime.now().strftime("%Y-%m-%d")
-    get_tweets_by_hashtag(hashtag='Madrid', date=today, lang='es')
