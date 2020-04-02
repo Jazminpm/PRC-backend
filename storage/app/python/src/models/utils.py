@@ -123,14 +123,14 @@ def save_model(classifier, model_name, le):
     # SAVE PROCESADOR DE CARACTERÍSTICAS
     filenameSAV = model_name + "_" + str(now.date()) + "_" + str(now.hour) + "." + str(now.minute) + "." + str(
         now.second) + ".pkl"
-    my_path = Path("..") / Path("..") / "model" / "preprocess_characteristic" / model_name / filenameSAV
+    my_path = Path("..") / Path("..") / Path("..") / Path("..") / "models" / "preprocess_characteristic" / model_name / filenameSAV
     my_file = open(my_path, 'wb')  # Open file for writhing
     pickle.dump(le, my_file)
 
     # SAVE SAV
     filenameSAV = model_name + "_" + str(now.date()) + "_" + str(now.hour) + "." + str(now.minute) + "." + str(
         now.second) + ".sav"
-    my_path = Path("..") / Path("..") / "model" / "training_models" / model_name / filenameSAV
+    my_path = Path("..") / Path("..") / Path("..") / Path("..") / "models" / "training_models" / model_name / filenameSAV
     my_file = open(my_path, 'wb')
     pickle.dump(classifier, my_file)
 
@@ -143,11 +143,11 @@ def prediction(characteristic, model_name, model_date):
     filename = model_name + "_" + str(date.date()) + "_" + str(date.hour) + "." + str(date.minute) + "." + str(
         date.second)
 
-    model_path = Path("..") / Path("..") / "model" / "training_models" / model_name / (filename + ".sav")
+    model_path = Path("..") / Path("..") / Path("..") / Path("..") / "models" / "training_models" / model_name / (filename + ".sav")
     with open(model_path, 'rb') as pickle_file:
         model = pickle.load(pickle_file)
 
-    preprocess_path = Path("..") / Path("..") / "model" / "preprocess_characteristic" / model_name / (filename + ".pkl")
+    preprocess_path = Path("..") / Path("..") / Path("..") / Path("..") / "models" / "preprocess_characteristic" / model_name / (filename + ".pkl")
     preprocess_obj = pickle.load(open(preprocess_path, 'rb'))
 
     # 2. Import data for test
