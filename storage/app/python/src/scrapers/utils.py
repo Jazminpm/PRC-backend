@@ -18,6 +18,7 @@ ENDPOINT = {
 
 
 URL_TUTIEMPO = "https://www.tutiempo.net/registros/"
+URL_ELTIEMPO = "https://www.eltiempo.es/barajas.html?v=por_hora"
 LEMD_ID = 5327
 LEMD = "lemd"
 
@@ -122,8 +123,8 @@ def tu_tiempo(str_date, airport=LEMD):
 
 
 def el_tiempo():
-    today = str(date.today())
-    page = requests.get("https://www.eltiempo.es/madrid.html?v=por_hora")
+    today = datetime.now().strftime('%Y-%m-%d')
+    page = requests.get(URL_ELTIEMPO)
     soup = BeautifulSoup(page.content, 'html.parser')
 
     html = list(soup.children)[2]
@@ -131,9 +132,9 @@ def el_tiempo():
 
     # Contenido tabla mañana
     table = body.find_all('div', class_='m_table_weather_hour_detail by_hour')[1]  # accedo a la tabla de mañana
-    #fila = data-expand-tablechild-item, primera 3, ultima 49
+    # fila = data-expand-tablechild-item, primera 3, ultima 49
 
-    #diccionarios
+    # diccionarios
     array_hour = []
     array_temperature = []
     array_wind_direction = []
@@ -147,7 +148,7 @@ def el_tiempo():
 
         velocidad = table.find_all('div', class_='m_table_weather_hour_detail_med')[i].get_text()
 
-        #viento
+        # viento
         wind = table.find_all('div', class_='m_table_weather_hour_detail_wind')[i]  # icono
         wind2 = list(wind)[1]  # span
         wind3 = list(wind2)[1]  # i
@@ -180,7 +181,7 @@ def el_tiempo():
         if southWest > 0:
             windDir = 7
 
-        #aniado
+        # aniado
         array_hour.append(horas)
         array_temperature.append(prevision)
         array_wind_speed.append(velocidad)
@@ -196,21 +197,22 @@ def el_tiempo():
         array_humidity.append(humidity)
         array_pressure.append(preas)
 
-    for i in range(len(array_hour)): #24
-        response = {
-            'date': today[8:10] + '-' + today[5:7] + '-' + today[0:4],
-            'hour': array_hour[i],
-            'temperature': re.findall(r"[-]*[\d]+",array_temperature[i])[0],
-            'wind_speed': re.findall(r"[\d]+",array_wind_speed[i])[0],
+    for i in range(len(array_hour)):  # 24
+        body = {
+            'date': today + ' ' + array_hour[i] + ':00',
+            'temperature': int(re.findall(r"[-]*[\d]+", array_temperature[i])[0]),
+            'wind_speed': int(re.findall(r"[\d]+", array_wind_speed[i])[0]),
             'wind_direction': array_wind_direction[i],
-            'humidity': re.findall(r"[\d]+",array_humidity[i])[0],
-            'pressure': re.findall(r"[\d]+",array_pressure[i])[0]
+            'humidity': int(re.findall(r"[\d]+", array_humidity[i])[0]),
+            'pressure': int(re.findall(r"[\d]+", array_pressure[i])[0]),
+            'airport_id': LEMD_ID  # TODO: implements all airports
         }
-        print(response)
+        r = requests.post(url=ENDPOINT['weather'], data=json.dumps(body))
         # --------------------------------------------------------------regex----------------------------------------------------------
         #regex = r"(date).+(hour).+([0-9]{2}:[0-9]{2}).+(temperature).+([0-9])°.+(wind_speed).+([0-9])\skm\/h.+(wind_direction)..\s([0-9]{1,}).+(humidity)..\s.([0-9]{1,})%.+(pressure)..\s.([0-9]{1,})\shPa"
         #test_str = str(response)
         #print(re.findall(regex, test_str)[0])
+
 
 def select_historical_date(day, month, year):
     today = date.today()
@@ -219,17 +221,19 @@ def select_historical_date(day, month, year):
     if (today - select_date).days > 5:
         select_date = today - timedelta(days=5)
         date_list = [(select_date + timedelta(days=d)).strftime("%Y-%m-%d")
-                        for d in range((today - select_date).days)]
+                     for d in range((today - select_date).days)]
     else:
         date_list = [(select_date + timedelta(days=d)).strftime("%Y-%m-%d")
-                        for d in range((today - select_date).days)]
+                     for d in range((today - select_date).days)]
 
     for dat in date_list:
         asyncio.get_event_loop().run_until_complete(select_url(dat[8:10], dat[5:7], dat[0:4]))
 
+
 def select_future_date():
     today = str(date.today())
     asyncio.get_event_loop().run_until_complete(select_url(today[8:10], today[5:7], today[0:4]))
+
 
 async def select_url(day, month, year):
     browser = await launch()
@@ -245,6 +249,7 @@ async def select_url(day, month, year):
                                'document.documentElement.outerHTML')
     scraper_airportia(html, day, month, year)
     await browser.close()
+
 
 def scraper_airportia(html, day, month, year):
     soup = BeautifulSoup(html, 'html.parser')
