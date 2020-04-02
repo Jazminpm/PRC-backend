@@ -65,28 +65,31 @@ def import_model(characteristic, select_classifier):
     # -------------4. Select, create and train the Algorithm
     if select_classifier == 0:
         classifier = GaussianNB()
-        model_name = 'naive bayes'
+        model_name = 'naive_bayes'
     elif select_classifier == 1:
         classifier = RandomForestClassifier(n_estimators=3,
                                             random_state=0)
-        model_name = 'random forest'
+        model_name = 'random_forest'
     elif select_classifier == 2:
         classifier = GradientBoostingClassifier(n_estimators=3, learning_rate=0.5, max_features=2, max_depth=2,
                                                 random_state=0)
-        model_name = 'gradient boosting classifier'
+        model_name = 'gradient_boosting'
     elif select_classifier == 3:
         classifier = tree.DecisionTreeClassifier()
-        model_name = 'decision tree'
+        model_name = 'decision_tree'
     elif select_classifier == 4:
         classifier = KNeighborsClassifier()
         model_name = 'k-nn'
     else:
         classifier = LogisticRegression(solver='liblinear')
-        model_name = 'logistic regression'
+        model_name = 'logistic_regression'
     classifier.fit(X_train, y_train)
 
     # -------------5. Export model, report and selected columns
     y_pred = classifier.predict(X_test)
+
+    save_model(classifier, model_name, d)
+
     report = pd.DataFrame(classification_report(y_test, y_pred, output_dict=True)).transpose()
     response = {
         'type': str(model_name),
@@ -114,24 +117,20 @@ def import_model(characteristic, select_classifier):
     }
     print(response)
 
-    save_model(classifier, model_name, d)
-
 
 def save_model(classifier, model_name, le):
-    root = Path("..") / Path("..")
     now = datetime.now()
     # SAVE PROCESADOR DE CARACTERÍSTICAS
-    filenameSAV = model_name + " " + str(now.date()) + " " + str(now.hour) + "." + str(now.minute) + "." + str(
+    filenameSAV = model_name + "_" + str(now.date()) + "_" + str(now.hour) + "." + str(now.minute) + "." + str(
         now.second) + ".pkl"
-
-    my_path = root / "Model" / "preprocess characteristic" / model_name / filenameSAV
+    my_path = Path("..") / Path("..") / "model" / "preprocess_characteristic" / model_name / filenameSAV
     my_file = open(my_path, 'wb')  # Open file for writhing
     pickle.dump(le, my_file)
 
     # SAVE SAV
-    filenameSAV = model_name + " " + str(now.date()) + " " + str(now.hour) + "." + str(now.minute) + "." + str(
+    filenameSAV = model_name + "_" + str(now.date()) + "_" + str(now.hour) + "." + str(now.minute) + "." + str(
         now.second) + ".sav"
-    my_path = root / "model" / "training models" / model_name / filenameSAV
+    my_path = Path("..") / Path("..") / "model" / "training_models" / model_name / filenameSAV
     my_file = open(my_path, 'wb')
     pickle.dump(classifier, my_file)
 
@@ -141,15 +140,14 @@ def prediction(characteristic, model_name, model_date):
 
     # 1. Import from directories
     date = datetime.strptime(model_date, "%Y-%m-%d %H:%M:%S")
-    filename = model_name + " " + str(date.date()) + " " + str(date.hour) + "." + str(date.minute) + "." + str(
+    filename = model_name + "_" + str(date.date()) + "_" + str(date.hour) + "." + str(date.minute) + "." + str(
         date.second)
 
-    model_path = Path("..") / Path("..") / "model" / "training models" / model_name / (filename + ".sav")
-
+    model_path = Path("..") / Path("..") / "model" / "training_models" / model_name / (filename + ".sav")
     with open(model_path, 'rb') as pickle_file:
         model = pickle.load(pickle_file)
 
-    preprocess_path = Path("..") / Path("..") / "model" / "preprocess characteristic" / model_name / (filename + ".pkl")
+    preprocess_path = Path("..") / Path("..") / "model" / "preprocess_characteristic" / model_name / (filename + ".pkl")
     preprocess_obj = pickle.load(open(preprocess_path, 'rb'))
 
     # 2. Import data for test
