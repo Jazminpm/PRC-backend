@@ -44,3 +44,12 @@ $ vendor/python/venv/bin/python -m pip install -r storage/app/python/requirement
 virtualenv -p python3 vendor/python/venv
 vendor\python\venv\Scripts\python -m pip install -r storage/app/python/requirements.txt
 ```
+
+###Laravel authentication
+```shell script
+#Install the Vue scaffolding provided by Laravel
+composer require laravel/ui
+php artisan ui vue --auth
+npm install
+npm run dev
+```
