@@ -208,13 +208,8 @@ def el_tiempo():
             'airport_id': LEMD_ID  # TODO: implements all airports
         }
         r = requests.post(url=ENDPOINT['weather'], data=json.dumps(body))
-        # --------------------------------------------------------------regex----------------------------------------------------------
-        #regex = r"(date).+(hour).+([0-9]{2}:[0-9]{2}).+(temperature).+([0-9])°.+(wind_speed).+([0-9])\skm\/h.+(wind_direction)..\s([0-9]{1,}).+(humidity)..\s.([0-9]{1,})%.+(pressure)..\s.([0-9]{1,})\shPa"
-        #test_str = str(response)
-        #print(re.findall(regex, test_str)[0])
 
-
-def select_historical_date(day, month, year):
+def select_historical_date(day, month, year, url):
     today = date.today()
     select_date = date(year, month, day)
 
@@ -227,24 +222,25 @@ def select_historical_date(day, month, year):
                      for d in range((today - select_date).days)]
 
     for dat in date_list:
-        asyncio.get_event_loop().run_until_complete(select_url(dat[8:10], dat[5:7], dat[0:4]))
+        asyncio.get_event_loop().run_until_complete(select_url(dat[8:10], dat[5:7], dat[0:4], url))
 
 
-def select_future_date():
+def select_future_date(url):
     today = str(date.today())
-    asyncio.get_event_loop().run_until_complete(select_url(today[8:10], today[5:7], today[0:4]))
+    asyncio.get_event_loop().run_until_complete(select_url(today[8:10], today[5:7], today[0:4], url))
 
 
-async def select_url(day, month, year):
+async def select_url(day, month, year, url):
     browser = await launch()
     page = await browser.newPage()
-    await page.goto('https://www.airportia.com/spain/madrid-barajas-international-airport/departures/')
+    await page.goto('https://www.airportia.com' + url + 'departures/')
+    await page.waitFor(6000)
     await page.select('.flightsFilter-select--date', year + month + day)
     await page.select('.flightsFilter-select--fromTime', '0000')
     await page.select('.flightsFilter-select--toTime', '2359')
 
     await page.click('.flightsFilter-submit')
-    await page.waitFor(4000)
+
     html = await page.evaluate('new XMLSerializer().serializeToString(document.doctype) + '
                                'document.documentElement.outerHTML')
     scraper_airportia(html, day, month, year)
@@ -277,3 +273,22 @@ def scraper_airportia(html, day, month, year):
                 }
                 print(response)
         i = i + 1
+
+# Get airport names according of the country
+async def airports_name(airport_name):
+    browser = await launch()
+    page = await browser.newPage()
+
+    await page.goto('https://www.airportia.com/' + airport_name + "/")
+    await page.waitFor(6000)
+    html = await page.evaluate('new XMLSerializer().serializeToString(document.doctype) + '
+                               'document.documentElement.outerHTML')
+    soup = BeautifulSoup(html, 'html.parser')
+    airports = soup.find('div', class_='textlist-body').findAll('a')
+    for airport in airports:
+        result = {
+            'airport_url': airport.get('href'),
+            'iata': re.findall(r"\([A-Za-z]+\)", airport.getText())[0].replace('(', '').replace(')', '')
+        }
+        print(result)
+    await browser.close()

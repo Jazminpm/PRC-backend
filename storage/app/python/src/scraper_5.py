@@ -4,4 +4,5 @@ import sys
 from scrapers.utils import select_future_date
 
 if __name__ == "__main__":
-    select_future_date()
+    data = json.loads(sys.argv[1])
+    select_future_date(data['url'])
