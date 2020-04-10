@@ -1,32 +1,15 @@
-
-# -*- coding: utf-8 -*-
-
 root = true
 
 [*]
-indent_style = space
+charset = utf-8
 end_of_line = lf
 insert_final_newline = true
+indent_style = space
+indent_size = 4
 trim_trailing_whitespace = true
-charset = utf-8
 
-# Python files
-[*.py]
-indent_size = 4
+[*.md]
+trim_trailing_whitespace = false
 
-
-# RST files (used by sphinx)
-[*.rst]
-indent_size = 4
-
-# CSS, HTML, JS, JSON, YML
-[*.{css,html,js,json,yml}]
+[*.{yml,yaml}]
 indent_size = 2
-
-# Matches the exact files either package.json or .travis.yml
-[{package.json,.travis.yml}]
-indent_size = 2
-
-# Dockerfile
-[Dockerfile]
-indent_size = 4

@@ -1,13 +1,28 @@
-# Editors
+### Editors
 .vscode/
 .idea/
 .theia/
 
-# Vagrant
-.vagrant/
+### Laravel
+/node_modules
+/public/hot
+/public/storage
+/storage/*.key
+/vendor
+.env
+.env.backup
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+npm-debug.log
+yarn-error.log
 
 # Mac/OSX
 .DS_Store
+
+### Python
+# Vagrant
+.vagrant/
 
 # Windows
 Thumbs.db
@@ -67,15 +82,6 @@ coverage.xml
 *.mo
 *.pot
 
-# Django stuff:
-*.log
-local_settings.py
-db.sqlite3
-
-# Flask stuff:
-instance/
-.webassets-cache
-
 # Scrapy stuff:
 .scrapy
 
@@ -102,7 +108,6 @@ celerybeat-schedule
 *.sage.py
 
 # Environments
-.env
 .venv
 env/
 venv/
