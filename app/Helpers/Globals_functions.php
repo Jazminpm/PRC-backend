@@ -1,5 +1,19 @@
 <?php
-function executePython($cmd, $file_name, $request) {
-    exec($cmd.' '.$file_name.' '.json_encode($request->getContent()), $output_array);
-    return $output_array;
+
+use Symfony\Component\Process\Process;
+
+
+function executePython($script, $args) {
+    $cmd = config('python.exec');
+    $process = new Process([$cmd, $script, $args]);
+    $process->run();
+
+    // executes after the command finishes
+    if (!$process->isSuccessful()) {
+        throw new ProcessFailedException($process);
+    }
+
+    $response = json_decode($process->getOutput(), true);
+
+    return response($response, 200);
 }
