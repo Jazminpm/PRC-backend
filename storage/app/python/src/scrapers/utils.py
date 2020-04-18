@@ -3,7 +3,8 @@
 import asyncio
 import json
 import re
-from datetime import datetime, date, timedelta
+from datetime import datetime, date
+from datetime import timedelta
 
 import numpy as np
 import requests
@@ -122,92 +123,35 @@ def tu_tiempo(str_date, airport=LEMD):
             r = requests.post(url=ENDPOINT['weather'], data=json.dumps(body))
 
 
+def wind_direction_id(wind_direction):
+    directions = ["", "calm", "north", "north-east", "east", "south-east", "south", "south-west", "west", "north-west", "variable"]
+    return directions.index(wind_direction)
+
+
 def el_tiempo():
-    today = datetime.now().strftime('%Y-%m-%d')
+    """Get weather data from URL_ELTIEMPO and post in an endpoint.
+
+    """
+    tomorrow = (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d')
     page = requests.get(URL_ELTIEMPO)
     soup = BeautifulSoup(page.content, 'html.parser')
 
-    html = list(soup.children)[2]
-    body = list(html.children)[3]
+    table = soup.find_all('div', class_='m_table_weather_hour_detail by_hour')[1]
 
-    # Contenido tabla mañana
-    table = body.find_all('div', class_='m_table_weather_hour_detail by_hour')[1]  # accedo a la tabla de mañana
-    # fila = data-expand-tablechild-item, primera 3, ultima 49
+    for row in table.find_all('div', attrs={'data-expand-tablechild-item': True}):
 
-    # diccionarios
-    array_hour = []
-    array_temperature = []
-    array_wind_direction = []
-    array_wind_speed = []
-    array_humidity = []
-    array_pressure = []
-
-    for i in range(1, 25):
-        horas = table.find_all('div', class_='m_table_weather_hour_detail_hours')[i].get_text()
-        prevision = table.find_all('div', class_='m_table_weather_hour_detail_pred')[i].get_text()
-
-        velocidad = table.find_all('div', class_='m_table_weather_hour_detail_med')[i].get_text()
-
-        # viento
-        wind = table.find_all('div', class_='m_table_weather_hour_detail_wind')[i]  # icono
-        wind2 = list(wind)[1]  # span
-        wind3 = list(wind2)[1]  # i
-
-        north = len(wind2.find_all('i', class_='north'))
-        south = len(wind2.find_all('i', class_='south'))
-        east = len(wind2.find_all('i', class_='east'))
-        west = len(wind2.find_all('i', class_='west'))
-        northEast = len(wind2.find_all('i', class_='north-east'))
-        northWest = len(wind2.find_all('i', class_='north-west'))
-        southEast = len(wind2.find_all('i', class_='south-east'))
-        southWest = len(wind2.find_all('i', class_='south-west'))
-
-        windDir = 0  # id
-
-        if north > 0:
-            windDir = 2
-        if south > 0:
-            windDir = 6
-        if east > 0:
-            windDir = 4
-        if west > 0:
-            windDir = 8
-        if northEast > 0:
-            windDir = 3
-        if northWest > 0:
-            windDir = 9
-        if southEast > 0:
-            windDir = 5
-        if southWest > 0:
-            windDir = 7
-
-        # aniado
-        array_hour.append(horas)
-        array_temperature.append(prevision)
-        array_wind_speed.append(velocidad)
-        array_wind_direction.append(windDir)
-
-    for j in range(0, 24):
-        humedad = table.find_all('div', class_='m_table_weather_hour_detail_hum')[j]
-        humidity = humedad.find_all('span')[1].get_text()
-        presion = table.find_all('div', class_='m_table_weather_hour_detail_preas')[j]
-        preas = presion.find_all('span')[1].get_text()
-
-        # aniado
-        array_humidity.append(humidity)
-        array_pressure.append(preas)
-
-    for i in range(len(array_hour)):  # 24
-        body = {
-            'date': today + ' ' + array_hour[i] + ':00',
-            'temperature': int(re.findall(r"[-]*[\d]+", array_temperature[i])[0]),
-            'wind_speed': int(re.findall(r"[\d]+", array_wind_speed[i])[0]),
-            'wind_direction': array_wind_direction[i],
-            'humidity': int(re.findall(r"[\d]+", array_humidity[i])[0]),
-            'pressure': int(re.findall(r"[\d]+", array_pressure[i])[0]),
-            'airport_id': LEMD_ID  # TODO: implements all airports
+        weather_json = {
+            "date_time": tomorrow + ' ' + row.find('div', class_='m_table_weather_hour_detail_hours').getText() + ':00',
+            'temperature': int(row.find('div', class_='m_table_weather_hour_detail_pred').getText().split('°')[0]),
+            'wind_speed': int(row.find('div', class_='m_table_weather_hour_detail_med').getText().split(' ')[0]),
+            'wind_direction': wind_direction_id(row.find('div', class_='m_table_weather_hour_detail_wind').find('i')['class'][-1]),
+            'humidity': int(row.find('div', class_='m_table_weather_hour_detail_child m_table_weather_hour_detail_hum').find_all('span')[1].getText().split('%')[0]),
+            'pressure': int(row.find('div', class_='m_table_weather_hour_detail_child m_table_weather_hour_detail_preas').find_all('span')[1].getText().split()[0]),
+            'airport_id': LEMD_ID  # todo: get more airports
         }
-        r = requests.post(url=ENDPOINT['weather'], data=json.dumps(body))
+        print(json.dumps(weather_json))
+        r = requests.post(url=ENDPOINT['weather'], data=json.dumps(weather_json))
+
 
 def select_historical_date(day, month, year, url):
     today = date.today()

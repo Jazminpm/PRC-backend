@@ -15,7 +15,11 @@ function executePython($script, $request) {
             $args = $args.'"'.$key.'":'.''.$part.',';
     }
     $args = substr($args, 0, -1)."}";
+    if($args == '}'){
+        $args = "";
+    }
 
+    // dd($cmd.' '.$script.' '.$args);
     // Iniciamos el proceso
     $process = new Process([$cmd, $script, $args]);
     $process->run();
@@ -25,12 +29,8 @@ function executePython($script, $request) {
         throw new ProcessFailedException($process);
     }
 
+    // executes after the command finishes
     $response = json_decode($process->getOutput(), true);
-
-    // For see all de print results (we dont need it with database)
-    foreach ($process as $type => $data) {
-        $response = $data;
-    }
 
     return response($response, 200);
 }

@@ -15,13 +15,12 @@ class CreateFlightsTable extends Migration
     {
         Schema::create('flights', function (Blueprint $table) {
             $table->string('id');
-            $table->dateTime('date');
-            $table->primary(['id', 'date']);
+            $table->dateTime('date_time');
+            $table->primary(['id', 'date_time']);
             $table->integer('airline_id')->unsigned();
             $table->foreign('airline_id')->references('id')->on('airlines');
             $table->string('destination');
             $table->integer('delay'); // retraso(mins)
-            $table->dateTime('expected_departure_time');
             $table->integer('airport_id')->unsigned();
             $table->foreign('airport_id')->references('id')->on('airports')->onDelete('cascade');
         });
