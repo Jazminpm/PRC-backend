@@ -88,13 +88,13 @@ def tu_tiempo(str_date, airport=LEMD):
         str_date (str): Date in YYYY-mm-dd format.
         airport (str): Airport ICAO code.
     """
-    months = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
-    wind_directions = np.array(['En calma', 'Norte', 'Nordeste', 'Este', 'Sureste', 'Sur', 'Suroeste', 'Oeste', 'Noroeste', 'Variable'])
+    months = ['', 'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
+    wind_directions = np.array(['', 'En calma', 'Norte', 'Nordeste', 'Este', 'Sureste', 'Sur', 'Suroeste', 'Oeste', 'Noroeste', 'Variable'])
 
     str_date = datetime.strptime(str_date, '%Y-%m-%d')
 
     day = int(str_date.strftime('%d'))
-    month = months[int(str_date.strftime('%d'))]
+    month = months[int(str_date.strftime('%m'))]
     year = str_date.strftime('%Y')
 
     url_tutiempo_airport = URL_TUTIEMPO + airport + '/' + str(day) + '-' + month + '-' + year + '.html'
