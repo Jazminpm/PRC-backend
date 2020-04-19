@@ -1,0 +1,71 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "EasyTravel API",
+        "description": "Documentation for EasyTravel project.",
+        "contact": {
+            "email": "21732184@live.uem.es"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/scrapers/{id}": {
+            "get": {
+                "tags": [
+                    "scrapers"
+                ],
+                "summary": "Launch a scraper",
+                "description": "Lunch a scraper for get data from sources",
+                "operationId": "getProjectsList",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Scraper id to run",
+                        "required": true,
+                        "style": "form",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "examples": {
+                            "scrapers": {
+                                "summary": "El Tiempo",
+                                "value": 1
+                            },
+                            "0": {
+                                "summary": "Tu Tiempo",
+                                "value": 2
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key_security_example": []
+                    }
+                ]
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "scrapers",
+            "description": "Operations with scrapers"
+        }
+    ]
+}

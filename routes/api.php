@@ -20,7 +20,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::post('/analysis', 'AnalysisController@analyze');
 Route::post('/translate', 'AnalysisController@translate');
-Route::get('/scraper/{id}', 'ScraperController@scrapers');
+Route::get('/scrapers/{id}', 'ScraperController@scrapers');
 Route::get('/model/{id}', 'ModelController@models');
 
 Route::get('/location/city', 'LocationController@getCity');
