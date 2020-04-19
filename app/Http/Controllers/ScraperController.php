@@ -55,9 +55,21 @@ class ScraperController extends Controller
      *      operationId="getWeathersHistory",
      *      tags={"scrapers"},
      *      summary="Tu Tiempo scraper",
-     *      description="Launches Tu Tiempo scraper with the request date.",
-     *      @OA\Response(response=200, description="Successful operation"),
-     *      @OA\Response(response=400, description="Bad request"),
+     *      description="Launches Tu Tiempo scraper with the requested date.",
+     *      @OA\RequestBody(
+     *          @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema(
+     *                  @OA\Property(
+     *                      property="date",
+     *                      type="date"
+     *                  ),
+     *                  example={"date": "2020-04-19"}
+     *              )
+     *          )
+     *      ),
+     *      @OA\Response(response=200, description="Ok."),
+     *      @OA\Response(response=400, description="Bad request."),
      *      )
      *
      * @param Request $request
@@ -66,7 +78,7 @@ class ScraperController extends Controller
     function weatherHistory(Request $request)
     {
         $validator = Validator::make($request->json()->all(), [
-            'date_time' => ['required', 'date', 'date_format:Y-m-d', 'before_or_equal:yesterday']
+            'date' => ['required', 'date', 'date_format:Y-m-d', 'before_or_equal:yesterday']
         ]);
 
         if ($validator->fails()) {

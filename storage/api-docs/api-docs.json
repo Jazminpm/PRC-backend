@@ -37,14 +37,31 @@
                     "scrapers"
                 ],
                 "summary": "Tu Tiempo scraper",
-                "description": "Launches Tu Tiempo scraper with the request date.",
+                "description": "Launches Tu Tiempo scraper with the requested date.",
                 "operationId": "getWeathersHistory",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "date": {
+                                        "type": "date"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "date": "2020-04-19"
+                                }
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
-                        "description": "Successful operation"
+                        "description": "Ok."
                     },
                     "400": {
-                        "description": "Bad request"
+                        "description": "Bad request."
                     }
                 }
             }
