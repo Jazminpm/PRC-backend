@@ -62,14 +62,57 @@ class ScraperController extends Controller
      *              @OA\Schema(
      *                  @OA\Property(
      *                      property="date",
-     *                      type="date"
+     *                      type="date",
+     *                      description="Date in format Y-m-d"
      *                  ),
      *                  example={"date": "2020-04-19"}
      *              )
      *          )
      *      ),
-     *      @OA\Response(response=200, description="Ok."),
-     *      @OA\Response(response=400, description="Bad request."),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Ok.",
+     *          content={
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="total",
+     *                          type="integer",
+     *                          description="Total inserted documents"
+     *                      ),
+     *                      example={
+     *                          "total": 24
+     *                      }
+     *                  )
+     *              )
+     *          }
+     *      ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad request.",
+     *          content={
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="errors",
+     *                          type="array",
+     *                          description="List of errors.",
+     *                          @OA\Items(type="string")
+     *                      ),
+     *                      example={
+     *                          "errors": {
+     *                              "The date field is required.",
+     *                              "The date is not a valid date.",
+     *                              "The date does not match the format Y-m-d.",
+     *                              "The date must be a date before or equal to yesterday."
+     *                          }
+     *                      }
+     *                  )
+     *              )
+     *          }
+     *      ),
      *      )
      *
      * @param Request $request
@@ -110,3 +153,8 @@ class ScraperController extends Controller
 //        $script = config('python.scripts') . 'scraper_' . $id . '.py';
     }
 }
+// http://promptsoftech.com/blog/how-to-use-swagger-tool-for-api-documentation/
+// @ OA\Items(type="string",format=),
+// @ OA\Items(type="string",format=),
+// @ OA\Items(type="string",format=),
+// @ OA\Items(type="string",format=")

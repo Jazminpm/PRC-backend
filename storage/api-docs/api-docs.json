@@ -45,6 +45,7 @@
                             "schema": {
                                 "properties": {
                                     "date": {
+                                        "description": "Date in format Y-m-d",
                                         "type": "date"
                                     }
                                 },
@@ -58,10 +59,50 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Ok."
+                        "description": "Ok.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "total": {
+                                            "description": "Total inserted documents",
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "total": 24
+                                    }
+                                }
+                            }
+                        }
                     },
                     "400": {
-                        "description": "Bad request."
+                        "description": "Bad request.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "errors": {
+                                            "description": "List of errors.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "errors": [
+                                            "The date field is required.",
+                                            "The date is not a valid date.",
+                                            "The date does not match the format Y-m-d.",
+                                            "The date must be a date before or equal to yesterday."
+                                        ]
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
