@@ -12,6 +12,9 @@ import tweepy
 from bs4 import BeautifulSoup
 from pyppeteer import launch
 
+import time
+
+
 API = "http://127.0.0.1:8000/api/"
 ENDPOINT = {
     'weather': API + 'weather'
@@ -111,7 +114,7 @@ def tu_tiempo(str_date, airport=LEMD):
 
             dt = str_date.strftime('%Y-%m-%d') + ' ' + td[0].getText() + ':00'
 
-            body = {
+            weather_json = {
                 'date_time': dt,
                 'temperature': int(re.findall(r"[-]*[\d]+", td[2].getText())[0]),
                 'wind_speed': int(speed),
@@ -120,7 +123,8 @@ def tu_tiempo(str_date, airport=LEMD):
                 'pressure': int(re.findall(r"[\d]+", td[5].getText())[0]),
                 'airport_id': LEMD_ID  # TODO: implements all airports
             }
-            r = requests.post(url=ENDPOINT['weather'], data=json.dumps(body))
+            print(json.dumps(weather_json))
+        #r = requests.post(url=ENDPOINT['weather'], data=json.dumps(weather_json))
 
 
 def wind_direction_id(wind_direction):
@@ -138,6 +142,7 @@ def el_tiempo():
 
     table = soup.find_all('div', class_='m_table_weather_hour_detail by_hour')[1]
 
+
     for row in table.find_all('div', attrs={'data-expand-tablechild-item': True}):
 
         weather_json = {
@@ -150,7 +155,7 @@ def el_tiempo():
             'airport_id': LEMD_ID  # todo: get more airports
         }
         print(json.dumps(weather_json))
-        r = requests.post(url=ENDPOINT['weather'], data=json.dumps(weather_json))
+    # r = requests.post(url=ENDPOINT['weather'], data=json.dumps(weather_json))
 
 
 def select_historical_date(day, month, year, url):

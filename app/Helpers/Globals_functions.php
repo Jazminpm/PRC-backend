@@ -28,9 +28,10 @@ function executePython($script, $request) {
     if (!$process->isSuccessful()) {
         throw new ProcessFailedException($process);
     }
+    // executes after command finish
+    foreach ($process as $type => $data) {
+        $response = array_filter( explode("\n", $data));
+    }
 
-    // executes after the command finishes
-    $response = json_decode($process->getOutput(), true);
-
-    return response($response, 200);
+    return $response;
 }
