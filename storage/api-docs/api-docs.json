@@ -13,52 +13,40 @@
         "version": "1.0.0"
     },
     "paths": {
-        "/api/scrapers/{id}": {
-            "get": {
+        "/api/scrapers/weathers/forecast": {
+            "post": {
                 "tags": [
                     "scrapers"
                 ],
-                "summary": "Launch a scraper",
-                "description": "Lunch a scraper for get data from sources",
-                "operationId": "getProjectsList",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "Scraper id to run",
-                        "required": true,
-                        "style": "form",
-                        "schema": {
-                            "type": "integer"
-                        },
-                        "examples": {
-                            "scrapers": {
-                                "summary": "El Tiempo",
-                                "value": 1
-                            },
-                            "0": {
-                                "summary": "Tu Tiempo",
-                                "value": 2
-                            }
-                        }
-                    }
-                ],
+                "summary": "El Tiempo scraper",
+                "description": "Launches El Tiempo scraper for tomorrow's forecast data",
+                "operationId": "getWeathersForecast",
                 "responses": {
                     "200": {
                         "description": "Successful operation"
                     },
                     "400": {
                         "description": "Bad request"
+                    }
+                }
+            }
+        },
+        "/api/scrapers/weathers/history": {
+            "post": {
+                "tags": [
+                    "scrapers"
+                ],
+                "summary": "Tu Tiempo scraper",
+                "description": "Launches Tu Tiempo scraper with the request date.",
+                "operationId": "getWeathersHistory",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
                     },
-                    "404": {
-                        "description": "Not Found"
+                    "400": {
+                        "description": "Bad request"
                     }
-                },
-                "security": [
-                    {
-                        "api_key_security_example": []
-                    }
-                ]
+                }
             }
         }
     },
