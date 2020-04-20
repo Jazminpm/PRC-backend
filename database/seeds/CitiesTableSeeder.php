@@ -7111,5 +7111,24 @@ class CitiesTableSeeder extends Seeder
         City::create(['id' => 7097, 'name' => "Spray View", 'country_id' => 237]);
         City::create(['id' => 7098, 'name' => "Victoria Falls", 'country_id' => 237]);
         City::create(['id' => 7099, 'name' => "Zvishavane", 'country_id' => 237]);
+        City::create(['id' => 7100, 'name' => "Argel/Algiers", 'country_id' => 196]);
+        City::create(['id' => 7101, 'name' => "Port Louis", 'country_id' => 135]);
+        City::create(['id' => 7102, 'name' => "Espargos", 'country_id' => 39]);
+        City::create(['id' => 7103, 'name' => "Basel", 'country_id' => 206]);
+        City::create(['id' => 7104, 'name' => "Asturias", 'country_id' => 199]);
+        City::create(['id' => 7105, 'name' => "A Coruna", 'country_id' => 199]);
+        City::create(['id' => 7106, 'name' => "Santorini", 'country_id' => 83]);
+        City::create(['id' => 7107, 'name' => "Lanzarote", 'country_id' => 199]);
+        City::create(['id' => 7108, 'name' => "Girona", 'country_id' => 199]);
+        City::create(['id' => 7109, 'name' => "Mahon", 'country_id' => 199]);
+        City::create(['id' => 7110, 'name' => "Bedford", 'country_id' => 223]);
+        City::create(['id' => 7111, 'name' => "Rostock", 'country_id' => 80]);
+        City::create(['id' => 7112, 'name' => "Bangor", 'country_id' => 223]);
+        City::create(['id' => 7113, 'name' => "Puerto Iguazu", 'country_id' => 9]);
+        City::create(['id' => 7114, 'name' => "Corfu", 'country_id' => 83]);
+        City::create(['id' => 7115, 'name' => "Nador", 'country_id' => 144]);
+        City::create(['id' => 7116, 'name' => "Luqa", 'country_id' => 131]);
+        City::create(['id' => 7117, 'name' => "Lamezia Terme", 'country_id' => 105]);
+        City::create(['id' => 7118, 'name' => "Trieste", 'country_id' => 105]);
     }
 }
