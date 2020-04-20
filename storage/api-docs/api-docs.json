@@ -23,10 +23,72 @@
                 "operationId": "getWeathersForecast",
                 "responses": {
                     "200": {
-                        "description": "Successful operation"
+                        "description": "Ok.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "total": {
+                                            "description": "Total inserted documents",
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "total": 24
+                                    }
+                                }
+                            }
+                        }
                     },
                     "400": {
                         "description": "Bad request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "description": "Server message that contains the error.",
+                                            "type": "string"
+                                        },
+                                        "exception": {
+                                            "description": "Generated exception.",
+                                            "type": "string"
+                                        },
+                                        "file": {
+                                            "description": "File that throw the exception.",
+                                            "type": "string"
+                                        },
+                                        "line": {
+                                            "description": "Line that thorws the execption.",
+                                            "type": "integer"
+                                        },
+                                        "trace": {
+                                            "description": "Trace route objects.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "messagge": "The command failed.",
+                                        "exception": "",
+                                        "file": "",
+                                        "line": 150,
+                                        "trace": {
+                                            "file": "",
+                                            "line": 1,
+                                            "content": ""
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -71,7 +133,7 @@
                                     },
                                     "type": "object",
                                     "example": {
-                                        "total": 24
+                                        "total": 47
                                     }
                                 }
                             }
@@ -99,6 +161,52 @@
                                             "The date does not match the format Y-m-d.",
                                             "The date must be a date before or equal to yesterday."
                                         ]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "description": "Server message that contains the error.",
+                                            "type": "string"
+                                        },
+                                        "exception": {
+                                            "description": "Generated exception.",
+                                            "type": "string"
+                                        },
+                                        "file": {
+                                            "description": "File that throw the exception.",
+                                            "type": "string"
+                                        },
+                                        "line": {
+                                            "description": "Line that thorws the execption.",
+                                            "type": "integer"
+                                        },
+                                        "trace": {
+                                            "description": "Trace route objects.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "messagge": "The command failed.",
+                                        "exception": "",
+                                        "file": "",
+                                        "line": 150,
+                                        "trace": {
+                                            "file": "",
+                                            "line": 1,
+                                            "content": ""
+                                        }
                                     }
                                 }
                             }

@@ -30,9 +30,71 @@ class ScraperController extends Controller
      *      tags={"scrapers"},
      *      summary="El Tiempo scraper",
      *      description="Launches El Tiempo scraper for tomorrow's forecast data",
-     *      @OA\Response(response=200, description="Successful operation"),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Ok.",
+     *          content={
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="total",
+     *                          type="integer",
+     *                          description="Total inserted documents"
+     *                      ),
+     *                      example={
+     *                          "total": 24
+     *                      }
+     *                  )
+     *              )
+     *          }
+     *      ),
      *      @OA\Response(response=400, description="Bad request"),
-     *      )
+     *      @OA\Response(
+     *          response=500,
+     *          description="Internal Server Error.",
+     *          content={
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="message",
+     *                          type="string",
+     *                          description="Server message that contains the error."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="exception",
+     *                          type="string",
+     *                          description="Generated exception."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="file",
+     *                          type="string",
+     *                          description="File that throw the exception."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="line",
+     *                          type="integer",
+     *                          description="Line that thorws the execption."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="trace",
+     *                          type="array",
+     *                          description="Trace route objects.",
+     *                          @OA\Items(type="object")
+     *                      ),
+     *                      example={
+     *                          "messagge": "The command failed.",
+     *                          "exception": "",
+     *                          "file": "",
+     *                          "line": 150,
+     *                          "trace": {"file":"", "line":1, "content":""}
+     *                      }
+     *                  )
+     *              )
+     *          }
+     *      ),
+     *  )
      *
      * @param Request $request
      * @return JsonResponse
@@ -82,7 +144,7 @@ class ScraperController extends Controller
      *                          description="Total inserted documents"
      *                      ),
      *                      example={
-     *                          "total": 24
+     *                          "total": 47
      *                      }
      *                  )
      *              )
@@ -113,7 +175,51 @@ class ScraperController extends Controller
      *              )
      *          }
      *      ),
-     *      )
+     *      @OA\Response(
+     *          response=500,
+     *          description="Internal Server Error.",
+     *          content={
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="message",
+     *                          type="string",
+     *                          description="Server message that contains the error."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="exception",
+     *                          type="string",
+     *                          description="Generated exception."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="file",
+     *                          type="string",
+     *                          description="File that throw the exception."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="line",
+     *                          type="integer",
+     *                          description="Line that thorws the execption."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="trace",
+     *                          type="array",
+     *                          description="Trace route objects.",
+     *                          @OA\Items(type="object")
+     *                      ),
+     *                      example={
+     *                          "messagge": "The command failed.",
+     *                          "exception": "",
+     *                          "file": "",
+     *                          "line": 150,
+     *                          "trace": {"file":"", "line":1, "content":""}
+     *                      }
+     *                  )
+     *              )
+     *          }
+     *      ),
+     *  )
      *
      * @param Request $request
      * @return JsonResponse
@@ -132,7 +238,7 @@ class ScraperController extends Controller
             return response()->json(["errors" => $response], JsonResponse::HTTP_BAD_REQUEST);
 
         } else {
-            $script = config('python.scripts') . 'scraper_2.py';
+            $script = config('python.scripts') . 's.py';
             $inserts = 0;
             foreach (executePython($script, $request) as $result) {
                 $data = json_decode($result, true);
@@ -153,8 +259,3 @@ class ScraperController extends Controller
 //        $script = config('python.scripts') . 'scraper_' . $id . '.py';
     }
 }
-// http://promptsoftech.com/blog/how-to-use-swagger-tool-for-api-documentation/
-// @ OA\Items(type="string",format=),
-// @ OA\Items(type="string",format=),
-// @ OA\Items(type="string",format=),
-// @ OA\Items(type="string",format=")
