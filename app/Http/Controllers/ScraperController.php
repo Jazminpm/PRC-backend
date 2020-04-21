@@ -259,19 +259,8 @@ class ScraperController extends Controller
             $script = config('python.scripts') . 'scraper_3.py';
             $inserts = 0;
             foreach (executePython($script, $request) as $result) {
-                try {
-                    $data = json_decode($result, true);
-                    $airline_id = DB::table('airlines')
-                        ->select('id')
-                        ->where('name', 'like', '%'.$data['airline'].'%')->first();
-                    $destination = DB::table('cities')
-                        ->select('id')
-                        ->where('name', 'like', '%'.$data['destination'].'%')->first();
-                } catch (Exception $e) {
-                    dd($result);
-                }
-                dd('OLEEE');
-                WeatherController::insert($data);
+                $data = json_decode($result, true);
+                FlightsController::insert($data);
                 $inserts += 1;
             }
             return response()->json(["total" => $inserts], JsonResponse::HTTP_OK);
@@ -280,6 +269,13 @@ class ScraperController extends Controller
 
     function flightsForecast(Request $request)
     {
-//        $script = config('python.scripts') . 'scraper_' . $id . '.py';
+        $script = config('python.scripts') . 'scraper_5.py';
+        $inserts = 0;
+        foreach (executePython($script, $request) as $result) {
+            $data = json_decode($result, true);
+            FlightsController::insert($data);
+            $inserts += 1;
+        }
+        return response()->json(["total" => $inserts], JsonResponse::HTTP_OK);
     }
 }

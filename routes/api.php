@@ -35,4 +35,6 @@ Route::get('/location/country', 'LocationController@getCountry');
 Route::post('/weather', 'WeatherController@insert');
 Route::post('/comment', 'CommentController@insert');
 
+Route::post('/flights', 'FlightsController@insert');
+
 

@@ -233,9 +233,10 @@ def scraper_airportia(html, day, month, year):
 
                 response = {
                     'id': identifier.find('a').getText(),
-                    'date': year + '-' + month + '-' + day + ' ' + td[4].getText(),
-                    'airline': td[2].getText(),
-                    'destination': td[1].find('span').getText(),
+                    'date_time': year + '-' + month + '-' + day + ' ' + td[4].getText(),
+                    'airline_id': td[2].getText(),
+                    'city_id': td[1].find('span').getText(),
+                    'airport_id': LEMD_ID,  # todo: get more airports
                     'delay': delay,  # 0->ok, 1->late, 2->cancelled
                 }
                 print(json.dumps(response))

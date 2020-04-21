@@ -19,7 +19,7 @@ function executePython($script, $request) {
         $args = "";
     }
 
-
+    // dd($cmd.' '.$script.' '.$args);
     // Iniciamos el proceso
     $process = new Process([$cmd, $script, $args]);
     $process->run();

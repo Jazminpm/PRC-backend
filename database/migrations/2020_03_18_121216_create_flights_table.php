@@ -17,13 +17,20 @@ class CreateFlightsTable extends Migration
             $table->string('id');
             $table->dateTime('date_time');
             $table->primary(['id', 'date_time']);
+
             $table->integer('airline_id')->unsigned();
-            $table->foreign('airline_id')->references('id')->on('airlines');
-            $table->string('destination');
-            $table->integer('delay'); // retraso(mins)
+            $table->foreign('airline_id')->references('id')->on('airlines')->onDelete('cascade');
+
+            $table->integer('city_id')->unsigned();
+            $table->foreign('city_id')->references('id')->on('cities')->onDelete('cascade');
+
+            $table->integer('delay')->unsigned();// retraso(mins)
+            $table->foreign('delay')->references('id')->on('flight_statuses')->onDelete('cascade');
+
             $table->integer('airport_id')->unsigned();
             $table->foreign('airport_id')->references('id')->on('airports')->onDelete('cascade');
-            $table->foreign('delay')->references('id')->on('flight_statuses')->onDelete('cascade');
+
+
         });
     }
 
