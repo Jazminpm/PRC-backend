@@ -1,4 +1,6 @@
 <?php
+
+use Illuminate\Http\JsonResponse;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
@@ -6,7 +8,12 @@ function executePython($script, $request) {
     $cmd = config('python.exec');
 
     // Request en formato correcto
-    $json = $request->json()->all();
+    if (gettype($request) != "array"){
+        $json = $request->json()->all();
+    } else {
+        $json = $request;
+    }
+
     $args = "{";
     foreach ($json as $key => $part) {
         if (gettype($part) === 'string')

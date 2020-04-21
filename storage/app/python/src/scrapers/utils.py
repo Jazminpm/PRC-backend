@@ -158,7 +158,7 @@ def el_tiempo():
     # r = requests.post(url=ENDPOINT['weather'], data=json.dumps(weather_json))
 
 
-def select_historical_date(str_date, url):
+def select_historical_date(str_date, url, airport_id):
     today = date.today()
     str_date = datetime.strptime(str_date, '%Y-%m-%d')
 
@@ -177,15 +177,15 @@ def select_historical_date(str_date, url):
                      for d in range((today - select_date).days)]
 
     for dat in date_list:
-        asyncio.get_event_loop().run_until_complete(select_url(dat[8:10], dat[5:7], dat[0:4], url))
+        asyncio.get_event_loop().run_until_complete(select_url(dat[8:10], dat[5:7], dat[0:4], url, airport_id))
 
 
-def select_future_date(url):
+def select_future_date(url, airport_id):
     today = str(date.today())
-    asyncio.get_event_loop().run_until_complete(select_url(today[8:10], today[5:7], today[0:4], url))
+    asyncio.get_event_loop().run_until_complete(select_url(today[8:10], today[5:7], today[0:4], url, airport_id))
 
 
-async def select_url(day, month, year, url):
+async def select_url(day, month, year, url, airport_id):
     browser = await launch(args=['--no-sandbox'])
     page = await browser.newPage()
     await page.goto('https://www.airportia.com' + url + 'departures/')
@@ -198,11 +198,11 @@ async def select_url(day, month, year, url):
 
     html = await page.evaluate('new XMLSerializer().serializeToString(document.doctype) + '
                                'document.documentElement.outerHTML')
-    scraper_airportia(html, day, month, year)
+    scraper_airportia(html, day, month, year, airport_id)
     await browser.close()
 
 
-def scraper_airportia(html, day, month, year):
+def scraper_airportia(html, day, month, year, airport_id):
     soup = BeautifulSoup(html, 'html.parser')
     trs = soup.find('table', class_='flightsTable').findAll('tr')
     i = 0
@@ -231,15 +231,15 @@ def scraper_airportia(html, day, month, year):
                         delay = 7
 
 
-                response = {
+                result = {
                     'id': identifier.find('a').getText(),
                     'date_time': year + '-' + month + '-' + day + ' ' + td[4].getText(),
                     'airline_id': td[2].getText(),
                     'city_id': td[1].find('span').getText(),
-                    'airport_id': LEMD_ID,  # todo: get more airports
+                    'airport_id': airport_id,  # todo: get more airports
                     'delay': delay,  # 0->ok, 1->late, 2->cancelled
                 }
-                print(json.dumps(response))
+                print(json.dumps(result))
         i = i + 1
 
 # Get airport names according of the country
@@ -255,8 +255,8 @@ async def airports_name(airport_name):
     airports = soup.find('div', class_='textlist-body').findAll('a')
     for airport in airports:
         result = {
+            'airport_id': re.findall(r"\([A-Za-z]+\)", airport.getText())[0].replace('(', '').replace(')', ''),
             'airport_url': airport.get('href'),
-            'iata': re.findall(r"\([A-Za-z]+\)", airport.getText())[0].replace('(', '').replace(')', '')
         }
-        print(result)
+        print(json.dumps(result))
     await browser.close()

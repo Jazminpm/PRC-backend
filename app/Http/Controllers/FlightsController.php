@@ -13,7 +13,7 @@ class FlightsController extends Controller
      */
     public static function insert($json)
     {
-        // Get foreign key of airline and
+        // Get foreign key of airline and a city
         $json['airline_id'] = DB::table('airlines')
             ->select('id')
             ->where('name', 'like', '%'.$json['airline_id'].'%')->first()->id;

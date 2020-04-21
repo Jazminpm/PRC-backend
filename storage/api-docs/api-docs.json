@@ -214,6 +214,323 @@
                     }
                 }
             }
+        },
+        "/api/scrapers/flights/history": {
+            "post": {
+                "tags": [
+                    "scrapers"
+                ],
+                "summary": "Airportia historical scraper",
+                "description": "Launches Airportia historical scraper with the requested date and with the departure airport id.",
+                "operationId": "getFlightsHistory",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "date": {
+                                        "description": "Date in format Y-m-d",
+                                        "type": "date"
+                                    },
+                                    "airport_id": {
+                                        "description": "Departure airport id",
+                                        "type": "int"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "date": "2020-04-12",
+                                    "airport_id": 5327
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ok.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "total": {
+                                            "description": "Total inserted documents",
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "total": 47
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "errors": {
+                                            "description": "List of errors.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "errors": [
+                                            "The date field is required.",
+                                            "The date is not a valid date.",
+                                            "The date does not match the format Y-m-d.",
+                                            "The date must be a date before or equal to yesterday."
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "description": "Server message that contains the error.",
+                                            "type": "string"
+                                        },
+                                        "exception": {
+                                            "description": "Generated exception.",
+                                            "type": "string"
+                                        },
+                                        "file": {
+                                            "description": "File that throw the exception.",
+                                            "type": "string"
+                                        },
+                                        "line": {
+                                            "description": "Line that thorws the execption.",
+                                            "type": "integer"
+                                        },
+                                        "trace": {
+                                            "description": "Trace route objects.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "messagge": "The command failed.",
+                                        "exception": "",
+                                        "file": "",
+                                        "line": 150,
+                                        "trace": {
+                                            "file": "",
+                                            "line": 1,
+                                            "content": ""
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/scrapers/flights/forecast": {
+            "post": {
+                "tags": [
+                    "scrapers"
+                ],
+                "summary": "Airportia forecast scraper",
+                "description": "Launches Airportia forecast scraper with the requested departure airport id.",
+                "operationId": "getFlightsForecast",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "airport_id": {
+                                        "description": "Departure airport id",
+                                        "type": "int"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "airport_id": 5306
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ok.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "total": {
+                                            "description": "Total inserted documents",
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "total": 47
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "description": "Server message that contains the error.",
+                                            "type": "string"
+                                        },
+                                        "exception": {
+                                            "description": "Generated exception.",
+                                            "type": "string"
+                                        },
+                                        "file": {
+                                            "description": "File that throw the exception.",
+                                            "type": "string"
+                                        },
+                                        "line": {
+                                            "description": "Line that thorws the execption.",
+                                            "type": "integer"
+                                        },
+                                        "trace": {
+                                            "description": "Trace route objects.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "messagge": "The command failed.",
+                                        "exception": "",
+                                        "file": "",
+                                        "line": 150,
+                                        "trace": {
+                                            "file": "",
+                                            "line": 1,
+                                            "content": ""
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/scrapers/airportia/url": {
+            "post": {
+                "tags": [
+                    "scrapers"
+                ],
+                "summary": "Add the url of an Airportia airport to the database.",
+                "description": "Launches URL Airportia scraper with the requested country id.",
+                "operationId": "setAirportUrl",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "country_id": {
+                                        "description": "Id of a country in the database.",
+                                        "type": "int"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "country_id": 199
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ok.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "total": {
+                                            "description": "Total inserted documents",
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "total": 20
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "description": "Server message that contains the error.",
+                                            "type": "string"
+                                        },
+                                        "exception": {
+                                            "description": "Generated exception.",
+                                            "type": "string"
+                                        },
+                                        "file": {
+                                            "description": "File that throw the exception.",
+                                            "type": "string"
+                                        },
+                                        "line": {
+                                            "description": "Line that thorws the execption.",
+                                            "type": "integer"
+                                        },
+                                        "trace": {
+                                            "description": "Trace route objects.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "messagge": "The command failed.",
+                                        "exception": "",
+                                        "file": "",
+                                        "line": 150,
+                                        "trace": {
+                                            "file": "",
+                                            "line": 1,
+                                            "content": ""
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "tags": [
