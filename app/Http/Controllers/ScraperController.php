@@ -6,6 +6,9 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
+use Illuminate\Support\Facades\DB;
+use mysql_xdevapi\Exception;
+
 class ScraperController extends Controller
 {
     function scrapers(Request $request)
@@ -231,14 +234,9 @@ class ScraperController extends Controller
         ]);
 
         if ($validator->fails()) {
-            $response = [];
-            foreach ($validator->errors()->getMessages() as $item) {
-                array_push($response, $item);
-            }
-            return response()->json(["errors" => $response], JsonResponse::HTTP_BAD_REQUEST);
-
+            return failValidation($validator);
         } else {
-            $script = config('python.scripts') . 's.py';
+            $script = config('python.scripts') . 'scraper_2.py';
             $inserts = 0;
             foreach (executePython($script, $request) as $result) {
                 $data = json_decode($result, true);
@@ -251,7 +249,33 @@ class ScraperController extends Controller
 
     function flightsHistory(Request $request)
     {
-//        $script = config('python.scripts') . 'scraper_' . $id . '.py';
+        $validator = Validator::make($request->json()->all(), [
+            'date' => ['required', 'date', 'date_format:Y-m-d', 'before_or_equal:yesterday']
+        ]);
+
+        if ($validator->fails()) {
+            return failValidation($validator);
+        } else {
+            $script = config('python.scripts') . 'scraper_3.py';
+            $inserts = 0;
+            foreach (executePython($script, $request) as $result) {
+                try {
+                    $data = json_decode($result, true);
+                    $airline_id = DB::table('airlines')
+                        ->select('id')
+                        ->where('name', 'like', '%'.$data['airline'].'%')->first();
+                    $destination = DB::table('cities')
+                        ->select('id')
+                        ->where('name', 'like', '%'.$data['destination'].'%')->first();
+                } catch (Exception $e) {
+                    dd($result);
+                }
+                dd('OLEEE');
+                WeatherController::insert($data);
+                $inserts += 1;
+            }
+            return response()->json(["total" => $inserts], JsonResponse::HTTP_OK);
+        }
     }
 
     function flightsForecast(Request $request)

@@ -25,8 +25,8 @@ Route::get('/model/{id}', 'ModelController@models');
 // scrapers
 Route::post('/scrapers/weathers/forecast', 'ScraperController@weatherForecast');
 Route::post('/scrapers/weathers/history', 'ScraperController@weatherHistory');
-Route::get('/scrapers/flights/history', 'ScraperController@weatherHistory');
-Route::get('/scrapers/flights/forecast', 'ScraperController@weatherForecast');
+Route::get('/scrapers/flights/history', 'ScraperController@flightsHistory');
+Route::get('/scrapers/flights/forecast', 'ScraperController@flightsForecast');
 Route::get('/scrapers/{id}', 'ScraperController@scrapers');
 
 Route::get('/location/city', 'LocationController@getCity');

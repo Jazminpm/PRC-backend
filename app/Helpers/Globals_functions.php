@@ -19,7 +19,7 @@ function executePython($script, $request) {
         $args = "";
     }
 
-    // dd($cmd.' '.$script.' '.$args);
+
     // Iniciamos el proceso
     $process = new Process([$cmd, $script, $args]);
     $process->run();
@@ -34,4 +34,13 @@ function executePython($script, $request) {
     }
 
     return $response;
+}
+
+function failValidation($validator){
+    $response = [];
+    foreach ($validator->errors()->getMessages() as $item) {
+        array_push($response, $item);
+    }
+    return response()->json(["errors" => $response], JsonResponse::HTTP_BAD_REQUEST);
+
 }

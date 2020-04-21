@@ -158,8 +158,14 @@ def el_tiempo():
     # r = requests.post(url=ENDPOINT['weather'], data=json.dumps(weather_json))
 
 
-def select_historical_date(day, month, year, url):
+def select_historical_date(str_date, url):
     today = date.today()
+    str_date = datetime.strptime(str_date, '%Y-%m-%d')
+
+    day = int(str_date.strftime('%d'))
+    month = int(str_date.strftime('%m'))
+    year = int(str_date.strftime('%Y'))
+
     select_date = date(year, month, day)
 
     if (today - select_date).days > 5:
@@ -206,21 +212,33 @@ def scraper_airportia(html, day, month, year):
             if identifier is not None:
                 td = tr.findAll('td')
                 delay = 0
-                if td[5].find('div') is not None:
-                    if td[5].find('div').getText() == 'Cancelled' or td[5].find('div').getText() == 'Unknown':
+                if td[6].find('div') is not None:
+                    if td[6].find('div').getText() == 'Landed':  # En hora
+                       delay = 0
+                    elif td[6].find('div').getText() == 'Landed Late' or 'Delayed' in td[6].find('div').getText():  # Con retraso
+                        delay = 1
+                    elif td[6].find('div').getText() == 'Cancelled':  # Cancelada
                         delay = 2
-                    elif td[5].find('div').getText() == 'Landed Late':
-                        delay = 0
+                    elif td[6].find('div').getText() == 'Scheduled':  # Programada
+                        delay = 3
+                    elif td[6].find('div').getText() == 'Unknown':  # No se conoce el estado
+                        delay = 4
+                    elif td[6].find('div').getText() == 'Diverted': # Desviado
+                        delay = 5
+                    elif td[6].find('div').getText() == 'En-Route': # En ruta
+                        delay = 6
+                    else :  #Nuevo estado desconocido
+                        delay = 7
+
 
                 response = {
                     'id': identifier.find('a').getText(),
-                    'date': day + '-' + month + '-' + year,
+                    'date': year + '-' + month + '-' + day + ' ' + td[4].getText(),
                     'airline': td[2].getText(),
                     'destination': td[1].find('span').getText(),
                     'delay': delay,  # 0->ok, 1->late, 2->cancelled
-                    'expected_departure_time': td[3].getText(),
                 }
-                print(response)
+                print(json.dumps(response))
         i = i + 1
 
 # Get airport names according of the country

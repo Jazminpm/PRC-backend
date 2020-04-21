@@ -9473,7 +9473,7 @@ class AirlinesTableSeeder extends Seeder
         ]);
         Airline::create([
             "id" => 895,
-            "name" => "Iberia Airlines Express",
+            "name" => "Iberia Express",
             "alias" => "",
             "iata" => "I2",
             "icao" => "IBS",
@@ -11369,6 +11369,15 @@ class AirlinesTableSeeder extends Seeder
             "icao" => "ETR",
             "callsign" => "",
             "country_id" => 228
+        ]);
+        Airline::create([
+            'id' => 17009,
+            'name' => "Plus Ultra",
+            "alias" => null,
+            'iata' => "PU",
+            'icao' => "PUE",
+            "callsign" => "",
+            "country_id" => 199
         ]);
 
         // Airportia pone destinos de aerolineas que son aeropuertos
