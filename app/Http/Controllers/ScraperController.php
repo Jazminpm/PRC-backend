@@ -30,6 +30,19 @@ class ScraperController extends Controller
      *      tags={"scrapers"},
      *      summary="El Tiempo scraper",
      *      description="Launches El Tiempo scraper for tomorrow's forecast data",
+     *      @OA\RequestBody(
+     *          @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema(
+     *                  @OA\Property(
+     *                      property="airport_id",
+     *                      type="int",
+     *                      description="Departure airport id"
+     *                  ),
+     *                  example={"airport_id": 5306}
+     *              )
+     *          )
+     *      ),
      *      @OA\Response(
      *          response=200,
      *          description="Ok.",
@@ -101,6 +114,27 @@ class ScraperController extends Controller
      */
     function weatherForecast(Request $request)
     {
+        $icao = AirportsController::getAirportIcao($request->airport_id);
+        if (is_null($icao)){
+            return response()->json(["errors" => 'The airport does not have ICAO.'],
+                JsonResponse::HTTP_BAD_REQUEST);
+        } else {
+            $args = $request->all();
+            array_push($args, $icao);
+
+            $script = config('python.scripts') . 'scraper_forecast_weather.py';
+            $inserts = 0;
+            foreach (executePython($script, $args) as $result) {
+                $data = json_decode($result, true);
+                WeatherController::insert($data);
+                $inserts += 1;
+            }
+            return response()->json(["total" => $inserts], 200);
+        }
+    }
+    /*
+    function weatherForecast(Request $request)
+    {
         $script = config('python.scripts') . 'scraper_1.py';
         $inserts = 0;
         foreach (executePython($script, $request) as $result) {
@@ -109,7 +143,7 @@ class ScraperController extends Controller
             $inserts += 1;
         }
         return response()->json(["total" => $inserts], 200);
-    }
+    }*/
 
     /**
      * @OA\Post(
@@ -117,7 +151,7 @@ class ScraperController extends Controller
      *      operationId="getWeathersHistory",
      *      tags={"scrapers"},
      *      summary="Tu Tiempo scraper",
-     *      description="Launches Tu Tiempo scraper with the requested date.",
+     *      description="Launches Tu Tiempo scraper with the requested date and departure airport id.",
      *      @OA\RequestBody(
      *          @OA\MediaType(
      *              mediaType="application/json",
@@ -127,7 +161,12 @@ class ScraperController extends Controller
      *                      type="date",
      *                      description="Date in format Y-m-d"
      *                  ),
-     *                  example={"date": "2020-04-19"}
+     *                  @OA\Property(
+     *                      property="airport_id",
+     *                      type="int",
+     *                      description="Departure airport id"
+     *                  ),
+     *                  example={"date":"2020-04-20", "airport_id": 5306}
      *              )
      *          )
      *      ),
@@ -233,14 +272,23 @@ class ScraperController extends Controller
         if ($validator->fails()) {
             return failValidation($validator);
         } else {
-            $script = config('python.scripts') . 'scraper_2.py';
-            $inserts = 0;
-            foreach (executePython($script, $request) as $result) {
-                $data = json_decode($result, true);
-                WeatherController::insert($data);
-                $inserts += 1;
+            $icao = AirportsController::getAirportIcao($request->airport_id);
+            if (is_null($icao)){
+                return response()->json(["errors" => 'The airport does not have ICAO.'],
+                    JsonResponse::HTTP_BAD_REQUEST);
+            } else {
+                $args = $request->all();
+                array_push($args, $icao);
+
+                $script = config('python.scripts') . 'scraper_2.py';
+                $inserts = 0;
+                foreach (executePython($script, $args) as $result) {
+                    $data = json_decode($result, true);
+                    WeatherController::insert($data);
+                    $inserts += 1;
+                }
+                return response()->json(["total" => $inserts], JsonResponse::HTTP_OK);
             }
-            return response()->json(["total" => $inserts], JsonResponse::HTTP_OK);
         }
     }
     /**

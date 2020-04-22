@@ -23,6 +23,8 @@ ENDPOINT = {
 
 URL_TUTIEMPO = "https://www.tutiempo.net/registros/"
 URL_ELTIEMPO = "https://www.eltiempo.es/barajas.html?v=por_hora"
+URL_WEATERFORYOU = "https://www.weatherforyou.com/reports/index.php?config=&forecast=pass&pass=hourly_metric&pands" \
+                   "=&zipcode=&icao="
 LEMD_ID = 5327
 LEMD = "lemd"
 
@@ -81,12 +83,13 @@ def get_tweets_by_hashtag(hashtag, date, lang='en'):
         print(json.dumps(ee, ensure_ascii=False))
 
 
-def tu_tiempo(str_date, airport=LEMD):
+def tu_tiempo(str_date, airport_id, icao):
     """Get weather data from URL_TUTIEMPO and post in an endpoint.
 
     Args:
         str_date (str): Date in YYYY-mm-dd format.
-        airport (str): Airport ICAO code.
+        airport_id (int): Airport ID code.
+        icao (str): Airport ICAO code.
     """
     months = ['', 'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
     wind_directions = np.array(['', 'En calma', 'Norte', 'Nordeste', 'Este', 'Sureste', 'Sur', 'Suroeste', 'Oeste', 'Noroeste', 'Variable'])
@@ -97,7 +100,7 @@ def tu_tiempo(str_date, airport=LEMD):
     month = months[int(str_date.strftime('%m'))]
     year = str_date.strftime('%Y')
 
-    url_tutiempo_airport = URL_TUTIEMPO + airport + '/' + str(day) + '-' + month + '-' + year + '.html'
+    url_tutiempo_airport = URL_TUTIEMPO + icao + '/' + str(day) + '-' + month + '-' + year + '.html'
 
     page = requests.get(url_tutiempo_airport)
     soup = BeautifulSoup(page.content, 'html.parser')
@@ -121,7 +124,7 @@ def tu_tiempo(str_date, airport=LEMD):
                 'wind_direction': int(wind_direction[0]),
                 'humidity': int(re.findall(r"[\d]+", td[4].getText())[0]),
                 'pressure': int(re.findall(r"[\d]+", td[5].getText())[0]),
-                'airport_id': LEMD_ID  # TODO: implements all airports
+                'airport_id': airport_id  # TODO: implements all airports
             }
             print(json.dumps(weather_json))
         #r = requests.post(url=ENDPOINT['weather'], data=json.dumps(weather_json))
@@ -156,6 +159,63 @@ def el_tiempo():
         }
         print(json.dumps(weather_json))
     # r = requests.post(url=ENDPOINT['weather'], data=json.dumps(weather_json))
+
+
+def weather_for_you(airport_id, icao):
+    """Get weather data from URL_WEATERFORYOU and post in an endpoint.
+
+    Args:
+        airport_id (int): Airport ID code.
+        icao (str): Airport ICAO code.
+    """
+    wind_directions = np.array(['', '', 'N', 'NNE NE ENE', 'E', 'ESE SE SSE', 'S', 'SSW SW WSW', 'W', 'WNW NW NNW', ''])
+    week_days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+
+    url = URL_WEATERFORYOU + icao
+
+    page = requests.get(url)
+    soup = BeautifulSoup(page.content, 'html.parser')
+    [tag.decompose() for tag in soup("style")]
+    [tag.decompose() for tag in soup("script")]
+
+    table = soup.findAll('table')[1]
+    divs = table.findAll('div', class_='hourly_cal_colwrap cal_dayiconhi')
+
+    today = date.today()
+    week_day = week_days[today.weekday()]
+
+    for div in divs:
+        span = div.findAll('span')
+        a = div.findAll('a')
+
+        # Get hour in correct format
+        hour = span[0].getText().replace('PM', ':00 PM').replace('AM', ':00 AM')
+        if span[1].getText() == week_day:
+            hour = str(today) + ' ' + hour
+            date_time = datetime.strptime(hour, '%Y-%m-%d %I:%M %p')
+        else:
+            today = today + timedelta(days=1)
+            week_day = week_days[today.weekday()]
+            hour = str(today) + ' ' + hour
+            date_time = datetime.strptime(hour, '%Y-%m-%d %I:%M %p')
+
+        # Get number of wind direction
+        wind_regex = re.findall(r"[A-Z]+", a[3].getText())[0]
+        direction = [x for x in wind_directions if x == wind_regex]
+        if len(direction) == 0:
+            direction = [x for x in wind_directions if wind_regex in x]
+        wind_direction = np.where(wind_directions == direction[0])[0][0]
+
+        weather_json = {
+            'date_time': str(date_time),
+            'temperature': int(re.findall(r"[-]*[\d]+", span[2].getText())[0]),
+            'wind_speed': re.findall(r"[\d]+", a[4].getText())[0],
+            'wind_direction': int(wind_direction),
+            'humidity': int(re.findall(r"[\d]+", a[2].getText())[0]),
+            'pressure': int(re.findall(r"[\d]+", a[5].getText())[0]),
+            'airport_id': airport_id
+        }
+        print(json.dumps(weather_json))
 
 
 def select_historical_date(str_date, url, airport_id):

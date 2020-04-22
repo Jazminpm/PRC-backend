@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 
 class AirportsController extends Controller
 {
@@ -30,6 +31,18 @@ class AirportsController extends Controller
             return null;
         } else {
             return $url->airport_url;
+        }
+    }
+
+    public static function getAirportIcao($arg)
+    {
+        $data = DB::table('airports')
+            ->select('icao')
+            ->where('id', $arg)->first();
+        if (is_null($data)){
+            return null;
+        } else {
+            return $data->icao;
         }
     }
 }

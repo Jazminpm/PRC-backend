@@ -21,6 +21,24 @@
                 "summary": "El Tiempo scraper",
                 "description": "Launches El Tiempo scraper for tomorrow's forecast data",
                 "operationId": "getWeathersForecast",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "airport_id": {
+                                        "description": "Departure airport id",
+                                        "type": "int"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "airport_id": 5306
+                                }
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
                         "description": "Ok.",
@@ -99,7 +117,7 @@
                     "scrapers"
                 ],
                 "summary": "Tu Tiempo scraper",
-                "description": "Launches Tu Tiempo scraper with the requested date.",
+                "description": "Launches Tu Tiempo scraper with the requested date and departure airport id.",
                 "operationId": "getWeathersHistory",
                 "requestBody": {
                     "content": {
@@ -109,11 +127,16 @@
                                     "date": {
                                         "description": "Date in format Y-m-d",
                                         "type": "date"
+                                    },
+                                    "airport_id": {
+                                        "description": "Departure airport id",
+                                        "type": "int"
                                     }
                                 },
                                 "type": "object",
                                 "example": {
-                                    "date": "2020-04-19"
+                                    "date": "2020-04-20",
+                                    "airport_id": 5306
                                 }
                             }
                         }
