@@ -4,7 +4,7 @@ namespace App\Models\Fligths;
 
 use Illuminate\Database\Eloquent\Model;
 
-class FlightStatus extends Model
+class Algorithms extends Model
 {
     protected $fillable = [
         'id', 'name',
