@@ -4802,7 +4802,7 @@ class CitiesTableSeeder extends Seeder
         City::create(['id' => 4788, 'name' => "Gizan", 'country_id' => 186]);
         City::create(['id' => 4789, 'name' => "Guriat", 'country_id' => 186]);
         City::create(['id' => 4790, 'name' => "Hafr Al-batin", 'country_id' => 186]);
-        City::create(['id' => 4791, 'name' => "Hail", 'country_id' => 186]);
+        City::create(['id' => 4791, 'name' => "Ha'il", 'country_id' => 186]);
         City::create(['id' => 4792, 'name' => "Jeddah", 'country_id' => 186]);
         City::create(['id' => 4793, 'name' => "Jubail", 'country_id' => 186]);
         City::create(['id' => 4794, 'name' => "King Khalid Mil.city", 'country_id' => 186]);
@@ -7129,6 +7129,7 @@ class CitiesTableSeeder extends Seeder
         City::create(['id' => 7115, 'name' => "Nador", 'country_id' => 144]);
         City::create(['id' => 7116, 'name' => "Luqa", 'country_id' => 131]);
         City::create(['id' => 7117, 'name' => "Lamezia Terme", 'country_id' => 105]);
+        City::create(['id' => 7118, 'name' => "Trieste", 'country_id' => 105]);
         City::create(['id' => 7118, 'name' => "Trieste", 'country_id' => 105]);
     }
 }

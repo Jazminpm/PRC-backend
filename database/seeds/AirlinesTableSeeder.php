@@ -6242,7 +6242,7 @@ class AirlinesTableSeeder extends Seeder
         ]);
         Airline::create([
             "id" => 1011,
-            "name" => "Ukraine International Airlines",
+            "name" => "Ukraine Int. Airlines",
             "alias" => null,
             "iata" => "PS",
             "icao" => "AUI",
@@ -11378,6 +11378,24 @@ class AirlinesTableSeeder extends Seeder
             'icao' => "PUE",
             "callsign" => "",
             "country_id" => 199
+        ]);
+        Airline::create([
+            'id' => 17010,
+            'name' => "Air Senegal",
+            "alias" => null,
+            'iata' => "HC",
+            'icao' => "SZN",
+            "callsign" => "",
+            "country_id" => 187
+        ]);
+        Airline::create([
+            'id' => 17011,
+            'name' => "SkyUp Airlines",
+            "alias" => null,
+            'iata' => "PQ",
+            'icao' => "SPQ",
+            "callsign" => "",
+            "country_id" => 221
         ]);
 
         // Airportia pone destinos de aerolineas que son aeropuertos
