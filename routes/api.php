@@ -20,7 +20,10 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::post('/analysis', 'AnalysisController@analyze');
 Route::post('/translate', 'AnalysisController@translate');
-Route::get('/model/{id}', 'ModelController@models');
+
+// Models
+Route::post('/models/train', 'ModelController@trainModel');
+Route::post('/models/predict', 'ModelController@predict_model');
 
 // scrapers
 Route::post('/scrapers/weathers/forecast', 'ScraperController@weatherForecast');
@@ -37,5 +40,4 @@ Route::get('/location/country', 'LocationController@getCountry');
 Route::post('/weather', 'WeatherController@insert');
 Route::post('/comment', 'CommentController@insert');
 
-Route::post('/prueba', 'FlightsController@insertUrl');
-
+Route::post('/prueba', 'ModelController@insertTrain');

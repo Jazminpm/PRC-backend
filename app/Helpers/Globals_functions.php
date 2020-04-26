@@ -9,36 +9,26 @@ function executePython($script, $request) {
 
     // Request en formato correcto
     if (gettype($request) != "array"){
-        $json = $request->json()->all();
+        $args = $request->json()->all();
     } else {
-        $json = $request;
-    }
+        $args = $request;
 
-    $args = "{";
-    foreach ($json as $key => $part) {
-        if (gettype($part) === 'string')
-            $args = $args.'"'.$key.'":'.'"'.$part.'",';
-        else
-            $args = $args.'"'.$key.'":'.''.$part.',';
     }
-    $args = substr($args, 0, -1)."}";
-    if($args == '}'){
-        $args = "";
-    }
+    $args = json_encode($args, True);
 
-    // dd($cmd.' '.$script.' '.$args);
+    // dd($cmd.' '.$script." '".$args."'");
     // Iniciamos el proceso
     $process = new Process([$cmd, $script, $args]);
+    $process->setTimeout(3600);
     $process->run();
 
     // executes after the command finishes
     if (!$process->isSuccessful()) {
         throw new ProcessFailedException($process);
     }
-    // executes after command finish
-    foreach ($process as $type => $data) {
-        $response = array_filter( explode("\n", $data));
-    }
+
+    $response =  $process->getOutput(); // Python result is in one print
+    $response = array_filter( explode("\n", $response));
 
     return $response;
 }
@@ -49,5 +39,4 @@ function failValidation($validator){
         array_push($response, $item);
     }
     return response()->json(["errors" => $response], JsonResponse::HTTP_BAD_REQUEST);
-
 }
