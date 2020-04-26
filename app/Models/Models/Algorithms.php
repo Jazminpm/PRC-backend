@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Fligths;
+namespace App\Models\Models;
 
 use Illuminate\Database\Eloquent\Model;
 

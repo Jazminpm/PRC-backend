@@ -29,6 +29,9 @@ class CreateFlightsTable extends Migration
 
             $table->integer('airport_id')->unsigned();
             $table->foreign('airport_id')->references('id')->on('airports')->onDelete('cascade');
+
+            $table->tinyInteger('prediction');// retraso(mins)
+            $table->foreign('prediction')->references('id')->on('flight_statuses')->onDelete('cascade');
         });
     }
 
