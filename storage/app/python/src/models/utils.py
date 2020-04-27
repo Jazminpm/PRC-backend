@@ -86,7 +86,7 @@ def import_model(select_classifier, data_train):
     # -------------5. Export model, report and selected columns
     y_pred = classifier.predict(X_test)
 
-    #  save_model(classifier, model_name, d)
+    save_model(classifier, model_name, d)
 
     report = pd.DataFrame(classification_report(y_test, y_pred, output_dict=True)).transpose()
     response = {
@@ -134,28 +134,23 @@ def save_model(classifier, model_name, le):
     pickle.dump(classifier, my_file)
 
 
-def prediction(characteristic, model_name, model_date):
+def prediction(num_model, model_date, data_test):
     os.chdir(os.path.dirname(__file__))
+
+    model_name = ['', 'naive_bayes', 'random_forest', 'gradient_boosting', 'decision_tree', 'k-nn',
+    'logistic_regression']
 
     # 1. Import from directories
     date = datetime.strptime(model_date, "%Y-%m-%d %H:%M:%S")
-    filename = model_name + "_" + str(date.date()) + "_" + str(date.hour) + "." + str(date.minute) + "." + str(
+    filename = str(model_name[num_model]) + "_" + str(date.date()) + "_" + str(date.hour) + "." + str(date.minute) + "." + str(
         date.second)
 
-    model_path = Path("..") / Path("..") / Path("..") / Path("..") / "models" / "training_models" / model_name / (filename + ".sav")
+    model_path = Path("..") / Path("..") / Path("..") / Path("..") / "models" / "training_models" / str(model_name[num_model]) / (filename + ".sav")
     with open(model_path, 'rb') as pickle_file:
         model = pickle.load(pickle_file)
 
-    preprocess_path = Path("..") / Path("..") / Path("..") / Path("..") / "models" / "preprocess_characteristic" / model_name / (filename + ".pkl")
+    preprocess_path = Path("..") / Path("..") / Path("..") / Path("..") / "models" / "preprocess_characteristic" / str(model_name[num_model]) / (filename + ".pkl")
     preprocess_obj = pickle.load(open(preprocess_path, 'rb'))
-
-    # 2. Import data for test
-    pd.set_option('mode.chained_assignment', None)
-    data_test = pd.read_csv('dataset_test.csv', delimiter=";",
-                            encoding="ISO-8859-1")
-    for key in list(data_test.head()):
-        if key not in characteristic:
-            data_test = data_test.drop([key], axis=1)
 
     # -------------2. Preparing Data For Training (divides data into attributes and labels)
     df_object = data_test.select_dtypes(include=[object])

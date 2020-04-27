@@ -2,30 +2,426 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class ModelController extends Controller
 {
-    function trainModel(Request $request){
-        $args = FlightsController::getModelData($request->characteristic, $request->init_date, $request->final_date);
+    /**
+     * @OA\Post(
+     *      path="/api/models/training",
+     *      operationId="getTrainingModel",
+     *      tags={"models"},
+     *      summary="Training Model",
+     *      description="Create a training model with the data between a start date and and end date.",
+     *      @OA\RequestBody(
+     *          @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema(
+     *                  @OA\Property(
+     *                      property="characteristic",
+     *                      type="array",@OA\Items(type="string"),
+     *                      description="Characteristics selected for the training model"
+     *                  ),
+     *                  @OA\Property(
+     *                      property="start_date",
+     *                      type="date",
+     *                      description="Date in format Y-m-d"
+     *                  ),
+     *                  @OA\Property(
+     *                      property="end_date",
+     *                      type="date",
+     *                      description="Date in format Y-m-d"
+     *                  ),
+     *                  @OA\Property(
+     *                      property="algorithm",
+     *                      type="int",
+     *                      description="Algorithm selected for the training"
+     *                  ),
+     *                  example={"characteristic": {"id","date", "time","airline_id","city_id","airport_id","delay",
+     *                          "temperature","humidity","pressure","wind_direction","wind_speed"},
+     *                          "start_date": "2020-04-20","end_date": "2020-04-24","algorithm":1}
+     *              )
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=204,
+     *          description="Ok."
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="OK.",
+     *          content={
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="warning",
+     *                          type="string",
+     *                          description="Notice that something has not happened correctly."
+     *                      ),
+     *                      example={
+     *                          "warning": {
+     *                              "There are no flights on the date specified in the database.",
+     *                              "There no exist algorithm in the database with that identifier."}
+     *                      }
+     *                  )
+     *              )
+     *          }
+     *      ),
+     *      @OA\Response(
+     *          response=500,
+     *          description="Internal Server Error.",
+     *          content={
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="message",
+     *                          type="string",
+     *                          description="Server message that contains the error."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="exception",
+     *                          type="string",
+     *                          description="Generated exception."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="file",
+     *                          type="string",
+     *                          description="File that throw the exception."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="line",
+     *                          type="integer",
+     *                          description="Line that thorws the execption."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="trace",
+     *                          type="array",
+     *                          description="Trace route objects.",
+     *                          @OA\Items(type="object")
+     *                      ),
+     *                      example={
+     *                          "messagge": "The command failed.",
+     *                          "exception": "",
+     *                          "file": "",
+     *                          "line": 150,
+     *                          "trace": {"file":"", "line":1, "content":""}
+     *                      }
+     *                  )
+     *              )
+     *          }
+     *      ),
+     *  )
+     *
+     * @param Request $request
+     * @return string
+     */
+    function trainingModel(Request $request){
 
-        if (sizeof($args) > 0) {
-            $data = ModelController::getData($args, $request->characteristic);
-            $args = $request->all();
-            array_push($args, $data);
+        $validator = Validator::make($request->json()->all(), [
+            'characteristic' => ['required', 'array', 'min:1', 'max:12'],
+            'start_date' => ['required', 'date', 'date_format:Y-m-d', 'before_or_equal:yesterday'],
+            'end_date' => ['required', 'date', 'date_format:Y-m-d', 'before_or_equal:today'],
+            'algorithm' => ['required', 'integer', 'min:1', 'max:5']
+        ]);
 
-            $script = config('python.scripts') . 'model_1.py';
+        $algorithm_exist = is_null(DB::table('algorithms')->select('*')
+            ->where('id', $request->algorithm)->first());
+        if (!$algorithm_exist){
+            if ($validator->fails()) {
+                return failValidation($validator);
+            } else {
+                $args = FlightsController::getModelData($request->characteristic, $request->start_date, $request->end_date);
+                if (sizeof($args) > 0) {
+                    $data = ModelController::getData($args, $request->characteristic);
+                    $args = $request->all();
+                    array_push($args, $data);
 
+                    $script = config('python.scripts') . 'model_1.py';
 
-            $data = json_decode(executePython($script, $args)[0], true);
-            ModelController::insertTrain($data);
-            return 'Model create';
+                    $data = json_decode(executePython($script, $args)[0], true);
+                    DB::table('models')->Insert($data); // Insert data in the BBDD
+                    return response()->json([],JsonResponse::HTTP_NO_CONTENT);
+                } else {
+                    return response()->json(["warning" => 'There are no flights on the date specified in the database.'],
+                        JsonResponse::HTTP_OK);
+                }
+            }
         } else {
-            return ('errors = There are not flights.');
+            return response()->json(["warning" => 'There no exist algorithm in the database with that identifier.'],
+                JsonResponse::HTTP_OK);
         }
     }
+
+    /**
+     * @OA\Post(
+     *      path="/api/models/predict",
+     *      operationId="getPredictModel",
+     *      tags={"models"},
+     *      summary="Predict flight data",
+     *      description="This function is used to predict flight data.",
+     *      @OA\RequestBody(
+     *          @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema(
+     *                  @OA\Property(
+     *                      property="start_date",
+     *                      type="date",
+     *                      description="Date in format Y-m-d"
+     *                  ),
+     *                  @OA\Property(
+     *                      property="end_date",
+     *                      type="date",
+     *                      description="Date in format Y-m-d"
+     *                  ),
+     *                  example={"start_date": "2020-04-25","end_date": "2020-04-26"}
+     *              )
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Ok.",
+     *          content={
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="total",
+     *                          type="integer",
+     *                          description="Total inserted documents"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="warning",
+     *                          type="string",
+     *                          description="Notice that something has not happened correctly."
+     *                      ),
+     *                      example={
+     *                          "total": 20,
+     *                          "warning": "There are no flights on the date specified in the database."
+     *                      }
+     *                  )
+     *              )
+     *          }
+     *      ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad request.",
+     *          content={
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="errors",
+     *                          type="array",
+     *                          description="List of errors.",
+     *                          @OA\Items(type="string")
+     *                      ),
+     *                      example={
+     *                          "errors": {
+     *                              "The date field is required.",
+     *                              "The date is not a valid date.",
+     *                              "The date does not match the format Y-m-d.",
+     *                              "The date must be a date before or equal to today."
+     *                          }
+     *                      }
+     *                  )
+     *              )
+     *          }
+     *      ),
+     *      @OA\Response(
+     *          response=500,
+     *          description="Internal Server Error.",
+     *          content={
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="message",
+     *                          type="string",
+     *                          description="Server message that contains the error."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="exception",
+     *                          type="string",
+     *                          description="Generated exception."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="file",
+     *                          type="string",
+     *                          description="File that throw the exception."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="line",
+     *                          type="integer",
+     *                          description="Line that thorws the execption."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="trace",
+     *                          type="array",
+     *                          description="Trace route objects.",
+     *                          @OA\Items(type="object")
+     *                      ),
+     *                      example={
+     *                          "messagge": "The command failed.",
+     *                          "exception": "",
+     *                          "file": "",
+     *                          "line": 150,
+     *                          "trace": {"file":"", "line":1, "content":""}
+     *                      }
+     *                  )
+     *              )
+     *          }
+     *      ),
+     *  )
+     *
+     * @param Request $request
+     * @return string
+     */
+    function predictModel(Request $request){
+        $validator = Validator::make($request->json()->all(), [
+            'start_date' => ['required', 'date', 'date_format:Y-m-d', 'before_or_equal:today'],
+            'end_date' => ['required', 'date', 'date_format:Y-m-d', 'before_or_equal:today']
+        ]);
+
+        if ($validator->fails()) {
+            return failValidation($validator);
+        } else {
+            $selectedModel = ModelController::selectedModel();
+            // Attributes that we need for save de prediction.
+            $select_id = ($selectedModel->attribute_id == 1);
+            $select_date = ($selectedModel->attribute_date == 1);
+            $select_time = ($selectedModel->attribute_time == 1);
+
+            $characteristic = ModelController::getCharacteristic($selectedModel);
+            $args = FlightsController::getModelData($characteristic, $request->start_date, $request->end_date);
+            if (sizeof($args) > 0) {
+                $data = ModelController::getData($args, $characteristic);
+
+                # Copy keys.
+                $id = $data['id'];
+                $date = $data['date'];
+                $time = $data['time'];
+                if ($select_id == False){
+                    unset($data['id']);
+                }
+                if ($select_date == False){
+                    unset($data['date']);
+                }
+                if ($select_time == False){
+                    unset($data['time']);
+                }
+
+                $args = $request->all();
+                array_push($args, $selectedModel->type);
+                array_push($args, $selectedModel->date);
+                array_push($args, $data);
+
+                $script = config('python.scripts') . 'model_2.py';
+                $result = executePython($script, $args);
+                preg_match_all('!\d!', $result[0], $matches);
+                $inserts = 0;
+
+                for ($i=0; $i<sizeof($matches[0]); $i++){
+                    $data = [$matches[0][$i]];
+                    array_push($data, $id[$i]);
+                    array_push($data, $date[$i]);
+                    array_push($data, $time[$i]);
+                    FlightsController::updatePrediction($data);
+                    $inserts += 1;
+                }
+                return response()->json(["total" => $inserts], JsonResponse::HTTP_OK);
+            } else {
+                return response()->json(["warning" => 'There are no flights on the date specified in the database.'],
+                    JsonResponse::HTTP_OK);
+            }
+        }
+    }
+
+    /**
+     * @OA\Post(
+     *      path="/api/models/updateModel",
+     *      operationId="setSelectedModel",
+     *      tags={"models"},
+     *      summary="Select model in use",
+     *      description="It is used to select the model that is used in the application.",
+     *      @OA\RequestBody(
+     *          @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema(
+     *                  @OA\Property(
+     *                      property="model",
+     *                      type="int",
+     *                  ),
+     *                  example={"model":10}
+     *              )
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=204,
+     *          description="Ok."
+     *      ),
+     *      @OA\Response(
+     *          response=500,
+     *          description="Internal Server Error.",
+     *          content={
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="message",
+     *                          type="string",
+     *                          description="Server message that contains the error."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="exception",
+     *                          type="string",
+     *                          description="Generated exception."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="file",
+     *                          type="string",
+     *                          description="File that throw the exception."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="line",
+     *                          type="integer",
+     *                          description="Line that thorws the execption."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="trace",
+     *                          type="array",
+     *                          description="Trace route objects.",
+     *                          @OA\Items(type="object")
+     *                      ),
+     *                      example={
+     *                          "messagge": "The command failed.",
+     *                          "exception": "",
+     *                          "file": "",
+     *                          "line": 150,
+     *                          "trace": {"file":"", "line":1, "content":""}
+     *                      }
+     *                  )
+     *              )
+     *          }
+     *      ),
+     *  )
+     *
+     * @param Request $request
+     * @return string
+     */
+    function updateModelInUse(Request $request){
+        $model = DB::table('in_uses')->select('model')->first();
+            DB::table('in_uses')->where('model', $model->model)
+            ->update(['model' => $request->model]);
+
+        return response()->json([],JsonResponse::HTTP_NO_CONTENT);
+    }
+
 
     function getData($args, $characteristics){
         $data_structure = "{";
@@ -43,10 +439,52 @@ class ModelController extends Controller
         return $data;
     }
 
-    public static function insertTrain($data)
-    {
-        // Get foreign key of airline and a city
-        DB::table('models')->updateOrInsert($data);
+
+    function getCharacteristic($data){
+        $characteristic = [];
+
+        array_push($characteristic, 'date');
+        array_push($characteristic, 'time');
+        array_push($characteristic, 'id');
+
+        if ($data->attribute_airline == 1) {
+            array_push($characteristic, 'airline_id');
+        }
+        if ($data->attribute_destination == 1) {
+            array_push($characteristic, 'city_id');
+        }
+        if ($data->attribute_temperature == 1) {
+            array_push($characteristic, 'temperature');
+        }
+        if ($data->attribute_humidity == 1) {
+            array_push($characteristic, 'humidity');
+        }
+        if ($data->attribute_wind_speed == 1) {
+            array_push($characteristic, 'wind_speed');
+        }
+        if ($data->attribute_wind_direction == 1) {
+            array_push($characteristic, 'wind_direction');
+        }
+        if ($data->attribute_pressure == 1) {
+            array_push($characteristic, 'pressure');
+        }
+        if ($data->attribute_airport_id == 1) {
+            array_push($characteristic, 'airport_id');
+        }
+
+        return $characteristic;
+    }
+
+    function selectedModel() {
+        $selectModel = DB::table('in_uses')->select('model')->first();
+        if (!is_null($selectModel)){
+            $data = DB::table("models")->select(DB::raw('*'))
+                ->where('id', $selectModel->model)->first();
+
+            return $data;
+        } else {
+            return null;
+        }
     }
 
 }

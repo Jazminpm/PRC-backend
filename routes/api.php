@@ -22,8 +22,9 @@ Route::post('/analysis', 'AnalysisController@analyze');
 Route::post('/translate', 'AnalysisController@translate');
 
 // Models
-Route::post('/models/train', 'ModelController@trainModel');
-Route::post('/models/predict', 'ModelController@predict_model');
+Route::post('/models/training', 'ModelController@trainingModel');
+Route::post('/models/predict', 'ModelController@predictModel');
+Route::post('/models/updateModel', 'ModelController@updateModelInUse');
 
 // scrapers
 Route::post('/scrapers/weathers/forecast', 'ScraperController@weatherForecast');
@@ -40,4 +41,4 @@ Route::get('/location/country', 'LocationController@getCountry');
 Route::post('/weather', 'WeatherController@insert');
 Route::post('/comment', 'CommentController@insert');
 
-Route::post('/prueba', 'ModelController@insertTrain');
+Route::post('/prueba', 'ModelController@selectedAttributes');

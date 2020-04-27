@@ -62,10 +62,19 @@ class FlightsController extends Controller
             ->where(DB::raw('DATE(flights.date_time)'), '>=', $init_date)
             ->where(DB::raw('DATE(flights.date_time)'), '<=', $final_date)
             ->where(DB::raw('DATE(w.date_time)'), DB::raw('DATE(flights.date_time)'))
+            //->where(DB::raw('(extract(minute from time(w.date_time) - time(flights.date_time)))'),'>=', '0')
+            //->where(DB::raw('(extract(minute from time(w.date_time) - time(flights.date_time)))'),'<', '60')
             ->where(DB::raw('HOUR(w.date_time)'), DB::raw('HOUR(flights.date_time)'))
-            ->where(DB::raw('(extract(minute from time(w.date_time) - time(flights.date_time)))'),'>=', '0')
-            ->where(DB::raw('(extract(minute from time(w.date_time) - time(flights.date_time)))'),'<', '30')
             ->whereIn('delay', [0,1])
             ->get(), True);
     }
+
+    public static function updatePrediction($data){
+        DB::table('flights')
+            ->where('id', $data[1])
+            ->where('date_time', $data[2].' '.$data[3])
+            ->update(array('prediction' => $data[0]));
+    }
+
+
 }
