@@ -109,25 +109,30 @@ def tu_tiempo(str_date, airport_id, icao):
     for i in range(len(tr)):
         if 1 < i < len(tr) - 2 and i % 2 == 0:
             td = tr[i].findAll('td')
-            wind_direction = np.where(wind_directions == [td[3].find('img').get('title')])[0]
+            if len(td) > 0:
+                wind_direction = np.where(wind_directions == [td[3].find('img').get('title')])[0]
 
-            speed = 0
-            if td[3].getText() != 'En calma':
-                speed = re.findall(r"[\d]+", td[3].getText())[0]
+                speed = 0
+                if td[3].getText() != 'En calma':
+                    speed = re.findall(r"[\d]+", td[3].getText())[0]
 
-            dt = str_date.strftime('%Y-%m-%d') + ' ' + td[0].getText() + ':00'
+                dt = str_date.strftime('%Y-%m-%d') + ' ' + td[0].getText() + ':00'
 
-            weather_json = {
-                'date_time': dt,
-                'temperature': int(re.findall(r"[-]*[\d]+", td[2].getText())[0]),
-                'wind_speed': int(speed),
-                'wind_direction': int(wind_direction[0]),
-                'humidity': int(re.findall(r"[\d]+", td[4].getText())[0]),
-                'pressure': int(re.findall(r"[\d]+", td[5].getText())[0]),
-                'airport_id': airport_id  # TODO: implements all airports
-            }
-            print(json.dumps(weather_json))
-        #r = requests.post(url=ENDPOINT['weather'], data=json.dumps(weather_json))
+                if len(re.findall(r"[\d]+", td[5].getText())) > 0:
+                    pressure = int(re.findall(r"[\d]+", td[5].getText())[0])
+                else:
+                    pressure = 1000
+
+                weather_json = {
+                    'date_time': dt,
+                    'temperature': int(re.findall(r"[-]*[\d]+", td[2].getText())[0]),
+                    'wind_speed': int(speed),
+                    'wind_direction': int(wind_direction[0]),
+                    'humidity': int(re.findall(r"[\d]+", td[4].getText())[0]),
+                    'pressure': pressure,
+                    'airport_id': airport_id  # TODO: implements all airports
+                }
+                print(json.dumps(weather_json))
 
 
 def wind_direction_id(wind_direction):
