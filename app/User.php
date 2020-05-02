@@ -4,8 +4,9 @@ namespace App;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable
+class User extends Authenticatable implements JWTSubject
 {
     use Notifiable;
 
@@ -15,7 +16,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'dni', 'name', 'surname', 'email', 'password', 'phoneNumber', 'role'
+        'dni', 'name', 'surname', 'email', 'password', 'phoneNumber', 'role',
     ];
 
 
@@ -47,8 +48,14 @@ class User extends Authenticatable
         return $this->role == 2;
     }
 
-    public function getIsScrapperAttribute()
+
+    public function getJWTIdentifier()
     {
-        return $this->role == 3;
+        return $this->getKey();
+    }
+
+    public function getJWTCustomClaims()
+    {
+        return [];
     }
 }
