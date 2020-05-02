@@ -21,11 +21,8 @@ class CreateUsersTable extends Migration
             $table->string('dni')->unique()->nullable();
             $table->string('phoneNumber')->nullable();
             $table->string('email')->unique();
-            $table->integer('role')->unsigned()->nullable();
+            $table->integer('role')->unsigned()->default(2);
             $table->foreign('role')->references('id')->on('roles');
-            $table->string('flight_id')->nullable()->nullable();
-            $table->dateTime('date_time')->nullable();
-            $table->foreign(array('flight_id', 'date_time'))->references(array('id', 'date_time'))->on('flights');
             $table->timestamps();
         });
     }
