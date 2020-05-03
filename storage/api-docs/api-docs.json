@@ -223,6 +223,28 @@
                             }
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "errors": {
+                                            "description": "List of errors.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "errors": "Invalid credentials."
+                                    }
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "Internal Server Error.",
                         "content": {
@@ -236,7 +258,7 @@
                                     },
                                     "type": "object",
                                     "example": {
-                                        "errors": "Could not create access token"
+                                        "errors": "Could not create access token."
                                     }
                                 }
                             }

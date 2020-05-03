@@ -265,6 +265,26 @@ class AuthController extends Controller
      *          }
      *      ),
      *      @OA\Response(
+     *          response=401,
+     *          description="Unauthorized.",
+     *          content={
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="errors",
+     *                          type="array",
+     *                          description="List of errors.",
+     *                          @OA\Items(type="string")
+     *                      ),
+     *                      example={
+     *                          "errors": "Invalid credentials.",
+     *                      }
+     *                  )
+     *              )
+     *          }
+     *      ),
+     *      @OA\Response(
      *          response=500,
      *          description="Internal Server Error.",
      *          content={
@@ -277,7 +297,7 @@ class AuthController extends Controller
      *                          description="Token error."
      *                      ),
      *                      example={
-     *                          "errors": "Could not create access token",
+     *                          "errors": "Could not create access token.",
      *                      }
      *                  )
      *              )
