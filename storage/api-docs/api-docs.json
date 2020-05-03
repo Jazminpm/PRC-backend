@@ -13,6 +13,238 @@
         "version": "1.0.0"
     },
     "paths": {
+        "/api/auth/register": {
+            "post": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Create a new user.",
+                "description": "Register a new user in database.",
+                "operationId": "authRegister",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "description": "User name.",
+                                        "type": "string"
+                                    },
+                                    "surnames": {
+                                        "description": "User surnames.",
+                                        "type": "string"
+                                    },
+                                    "dni": {
+                                        "description": "User id.",
+                                        "type": "string"
+                                    },
+                                    "phoneNumber": {
+                                        "description": "User phone number.",
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "description": "User email.",
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "description": "User password.",
+                                        "type": "string"
+                                    },
+                                    "password_confirmation": {
+                                        "description": "User password confirmation.",
+                                        "type": "string"
+                                    },
+                                    "role": {
+                                        "description": "User role (default 2)",
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "name": "Cient",
+                                    "surnames": "EasyTravel",
+                                    "dni": "00000000a",
+                                    "phoneNumber": "000000001",
+                                    "email": "client@easytravel.com",
+                                    "password": "client",
+                                    "password_confirmation": "client",
+                                    "role": 2
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "access_token": {
+                                            "description": "User name.",
+                                            "type": "string"
+                                        },
+                                        "token_type": {
+                                            "description": "User surnames.",
+                                            "type": "string"
+                                        },
+                                        "expires_in": {
+                                            "description": "Alive time of the token in seconds. Default 3600s",
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC9sb2NhbGhvc3Q6ODAwMFwvYXBpXC9hdXRoXC9yZWdpc3RlciIsImlhdCI6MTU4ODQ5Mjk5MSwiZXhwIjoxNTg4NDk2NTkxLCJuYmYiOjE1ODg0OTI5OTEsImp0aSI6ImRMWjNQcmN0Tm5UUEdtanMiLCJzdWIiOjUsInBydiI6Ijg3ZTBhZjFlZjlmZDE1ODEyZmRlYzk3MTUzYTE0ZTBiMDQ3NTQ2YWEifQ.mNh-Rfalspe1SBH_ltfz_ErIAhExJwDIA8td69fZvWA",
+                                        "token_type": "bearer",
+                                        "expires_in": 3600
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "errors": {
+                                            "description": "List of errors.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "errors": [
+                                            "The dni field is required.",
+                                            "The name field is required.",
+                                            "The surnames must be a string.",
+                                            "The phoneNumber field is required.",
+                                            "The email field is required.",
+                                            "The password field is required.",
+                                            "The role field must be numeric."
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/auth/login": {
+            "post": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "User login.",
+                "description": "Generate a JWT token with credentials.",
+                "operationId": "authLogin",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "email": {
+                                        "description": "User email.",
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "description": "User password.",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "email": "client@easytravel.com",
+                                    "password": "client"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ok.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "access_token": {
+                                            "description": "User name.",
+                                            "type": "string"
+                                        },
+                                        "token_type": {
+                                            "description": "User surnames.",
+                                            "type": "string"
+                                        },
+                                        "expires_in": {
+                                            "description": "Alive time of the token in seconds. Default 3600s",
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC9sb2NhbGhvc3Q6ODAwMFwvYXBpXC9hdXRoXC9yZWdpc3RlciIsImlhdCI6MTU4ODQ5Mjk5MSwiZXhwIjoxNTg4NDk2NTkxLCJuYmYiOjE1ODg0OTI5OTEsImp0aSI6ImRMWjNQcmN0Tm5UUEdtanMiLCJzdWIiOjUsInBydiI6Ijg3ZTBhZjFlZjlmZDE1ODEyZmRlYzk3MTUzYTE0ZTBiMDQ3NTQ2YWEifQ.mNh-Rfalspe1SBH_ltfz_ErIAhExJwDIA8td69fZvWA",
+                                        "token_type": "bearer",
+                                        "expires_in": 3600
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "errors": {
+                                            "description": "List of errors.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "errors": [
+                                            "The email field is required.",
+                                            "The password field is required."
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "errors": {
+                                            "description": "Token error.",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "errors": "Could not create access token"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/models/training": {
             "post": {
                 "tags": [
