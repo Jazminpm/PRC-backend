@@ -11,14 +11,14 @@ use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 
-class UserController extends Controller
+class AuthController extends Controller
 {
 
 
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'dni' => ['required', 'size:9'],
+            'dni' => ['required', 'size:9', 'unique:users'],
             'name' => ['required', 'string', 'max:255'],
             'surname' => ['required', 'string', 'max:255'],
             'phoneNumber' => ['required', 'string', 'size:9', 'unique:users'],
@@ -42,7 +42,11 @@ class UserController extends Controller
 
         $token = JWTAuth::fromUser($user);
 
-        return response()->json(compact('user', 'token'), JsonResponse::HTTP_CREATED);
+        return response()->json([
+            'user' => $user,
+            'access_token' => $token,
+            'token_type' => 'bearer',
+            'expires_in' => auth('api')->factory()->getTTL() * 60,], JsonResponse::HTTP_CREATED);
     }
 
     public function authenticate(Request $request)
@@ -55,22 +59,26 @@ class UserController extends Controller
         } catch (JWTException $e) {
             return response()->json(['error' => 'could_not_create_token'], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
-        return response()->json(compact('token'));
+        return response()->json([
+            'access_token' => $token,
+            'token_type' => 'bearer',
+            'expires_in' => auth('api')->factory()->getTTL() * 60,],
+            JsonResponse::HTTP_OK);
     }
 
-    public function getAuthenticatedUser()
-    {
-        try {
-            if (!$user = JWTAuth::parseToken()->authenticate()) {
-                return response()->json(['user_not_found'], JsonResponse::HTTP_NOT_FOUND);
-            }
-        } catch (Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
-            return response()->json(['token_expired'], $e->getStatusCode());
-        } catch (Tymon\JWTAuth\Exceptions\TokenInvalidException $e) {
-            return response()->json(['token_invalid'], $e->getStatusCode());
-        } catch (Tymon\JWTAuth\Exceptions\JWTException $e) {
-            return response()->json(['token_absent'], $e->getStatusCode());
-        }
-        return response()->json(compact('user'));
-    }
+//    public function getAuthenticatedUser()
+//    {
+//        try {
+//            if (!$user = JWTAuth::parseToken()->authenticate()) {
+//                return response()->json(['user_not_found'], JsonResponse::HTTP_NOT_FOUND);
+//            }
+//        } catch (Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
+//            return response()->json(['token_expired'], $e->getStatusCode());
+//        } catch (Tymon\JWTAuth\Exceptions\TokenInvalidException $e) {
+//            return response()->json(['token_invalid'], $e->getStatusCode());
+//        } catch (Tymon\JWTAuth\Exceptions\JWTException $e) {
+//            return response()->json(['token_absent'], $e->getStatusCode());
+//        }
+//        return response()->json(compact('user'));
+//    }
 }

@@ -14,29 +14,35 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
-// auth
-Route::post('/auth/login', 'UserController@authenticate');
-Route::post('/auth/register', 'UserController@register');
+// EVERYONE
+Route::post('/auth/login', 'AuthController@authenticate');
+Route::post('/auth/register', 'AuthController@register');
 
 Route::post('/analysis', 'AnalysisController@analyze');
 Route::post('/translate', 'AnalysisController@translate');
 
-// Models
+// ADMIN
+Route::group(['middleware' => ['jwt.auth', 'admin']], function() {
+    // aqui van las rutas que solo puede lanzar el admin
+});
+
+// CLIENT or ADMIN
+Route::group(['middleware' => ['jwt.auth']], function() {
+    // aqui van las rutas de cualquier usuario que este registrado
+});
+
+// Models (admin)
 Route::post('/models/training', 'ModelController@trainingModel');
 Route::post('/models/predict', 'ModelController@predictModel');
 Route::post('/models/updateModel', 'ModelController@updateModelInUse');
 
-// scrapers
+// scrapers (admin)
 Route::post('/scrapers/weathers/forecast', 'ScraperController@weatherForecast');
 Route::post('/scrapers/weathers/history', 'ScraperController@weatherHistory');
 Route::post('/scrapers/flights/history', 'ScraperController@flightsHistory');
 Route::post('/scrapers/flights/forecast', 'ScraperController@flightsForecast');
-Route::get('/scrapers/{id}', 'ScraperController@scrapers');
-
 Route::post('/scrapers/airportia/url', 'ScraperController@airportUrl');
+Route::get('/scrapers/{id}', 'ScraperController@scrapers');
 
 Route::get('/location/city', 'LocationController@getCity');
 Route::get('/location/country', 'LocationController@getCountry');
