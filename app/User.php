@@ -16,7 +16,7 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $fillable = [
-        'dni', 'name', 'surname', 'email', 'password', 'phoneNumber', 'role',
+        'dni', 'name', 'surnames', 'email', 'password', 'phoneNumber', 'role',
     ];
 
 
@@ -37,16 +37,6 @@ class User extends Authenticatable implements JWTSubject
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
-
-    public function getIsAdminAttribute()
-    {
-        return $this->role == 1;
-    }
-
-    public function getIsClientAttribute()
-    {
-        return $this->role == 2;
-    }
 
 
     public function getJWTIdentifier()
