@@ -45,7 +45,7 @@ class ModelController extends Controller
      *                  ),
      *                  example={"characteristic": {"id","date", "time","airline_id","city_id","airport_id","delay",
      *                          "temperature","humidity","pressure","wind_direction","wind_speed"},
-     *                          "start_date": "2020-04-20","end_date": "2020-04-24","algorithm":1}
+     *                          "start_date": "2020-04-20","end_date": "2020-04-24","algorithm_id":1}
      *              )
      *          )
      *      ),
