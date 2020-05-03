@@ -295,8 +295,8 @@
                                         "description": "Date in format Y-m-d",
                                         "type": "date"
                                     },
-                                    "algorithm": {
-                                        "description": "Algorithm selected for the training",
+                                    "algorithm_id": {
+                                        "description": "Algorithm id selected for the training",
                                         "type": "int"
                                     }
                                 },
@@ -328,22 +328,38 @@
                     "204": {
                         "description": "Ok."
                     },
-                    "200": {
-                        "description": "OK.",
+                    "400": {
+                        "description": "Bad request.",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "warning": {
-                                            "description": "Notice that something has not happened correctly.",
-                                            "type": "string"
+                                        "errors": {
+                                            "description": "List of errors.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
                                         }
                                     },
                                     "type": "object",
                                     "example": {
-                                        "warning": [
-                                            "There are no flights on the date specified in the database.",
-                                            "There no exist algorithm in the database with that identifier."
+                                        "errors": [
+                                            "The characteristic field is required.",
+                                            "The start date field is required.",
+                                            "The end date field is required.",
+                                            "The algorithm id field is required.",
+                                            "The characteristic must be an array.",
+                                            "The start date is not a valid date.",
+                                            "The end date is not a valid date.",
+                                            "The start date does not match the format Y-m-d.",
+                                            "The end date does not match the format Y-m-d.",
+                                            "The algorithm id must be an integer.",
+                                            "The start date must be a date before or equal to yesterday.",
+                                            "The end date must be a date before or equal to today.",
+                                            "The selected algorithm id is invalid.",
+                                            "Not all characteristic exists.",
+                                            "There are no registered flights for these dates."
                                         ]
                                     }
                                 }
@@ -440,16 +456,11 @@
                                         "total": {
                                             "description": "Total inserted documents",
                                             "type": "integer"
-                                        },
-                                        "warning": {
-                                            "description": "Notice that something has not happened correctly.",
-                                            "type": "string"
                                         }
                                     },
                                     "type": "object",
                                     "example": {
-                                        "total": 20,
-                                        "warning": "There are no flights on the date specified in the database."
+                                        "total": 20
                                     }
                                 }
                             }
@@ -472,10 +483,15 @@
                                     "type": "object",
                                     "example": {
                                         "errors": [
-                                            "The date field is required.",
-                                            "The date is not a valid date.",
-                                            "The date does not match the format Y-m-d.",
-                                            "The date must be a date before or equal to today."
+                                            "The start date field is required.",
+                                            "The end date field is required.",
+                                            "The start date is not a valid date.",
+                                            "The end date is not a valid date.",
+                                            "The start date does not match the format Y-m-d.",
+                                            "The end date does not match the format Y-m-d.",
+                                            "The start date must be a date before or equal to today.",
+                                            "The end date must be a date before or equal to today.",
+                                            "There are no registered flights for these dates."
                                         ]
                                     }
                                 }
@@ -559,6 +575,32 @@
                 "responses": {
                     "204": {
                         "description": "Ok."
+                    },
+                    "400": {
+                        "description": "Bad request.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "errors": {
+                                            "description": "List of errors.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "errors": [
+                                            "The model id field is required.",
+                                            "The model id must be an integer.",
+                                            "The selected model id is invalid."
+                                        ]
+                                    }
+                                }
+                            }
+                        }
                     },
                     "500": {
                         "description": "Internal Server Error.",
@@ -656,7 +698,31 @@
                         }
                     },
                     "400": {
-                        "description": "Bad request"
+                        "description": "Bad request.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "errors": {
+                                            "description": "List of errors.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "errors": [
+                                            "The airport id field is required.",
+                                            "The airport id must be an integer.",
+                                            "The selected airport id is invalid.",
+                                            "The airport does not have ICAO."
+                                        ]
+                                    }
+                                }
+                            }
+                        }
                     },
                     "500": {
                         "description": "Internal Server Error.",
@@ -778,7 +844,11 @@
                                             "The date field is required.",
                                             "The date is not a valid date.",
                                             "The date does not match the format Y-m-d.",
-                                            "The date must be a date before or equal to yesterday."
+                                            "The date must be a date before or equal to yesterday.",
+                                            "The airport id field is required.",
+                                            "The airport id must be an integer.",
+                                            "The selected airport id is invalid.",
+                                            "The airport does not have ICAO."
                                         ]
                                     }
                                 }
@@ -905,7 +975,11 @@
                                             "The date field is required.",
                                             "The date is not a valid date.",
                                             "The date does not match the format Y-m-d.",
-                                            "The date must be a date before or equal to yesterday."
+                                            "The date must be a date before or equal to yesterday.",
+                                            "The airport id field is required.",
+                                            "The airport id must be an integer.",
+                                            "The selected airport id is invalid.",
+                                            "The airport does not have url."
                                         ]
                                     }
                                 }
@@ -1007,6 +1081,33 @@
                             }
                         }
                     },
+                    "400": {
+                        "description": "Bad request.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "errors": {
+                                            "description": "List of errors.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "errors": [
+                                            "The airport id field is required.",
+                                            "The airport id must be an integer.",
+                                            "The selected airport id is invalid.",
+                                            "The airport does not have url."
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "Internal Server Error.",
                         "content": {
@@ -1097,6 +1198,32 @@
                                     "type": "object",
                                     "example": {
                                         "total": 20
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "errors": {
+                                            "description": "List of errors.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "errors": [
+                                            "The country id field is required.",
+                                            "The country id must be an integer.",
+                                            "The selected country id is invalid."
+                                        ]
                                     }
                                 }
                             }

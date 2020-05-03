@@ -6,7 +6,9 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class ModelController extends Controller
 {
@@ -37,9 +39,9 @@ class ModelController extends Controller
      *                      description="Date in format Y-m-d"
      *                  ),
      *                  @OA\Property(
-     *                      property="algorithm",
+     *                      property="algorithm_id",
      *                      type="int",
-     *                      description="Algorithm selected for the training"
+     *                      description="Algorithm id selected for the training"
      *                  ),
      *                  example={"characteristic": {"id","date", "time","airline_id","city_id","airport_id","delay",
      *                          "temperature","humidity","pressure","wind_direction","wind_speed"},
@@ -52,21 +54,36 @@ class ModelController extends Controller
      *          description="Ok."
      *      ),
      *      @OA\Response(
-     *          response=200,
-     *          description="OK.",
+     *          response=400,
+     *          description="Bad request.",
      *          content={
      *              @OA\MediaType(
      *                  mediaType="application/json",
      *                  @OA\Schema(
      *                      @OA\Property(
-     *                          property="warning",
-     *                          type="string",
-     *                          description="Notice that something has not happened correctly."
+     *                          property="errors",
+     *                          type="array",
+     *                          description="List of errors.",
+     *                          @OA\Items(type="string")
      *                      ),
      *                      example={
-     *                          "warning": {
-     *                              "There are no flights on the date specified in the database.",
-     *                              "There no exist algorithm in the database with that identifier."}
+     *                          "errors": {
+     *                              "The characteristic field is required.",
+     *                              "The start date field is required.",
+     *                              "The end date field is required.",
+     *                              "The algorithm id field is required.",
+     *                              "The characteristic must be an array.",
+     *                              "The start date is not a valid date.",
+     *                              "The end date is not a valid date.",
+     *                              "The start date does not match the format Y-m-d.",
+     *                              "The end date does not match the format Y-m-d.",
+     *                              "The algorithm id must be an integer.",
+     *                              "The start date must be a date before or equal to yesterday.",
+     *                              "The end date must be a date before or equal to today.",
+     *                              "The selected algorithm id is invalid.",
+     *                              "Not all characteristic exists.",
+     *                              "There are no registered flights for these dates."
+     *                          }
      *                      }
      *                  )
      *              )
@@ -124,38 +141,41 @@ class ModelController extends Controller
     function trainingModel(Request $request){
 
         $validator = Validator::make($request->json()->all(), [
-            'characteristic' => ['required', 'array', 'min:1', 'max:12'],
+            'characteristic' => ['required','array'],
             'start_date' => ['required', 'date', 'date_format:Y-m-d', 'before_or_equal:yesterday'],
             'end_date' => ['required', 'date', 'date_format:Y-m-d', 'before_or_equal:today'],
-            'algorithm' => ['required', 'integer', 'min:1', 'max:5']
+            'algorithm_id' => ['required', 'integer', 'exists:algorithms,id']
         ]);
 
-        $algorithm_exist = is_null(DB::table('algorithms')->select('*')
-            ->where('id', $request->algorithm)->first());
-        if (!$algorithm_exist){
-            if ($validator->fails()) {
-                return failValidation($validator);
-            } else {
-                $args = FlightsController::getModelData($request->characteristic, $request->start_date, $request->end_date);
-                if (sizeof($args) > 0) {
-                    $data = ModelController::getData($args, $request->characteristic);
-                    $args = $request->all();
-                    array_push($args, $data);
-
-                    $script = config('python.scripts') . 'model_1.py';
-
-                    $data = json_decode(executePython($script, $args)[0], true);
-                    DB::table('models')->Insert($data); // Insert data in the BBDD
-                    return response()->json([],JsonResponse::HTTP_NO_CONTENT);
-                } else {
-                    return response()->json(["warning" => 'There are no flights on the date specified in the database.'],
-                        JsonResponse::HTTP_OK);
+        if ($validator->fails()) {
+            return failValidation($validator);
+        } else {
+            foreach($request->characteristic as $key => $val)
+            {
+                if (!Schema::hasColumn('flights', $val) and !Schema::hasColumn('weathers', $val) and
+                    $val != 'date' and $val != 'time')  {
+                    return response()->json(["errors" => 'Not all characteristic exists.'],
+                        JsonResponse::HTTP_BAD_REQUEST);
                 }
             }
-        } else {
-            return response()->json(["warning" => 'There no exist algorithm in the database with that identifier.'],
-                JsonResponse::HTTP_OK);
+
+            $args = FlightsController::getModelData($request->characteristic, $request->start_date, $request->end_date);
+            if (sizeof($args) > 0) {
+                $data = ModelController::getData($args, $request->characteristic);
+                $args = $request->all();
+                array_push($args, $data);
+
+                $script = config('python.scripts') . 'model_1.py';
+
+                $data = json_decode(executePython($script, $args)[0], true);
+                DB::table('models')->Insert($data); // Insert data in the BBDD
+                return response()->json([],JsonResponse::HTTP_NO_CONTENT);
+            } else {
+                return response()->json(["errors" => 'There are no registered flights for these dates.'],
+                    JsonResponse::HTTP_BAD_REQUEST);
+            }
         }
+
     }
 
     /**
@@ -195,14 +215,8 @@ class ModelController extends Controller
      *                          type="integer",
      *                          description="Total inserted documents"
      *                      ),
-     *                      @OA\Property(
-     *                          property="warning",
-     *                          type="string",
-     *                          description="Notice that something has not happened correctly."
-     *                      ),
      *                      example={
      *                          "total": 20,
-     *                          "warning": "There are no flights on the date specified in the database."
      *                      }
      *                  )
      *              )
@@ -223,10 +237,15 @@ class ModelController extends Controller
      *                      ),
      *                      example={
      *                          "errors": {
-     *                              "The date field is required.",
-     *                              "The date is not a valid date.",
-     *                              "The date does not match the format Y-m-d.",
-     *                              "The date must be a date before or equal to today."
+     *                              "The start date field is required.",
+     *                              "The end date field is required.",
+     *                              "The start date is not a valid date.",
+     *                              "The end date is not a valid date.",
+     *                              "The start date does not match the format Y-m-d.",
+     *                              "The end date does not match the format Y-m-d.",
+     *                              "The start date must be a date before or equal to today.",
+     *                              "The end date must be a date before or equal to today.",
+     *                              "There are no registered flights for these dates."
      *                          }
      *                      }
      *                  )
@@ -336,8 +355,8 @@ class ModelController extends Controller
                 }
                 return response()->json(["total" => $inserts], JsonResponse::HTTP_OK);
             } else {
-                return response()->json(["warning" => 'There are no flights on the date specified in the database.'],
-                    JsonResponse::HTTP_OK);
+                return response()->json(["errors" => 'There are no registered flights for these dates.'],
+                    JsonResponse::HTTP_BAD_REQUEST);
             }
         }
     }
@@ -364,6 +383,30 @@ class ModelController extends Controller
      *      @OA\Response(
      *          response=204,
      *          description="Ok."
+     *      ),
+     *     @OA\Response(
+     *          response=400,
+     *          description="Bad request.",
+     *          content={
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="errors",
+     *                          type="array",
+     *                          description="List of errors.",
+     *                          @OA\Items(type="string")
+     *                      ),
+     *                      example={
+     *                          "errors": {
+     *                              "The model id field is required.",
+     *                              "The model id must be an integer.",
+     *                              "The selected model id is invalid.",
+     *                          }
+     *                      }
+     *                  )
+     *              )
+     *          }
      *      ),
      *      @OA\Response(
      *          response=500,
@@ -415,9 +458,17 @@ class ModelController extends Controller
      * @return string
      */
     function updateModelInUse(Request $request){
-        $model = DB::table('in_uses')->select('model')->first();
+        $validator = Validator::make($request->json()->all(), [
+            'model' => ['required', 'integer', 'exists:in_uses']
+        ]);
+
+        if ($validator->fails()) {
+            return failValidation($validator);
+        } else {
+            $model = DB::table('in_uses')->select('model')->first();
             DB::table('in_uses')->where('model', $model->model)
-            ->update(['model' => $request->model]);
+                ->update(['model' => $request->model]);
+        }
 
         return response()->json([],JsonResponse::HTTP_NO_CONTENT);
     }
