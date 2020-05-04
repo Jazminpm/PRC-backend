@@ -318,7 +318,7 @@
                                     ],
                                     "start_date": "2020-04-20",
                                     "end_date": "2020-04-24",
-                                    "algorithm": 1
+                                    "algorithm_id": 1
                                 }
                             }
                         }
@@ -566,7 +566,7 @@
                                 },
                                 "type": "object",
                                 "example": {
-                                    "model": 10
+                                    "model": 1
                                 }
                             }
                         }

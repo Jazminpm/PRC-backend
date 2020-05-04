@@ -159,15 +159,27 @@ class ModelController extends Controller
                 }
             }
 
-            $args = FlightsController::getModelData($request->characteristic, $request->start_date, $request->end_date);
+            $characteristic = $request->characteristic;
+            if (in_array("airport_id", $characteristic)){
+                $pos = array_keys($characteristic, "airport_id")[0];
+                $characteristic[$pos] = "airport_id";
+            } else {
+                array_push($characteristic, "airport_id");
+            }
+
+            $args = FlightsController::getModelDataTrain($characteristic, $request->start_date, $request->end_date);
+
             if (sizeof($args) > 0) {
-                $data = ModelController::getData($args, $request->characteristic);
+                $data = ModelController::getData($args, $characteristic);
+                $airports = collect(array_unique($data['airport_id']))->implode('-');
+                if (!in_array("airport_id", $request->characteristic)){
+                    unset($data['airport_id']);
+                }
                 $args = $request->all();
                 array_push($args, $data);
-
                 $script = config('python.scripts') . 'model_1.py';
-
                 $data = json_decode(executePython($script, $args)[0], true);
+                $data['airports'] = $airports;
                 DB::table('models')->Insert($data); // Insert data in the BBDD
                 return response()->json([],JsonResponse::HTTP_NO_CONTENT);
             } else {
@@ -316,8 +328,11 @@ class ModelController extends Controller
             $select_date = ($selectedModel->attribute_date == 1);
             $select_time = ($selectedModel->attribute_time == 1);
 
+
+            $airports = array_map('intval', explode('-', $selectedModel->airports));
             $characteristic = ModelController::getCharacteristic($selectedModel);
-            $args = FlightsController::getModelData($characteristic, $request->start_date, $request->end_date);
+
+            $args = FlightsController::getModelDataPredict($characteristic, $request->start_date, $request->end_date, $airports);
             if (sizeof($args) > 0) {
                 $data = ModelController::getData($args, $characteristic);
 
@@ -376,7 +391,7 @@ class ModelController extends Controller
      *                      property="model",
      *                      type="int",
      *                  ),
-     *                  example={"model":10}
+     *                  example={"model":1}
      *              )
      *          )
      *      ),
@@ -459,15 +474,19 @@ class ModelController extends Controller
      */
     function updateModelInUse(Request $request){
         $validator = Validator::make($request->json()->all(), [
-            'model' => ['required', 'integer', 'exists:in_uses']
+            'model' => ['required', 'integer', 'exists:models,id']
         ]);
 
         if ($validator->fails()) {
             return failValidation($validator);
         } else {
             $model = DB::table('in_uses')->select('model')->first();
-            DB::table('in_uses')->where('model', $model->model)
-                ->update(['model' => $request->model]);
+            if (is_null($model)){
+                DB::table('in_uses')->insert(['model' => $request->model, 'analysis' => 0]);
+            } else {
+                DB::table('in_uses')->where('model', $model->model)
+                    ->update(['model' => $request->model]);
+            }
         }
 
         return response()->json([],JsonResponse::HTTP_NO_CONTENT);

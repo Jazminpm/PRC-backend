@@ -35,16 +35,11 @@ class FlightsController extends Controller
 
     }
 
-    public static function getModelData($characteristic, $init_date, $final_date){
+    public static function prepareCharacteristic($characteristic){
         // Data that exist in both tables (flights, weather)
         if (in_array("date_time", $characteristic)){
             $pos = array_keys($characteristic, "date_time")[0];
             $characteristic[$pos] = "flights.date_time";
-        }
-
-        if (in_array("airport_id", $characteristic)){
-            $pos = array_keys($characteristic, "airport_id")[0];
-            $characteristic[$pos] = "flights.airport_id";
         }
 
         if (in_array("date", $characteristic)){
@@ -57,6 +52,16 @@ class FlightsController extends Controller
             $characteristic[$pos] = DB::raw('TIME(flights.date_time) as time');
         }
 
+        if (in_array("airport_id", $characteristic)){
+            $pos = array_keys($characteristic, "airport_id")[0];
+            $characteristic[$pos] = "flights.airport_id";
+        }
+        return $characteristic;
+    }
+
+    public static function getModelDataTrain($characteristic, $init_date, $final_date){
+        $characteristic = FlightsController::prepareCharacteristic($characteristic);
+
         return json_decode(DB::table('flights')->select($characteristic) //$columns
             ->join('weathers as w', 'w.airport_id', '=', 'flights.airport_id', 'right outer')
             ->where(DB::raw('DATE(flights.date_time)'), '>=', $init_date)
@@ -68,6 +73,20 @@ class FlightsController extends Controller
             ->whereIn('delay', [0,1])
             ->get(), True);
     }
+
+    public static function getModelDataPredict($characteristic, $init_date, $final_date, $airports){
+        $characteristic = FlightsController::prepareCharacteristic($characteristic);
+        return json_decode(DB::table('flights')->select($characteristic) //$columns
+        ->join('weathers as w', 'w.airport_id', '=', 'flights.airport_id', 'right outer')
+            ->where(DB::raw('DATE(flights.date_time)'), '>=', $init_date)
+            ->where(DB::raw('DATE(flights.date_time)'), '<=', $final_date)
+            ->where(DB::raw('DATE(w.date_time)'), DB::raw('DATE(flights.date_time)'))
+            ->whereIn('flights.airport_id', $airports)
+            ->where(DB::raw('HOUR(w.date_time)'), DB::raw('HOUR(flights.date_time)'))
+            ->whereIn('delay', [0,1])
+            ->get(), True);
+    }
+
 
     public static function updatePrediction($data){
         DB::table('flights')

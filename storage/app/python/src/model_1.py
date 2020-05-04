@@ -6,4 +6,4 @@ from models.utils import import_model
 
 if __name__ == "__main__":
     data = json.loads(sys.argv[1])
-    import_model(data['algorithm'], pd.DataFrame.from_dict(data['0']))
+    import_model(data['algorithm_id'], pd.DataFrame.from_dict(data['0']))

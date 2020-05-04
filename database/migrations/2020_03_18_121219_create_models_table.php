@@ -43,6 +43,8 @@ class CreateModelsTable extends Migration
             $table->boolean('attribute_wind_direction');
             $table->boolean('attribute_pressure');
             $table->boolean('attribute_airport_id');
+
+            $table->string('airports');
         });
     }
 
