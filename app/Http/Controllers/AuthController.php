@@ -179,7 +179,7 @@ class AuthController extends Controller
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
-            'expires_in' => auth('api')->factory()->getTTL() * 60,], JsonResponse::HTTP_CREATED);
+            'expires_in' => auth()->factory()->getTTL() * 60,], JsonResponse::HTTP_CREATED);
     }
 
     /**
@@ -328,8 +328,35 @@ class AuthController extends Controller
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
-            'expires_in' => auth('api')->factory()->getTTL() * 60,],
+            'expires_in' => auth()->factory()->getTTL() * 60,],
             JsonResponse::HTTP_OK);
     }
 
+    public function refresh(Request $request)
+    {
+        $token = JWTAuth::getToken();
+        $newToken = JWTAuth::refresh($token);
+        return response()->json([
+            'access_token' => $newToken,
+            'token_type' => 'bearer',
+            'expires_in' => auth()->factory()->getTTL() * 60,],
+            JsonResponse::HTTP_OK);
+    }
+
+    public function logout()
+    {
+        // Get JWT Token from the request header key "Authorization"
+        $token = JWTAuth::getToken();
+
+        // Invalidate the token
+        try {
+            JWTAuth::invalidate($token);
+            return response()->json(['message' => 'Token invalidated successfully.',], JsonResponse::HTTP_OK);
+        } catch (JWTException $e) {
+            // something went wrong whilst attempting to encode the token
+            return response()->json([
+                'message' => 'Failed to logout, please try again.'
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
 }
