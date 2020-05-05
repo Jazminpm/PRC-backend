@@ -408,6 +408,7 @@ def comments(urls):
                             tokens = re.split('-', fecha)
                             month_number = month_str_to_number(tokens[1])
                             final_date = tokens[0] + "-" + str(month_number) + '-' + tokens[2]
+                            date_time_obj = datetime.strptime(final_date, '%Y-%m-%d')
 
                             title = comment.find('div', class_='quote').get_text()
 
@@ -419,7 +420,7 @@ def comments(urls):
                             rate = float(numero.split('_')[1]) / 10.0
 
                             response = {
-                                'date': final_date,  # anio, mes, dia
+                                'date': str(date_time_obj.date()),  # anio, mes, dia
                                 'place': unidecode(nombres[i]),
                                 'title': unidecode(title),
                                 'text': unidecode(texto),
