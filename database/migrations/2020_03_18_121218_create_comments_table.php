@@ -17,6 +17,8 @@ class CreateCommentsTable extends Migration
             $table->increments('id');
             $table->string('sentiment')->nullable();
             $table->decimal('polarity', 8, 2)->nullable();
+            $table->decimal('grade', 8, 2)->default(0.0);
+            $table->string('original_message');
             $table->string('message');
             $table->string('library')->nullable();
             $table->dateTime('date');

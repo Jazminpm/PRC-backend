@@ -43,6 +43,7 @@ Route::post('/scrapers/flights/history', 'ScraperController@flightsHistory');
 Route::post('/scrapers/flights/forecast', 'ScraperController@flightsForecast');
 Route::post('/scrapers/airportia/url', 'ScraperController@airportUrl');
 Route::get('/scrapers/{id}', 'ScraperController@scrapers');
+Route::post('/scrapers/comments', 'ScraperController@comments');
 
 Route::get('/location/city', 'LocationController@getCity');
 Route::get('/location/country', 'LocationController@getCountry');

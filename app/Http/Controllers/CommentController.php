@@ -7,9 +7,13 @@ use Illuminate\Support\Facades\DB;
 
 class CommentController extends Controller
 {
-    //Funcion insert a la base de datos
-    public function insert()
+    /**
+     * INSERT comments data if possible. UPDATE otherwise.
+     *
+     * @param $json
+     */
+    public static function insert($json)
     {
-
+        DB::table('comments')->updateOrInsert([], $json); //buscar update or insert con key autoincrement
     }
 }

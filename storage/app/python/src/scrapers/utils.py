@@ -11,6 +11,7 @@ import requests
 import tweepy
 from bs4 import BeautifulSoup
 from pyppeteer import launch
+from unidecode import unidecode
 
 import time
 
@@ -325,3 +326,111 @@ async def airports_name(airport_name):
         }
         print(json.dumps(result))
     await browser.close()
+
+# Get trip advisor comments based on a query
+async def buscar(query):
+    browser = await launch(args=['--no-sandbox'])  # abro el navegador chromium
+    page = await browser.newPage()  # nueva pagina dentro del navegador
+    await page.goto('https://www.tripadvisor.es/')  # busco la pagina web
+
+    selector_search = "input._3qLQ-U8m"  # escribo la consulta del parametro
+    await page.type(selector_search, query)
+    await page.click('._2a_Ua4Qv')  # hago click en el boton de buscar
+    await page.waitFor(3000)
+    html = await page.evaluate('new XMLSerializer().serializeToString(document.doctype) + '
+                               'document.documentElement.outerHTML')
+    find_url(html)
+    await browser.close()
+
+
+def find_url(html):
+    soup = BeautifulSoup(html, 'html.parser')
+    main = soup.find('div', class_="main_content")
+
+    if main is not None:
+        first_result = main.findAll(True, {'class': ['ui_columns', 'is-mobile', 'result-content-columns']})
+        main_result = first_result[1]
+        first_result_2 = main_result.find(True, {'class': ['is-3-desktop', 'is-3-tablet', 'is-4-mobile', 'thumbnail-column']})
+
+        enlace_f = first_result_2.get('onclick')
+        enlace = re.findall('/.+html', enlace_f)  # regex101: '\/.+html'
+
+        # llamar a encontrar las recomendaciones de esa pagina y luego imprimir todos los comentarios de cada pagina
+        rutas = recommendations_url('https://www.tripadvisor.es' + str(enlace[0]))
+        comments(rutas[1])
+
+
+enlaces = []
+nombres = []
+def recommendations_url(pagina):
+    # obtengo las recomendaciones de la ciudad consultada
+    page = requests.get(str(pagina))
+    soup = BeautifulSoup(page.content, 'html.parser')
+    main = soup.find('div', id="content")  # obtengo el contenido central de la pagina
+    if main is not None:
+        containers = main.find_all('div', class_="ui_container")  # obtengo todos los contenedores de recomendacion
+        for container in containers:
+            items = container.find_all('div', class_="ui_column")
+            for item in items:
+                enlace = item.find('a', class_='ui_poi_thumbnail')
+                nombre = item.find('span', class_='social-shelf-items-ShelfLocationSection__name--CdA_A')
+                if enlace is not None:
+                    href = enlace['href']  # enlace
+                    enlaces.append(href)  # guardo los enlaces a cada actividad recomendada en el diccionario
+                if nombre is not None:
+                    nombres.append(nombre.get_text())
+        print(len(enlaces))
+        return nombres, enlaces
+
+
+def comments(urls):
+    i = 0  # contador para los nombres de los sitios
+    for ruta in urls:
+        page2 = requests.get('https://www.tripadvisor.es' + str(ruta))  # obtengo el enlace del sitio
+        soup2 = BeautifulSoup(page2.content, 'html.parser')  # accedo al html de la pagina
+        # obtengo todas las paginas de comentarios
+        paginas = soup2.find('div', class_="pageNumbers")
+        if paginas is not None:
+            pag_enlaces = paginas.find_all('a', class_="pageNum")
+            for link in pag_enlaces:
+                pag_href = link['href']
+                page3 = requests.get('https://www.tripadvisor.es' + str(pag_href))
+                soup3 = BeautifulSoup(page3.content, 'html.parser')
+                opiniones = soup3.find('div', id='REVIEWS')  # obtengo el container de opiniones
+                if opiniones is not None:
+                    comentarios = opiniones.find_all('div', class_='ui_column is-9')  # obtengo todos los comentarios
+                    for comment in comentarios:
+                        if comment is not None:
+                            rating_date = comment.find('span', class_='ratingDate')
+                            date = rating_date.get('title')  # tengo la fecha en formato "9 de enero de 2020"
+                            reversed_date = ' '.join(reversed(date.split(' ')))  # anio-mes-dia
+                            fecha = reversed_date.replace(' de ', '-')
+                            tokens = re.split('-', fecha)
+                            month_number = month_str_to_number(tokens[1])
+                            final_date = tokens[0] + "-" + str(month_number) + '-' + tokens[2]
+
+                            title = comment.find('div', class_='quote').get_text()
+
+                            text = comment.find('p', class_='partial_entry').get_text()
+                            texto = text.replace('\n', ' ')
+
+                            rating = comment.find('span', class_='ui_bubble_rating')
+                            numero = rating.get('class')[1]
+                            rate = float(numero.split('_')[1]) / 10.0
+
+                            response = {
+                                'date': final_date,  # anio, mes, dia
+                                'place': unidecode(nombres[i]),
+                                'title': unidecode(title),
+                                'text': unidecode(texto),
+                                'rating': rate
+                            }
+                            respuesta = json.dumps(response, ensure_ascii=False)
+                            print(respuesta)
+        i += 1
+
+
+def month_str_to_number(month):
+    months = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+              'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
+    return months.index(month) + 1

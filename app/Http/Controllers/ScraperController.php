@@ -744,4 +744,115 @@ class ScraperController extends Controller
             return response()->json(["total" => $inserts], JsonResponse::HTTP_OK);
         }
     }
+    /**
+     * @OA\Post(
+     *      path="/api/scrapers/comments",
+     *      operationId="getComments",
+     *      tags={"scrapers"},
+     *      summary="Get comments from TripAdvisor",
+     *      description="Gets all the comments from tripadvisor based on a query/search",
+     *      @OA\RequestBody(
+     *          @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema(
+     *                  @OA\Property(
+     *                      property="query",
+     *                      type="string",
+     *                      description="Place or city"
+     *                  ),
+     *                  example={"query": "Madrid"}
+     *              )
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Ok.",
+     *          content={
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="total",
+     *                          type="integer",
+     *                          description="Total inserted documents"
+     *                      ),
+     *                      example={
+     *                          "total": 24
+     *                      }
+     *                  )
+     *              )
+     *          }
+     *      ),
+     *      @OA\Response(response=400, description="Bad request"),
+     *      @OA\Response(
+     *          response=500,
+     *          description="Internal Server Error.",
+     *          content={
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="message",
+     *                          type="string",
+     *                          description="Server message that contains the error."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="exception",
+     *                          type="string",
+     *                          description="Generated exception."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="file",
+     *                          type="string",
+     *                          description="File that throw the exception."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="line",
+     *                          type="integer",
+     *                          description="Line that thorws the exception."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="trace",
+     *                          type="array",
+     *                          description="Trace route objects.",
+     *                          @OA\Items(type="object")
+     *                      ),
+     *                      example={
+     *                          "messagge": "The command failed.",
+     *                          "exception": "",
+     *                          "file": "",
+     *                          "line": 150,
+     *                          "trace": {"file":"", "line":1, "content":""}
+     *                      }
+     *                  )
+     *              )
+     *          }
+     *      ),
+     *  )
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    function comments(Request $request)  # incluir analisis del sentimiento a cada comentario
+    {
+        $name = CitiesController::getCityName($request->city_id);
+        if (is_null($name)){
+            return response()->json(["errors" => 'The id does not have a city associated.'],
+                JsonResponse::HTTP_BAD_REQUEST);
+        } else {
+            $args = $request->all();
+            array_push($args, $name);
+
+            $script = config('python.scripts') . 'scraper_tripadvisor.py';
+            $inserts = 0;
+            dd(executePython($script, $args));
+            foreach (executePython($script, $args) as $result) {
+                $data = json_decode($result, true);
+                CommentController::insert($data);
+                $inserts += 1;
+            }
+            return response()->json(["total" => $inserts], 200);
+        }
+    }
 }
+
