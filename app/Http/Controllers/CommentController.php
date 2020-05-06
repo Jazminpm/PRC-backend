@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class CommentController extends Controller
@@ -14,6 +13,15 @@ class CommentController extends Controller
      */
     public static function insert($json)
     {
-        DB::table('comments')->updateOrInsert([], $json); //buscar update or insert con key autoincrement
+        # column => value
+        DB::table('comments')->updateOrInsert([
+            'sentiment' => $json['subjectivity'],
+            'polarity' => $json['polarity'],
+            'grade' => $json['rating'],
+            'original_message' => $json['text'],
+            'message' => $json['trans_text'],
+            'library' => '1',  # textblob
+            'date' => $json['date']
+        ], $json);
     }
 }

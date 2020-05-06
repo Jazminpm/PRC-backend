@@ -12,6 +12,9 @@ import tweepy
 from bs4 import BeautifulSoup
 from pyppeteer import launch
 from unidecode import unidecode
+import string
+
+from analysis.utils import textblob_analysis, vader_analysis, translate
 
 import time
 
@@ -419,12 +422,18 @@ def comments(urls):
                             numero = rating.get('class')[1]
                             rate = float(numero.split('_')[1]) / 10.0
 
+                            translate_text = translate(texto)
+
+                            sentiment = textblob_analysis(translate_text)
                             response = {
                                 'date': str(date_time_obj.date()),  # anio, mes, dia
                                 'place': unidecode(nombres[i]),
                                 'title': unidecode(title),
                                 'text': unidecode(texto),
-                                'rating': rate
+                                'trans_text': translate_text,
+                                'rating': rate,
+                                'polarity': sentiment[0],
+                                'subjectivity': sentiment[1]
                             }
                             respuesta = json.dumps(response, ensure_ascii=False)
                             print(respuesta)
