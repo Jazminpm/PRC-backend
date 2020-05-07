@@ -112,7 +112,7 @@ class ScraperController extends Controller
      *                      @OA\Property(
      *                          property="line",
      *                          type="integer",
-     *                          description="Line that thorws the execption."
+     *                          description="Line that throws the exception."
      *                      ),
      *                      @OA\Property(
      *                          property="trace",
@@ -264,7 +264,7 @@ class ScraperController extends Controller
      *                      @OA\Property(
      *                          property="line",
      *                          type="integer",
-     *                          description="Line that thorws the execption."
+     *                          description="Line that throws the exception."
      *                      ),
      *                      @OA\Property(
      *                          property="trace",
@@ -415,7 +415,7 @@ class ScraperController extends Controller
      *                      @OA\Property(
      *                          property="line",
      *                          type="integer",
-     *                          description="Line that thorws the execption."
+     *                          description="Line that throws the exception."
      *                      ),
      *                      @OA\Property(
      *                          property="trace",
@@ -557,7 +557,7 @@ class ScraperController extends Controller
      *                      @OA\Property(
      *                          property="line",
      *                          type="integer",
-     *                          description="Line that thorws the execption."
+     *                          description="Line that throws the exception."
      *                      ),
      *                      @OA\Property(
      *                          property="trace",
@@ -697,7 +697,7 @@ class ScraperController extends Controller
      *                      @OA\Property(
      *                          property="line",
      *                          type="integer",
-     *                          description="Line that thorws the execption."
+     *                          description="Line that throws the exception."
      *                      ),
      *                      @OA\Property(
      *                          property="trace",
@@ -750,7 +750,7 @@ class ScraperController extends Controller
      *      operationId="getComments",
      *      tags={"scrapers"},
      *      summary="Get comments from TripAdvisor",
-     *      description="Gets all the comments from tripadvisor based on a query/search",
+     *      description="Gets all the comments from tripadvisor based on a query/search that will be a city id",
      *      @OA\RequestBody(
      *          @OA\MediaType(
      *              mediaType="application/json",
@@ -760,7 +760,7 @@ class ScraperController extends Controller
      *                      type="string",
      *                      description="Place or city"
      *                  ),
-     *                  example={"query": "Madrid"}
+     *                  example={{"city_id": 5049}}
      *              )
      *          )
      *      ),
@@ -809,7 +809,7 @@ class ScraperController extends Controller
      *                      @OA\Property(
      *                          property="line",
      *                          type="integer",
-     *                          description="Line that thorws the exception."
+     *                          description="Line that throws the exception."
      *                      ),
      *                      @OA\Property(
      *                          property="trace",
