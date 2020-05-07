@@ -12,9 +12,9 @@ import tweepy
 from bs4 import BeautifulSoup
 from pyppeteer import launch
 from unidecode import unidecode
-import string
+import goslate
 
-from analysis.utils import textblob_analysis, vader_analysis, translate
+from analysis.utils import textblob_analysis, vader_analysis, translate, textblob_comment
 
 import time
 
@@ -388,6 +388,8 @@ def recommendations_url(pagina):
 
 def comments(urls):
     i = 0  # contador para los nombres de los sitios
+    j = 0  # contador para el numero de comentarios
+    gs = goslate.Goslate()  # traductor
     for ruta in urls:
         page2 = requests.get('https://www.tripadvisor.es' + str(ruta))  # obtengo el enlace del sitio
         soup2 = BeautifulSoup(page2.content, 'html.parser')  # accedo al html de la pagina
@@ -403,7 +405,7 @@ def comments(urls):
                 if opiniones is not None:
                     comentarios = opiniones.find_all('div', class_='ui_column is-9')  # obtengo todos los comentarios
                     for comment in comentarios:
-                        if comment is not None:
+                        if comment is not None and j < 50:
                             rating_date = comment.find('span', class_='ratingDate')
                             date = rating_date.get('title')  # tengo la fecha en formato "9 de enero de 2020"
                             reversed_date = ' '.join(reversed(date.split(' ')))  # anio-mes-dia
@@ -422,21 +424,25 @@ def comments(urls):
                             numero = rating.get('class')[1]
                             rate = float(numero.split('_')[1]) / 10.0
 
-                            translate_text = translate(texto)
+                            #translate_text = translate(texto) # traduce con google trans
+                            translate_text = gs.translate(texto, 'en')  # traduce con goslate
 
-                            sentiment = textblob_analysis(translate_text)
+                            sentiment = textblob_comment(translate_text) # analiza el sentimiento
+                            # sentiment = textblob_analysis(texto)  # traduce y analiza el sentimiento
+
                             response = {
                                 'date': str(date_time_obj.date()),  # anio, mes, dia
                                 'place': unidecode(nombres[i]),
                                 'title': unidecode(title),
-                                'text': unidecode(texto),
-                                'trans_text': translate_text,
-                                'rating': rate,
+                                'original_message': unidecode(texto),
+                                'message': translate_text,
+                                'grade': rate,
                                 'polarity': sentiment[0],
-                                'subjectivity': sentiment[1]
+                                'sentiment': sentiment[1]
                             }
                             respuesta = json.dumps(response, ensure_ascii=False)
                             print(respuesta)
+                            j += 1
         i += 1
 
 

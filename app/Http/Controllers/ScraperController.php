@@ -845,7 +845,7 @@ class ScraperController extends Controller
 
             $script = config('python.scripts') . 'scraper_tripadvisor.py';
             $inserts = 0;
-            dd(executePython($script, $args));
+            //dd(executePython($script, $args));
             foreach (executePython($script, $args) as $result) {
                 $data = json_decode($result, true);
                 CommentController::insert($data);

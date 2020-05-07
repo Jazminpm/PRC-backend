@@ -9,6 +9,10 @@ def translate(msg, dest='en'):
     return Translator().translate(msg, dest=dest).text
 
 
+def textblob_comment(msg):
+    return TextBlob(msg).sentiment
+
+
 def textblob_analysis(msg):
     return TextBlob(translate(msg)).sentiment
 
