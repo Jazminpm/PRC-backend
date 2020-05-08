@@ -346,9 +346,6 @@
                             }
                         }
                     }
-                },
-                "security": {
-                    "bearer": []
                 }
             }
         },
@@ -828,7 +825,7 @@
                                             "type": "string"
                                         },
                                         "line": {
-                                            "description": "Line that thorws the execption.",
+                                            "description": "Line that throws the exception.",
                                             "type": "integer"
                                         },
                                         "trace": {
@@ -959,7 +956,7 @@
                                             "type": "string"
                                         },
                                         "line": {
-                                            "description": "Line that thorws the execption.",
+                                            "description": "Line that throws the exception.",
                                             "type": "integer"
                                         },
                                         "trace": {
@@ -1090,7 +1087,7 @@
                                             "type": "string"
                                         },
                                         "line": {
-                                            "description": "Line that thorws the execption.",
+                                            "description": "Line that throws the exception.",
                                             "type": "integer"
                                         },
                                         "trace": {
@@ -1212,7 +1209,7 @@
                                             "type": "string"
                                         },
                                         "line": {
-                                            "description": "Line that thorws the execption.",
+                                            "description": "Line that throws the exception.",
                                             "type": "integer"
                                         },
                                         "trace": {
@@ -1333,7 +1330,7 @@
                                             "type": "string"
                                         },
                                         "line": {
-                                            "description": "Line that thorws the execption.",
+                                            "description": "Line that throws the exception.",
                                             "type": "integer"
                                         },
                                         "trace": {
@@ -1369,22 +1366,24 @@
                     "scrapers"
                 ],
                 "summary": "Get comments from TripAdvisor",
-                "description": "Gets all the comments from tripadvisor based on a query/search",
+                "description": "Gets all the comments from tripadvisor based on a query/search that will be a city id",
                 "operationId": "getComments",
                 "requestBody": {
                     "content": {
                         "application/json": {
                             "schema": {
                                 "properties": {
-                                    "query": {
-                                        "description": "Place or city",
-                                        "type": "string"
+                                    "city_id": {
+                                        "description": "City",
+                                        "type": "integer"
                                     }
                                 },
                                 "type": "object",
-                                "example": {
-                                    "query": "Madrid"
-                                }
+                                "example": [
+                                    {
+                                        "city_id": 5049
+                                    }
+                                ]
                             }
                         }
                     }
@@ -1410,7 +1409,30 @@
                         }
                     },
                     "400": {
-                        "description": "Bad request"
+                        "description": "Bad request.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "errors": {
+                                            "description": "List of errors.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "errors": [
+                                            "The city id field is required.",
+                                            "The city id must be an integer.",
+                                            "The selected city id is invalid."
+                                        ]
+                                    }
+                                }
+                            }
+                        }
                     },
                     "500": {
                         "description": "Internal Server Error.",
@@ -1431,7 +1453,7 @@
                                             "type": "string"
                                         },
                                         "line": {
-                                            "description": "Line that thorws the exception.",
+                                            "description": "Line that throws the exception.",
                                             "type": "integer"
                                         },
                                         "trace": {
@@ -1471,16 +1493,5 @@
             "name": "auth",
             "description": "Authentication operations."
         }
-    ],
-    "components": {
-        "securitySchemes": {
-            "bearer": {
-                "type": "http",
-                "description": "Authorization token obtained from logging in.",
-                "name": "Authorization",
-                "in": "header",
-                "scheme": "bearer"
-            }
-        }
-    }
+    ]
 }
