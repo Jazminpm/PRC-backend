@@ -741,9 +741,9 @@ class ScraperController extends Controller
      *              mediaType="application/json",
      *              @OA\Schema(
      *                  @OA\Property(
-     *                      property="query",
-     *                      type="string",
-     *                      description="Place or city"
+     *                      property="city_id",
+     *                      type="integer",
+     *                      description="City"
      *                  ),
      *                  example={{"city_id": 5049}}
      *              )
@@ -768,7 +768,30 @@ class ScraperController extends Controller
      *              )
      *          }
      *      ),
-     *      @OA\Response(response=400, description="Bad request"),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad request.",
+     *          content={
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="errors",
+     *                          type="array",
+     *                          description="List of errors.",
+     *                          @OA\Items(type="string")
+     *                      ),
+     *                      example={
+     *                          "errors": {
+     *                              "The city id field is required.",
+     *                              "The city id must be an integer.",
+     *                              "The selected city id is invalid.",
+     *                          }
+     *                      }
+     *                  )
+     *              )
+     *          }
+     *      ),
      *      @OA\Response(
      *          response=500,
      *          description="Internal Server Error.",
@@ -820,25 +843,33 @@ class ScraperController extends Controller
      */
     function comments(Request $request)  # incluir analisis del sentimiento a cada comentario
     {
-        $name = CitiesController::getCityName($request->city_id);
-        if (is_null($name)){
-            return response()->json(["errors" => 'The id does not have a city associated.'],
-                JsonResponse::HTTP_BAD_REQUEST);
-        } else {
-            $args = $request->all();
-            array_push($args, $name);
+        $validator = Validator::make($request->json()->all(), [
+            'city_id' => ['required', 'integer', 'exists:cities,id']
+        ]);
 
-            $script = config('python.scripts') . 'scraper_tripadvisor.py';
-            $inserts = 0;
-            //dd(executePython($script, $args));
-            foreach (executePython($script, $args) as $result) {
-                $data = json_decode($result, true);
-                $data['city_id'] = $request->city_id;
-                $data['user_id'] = 1;
-                CommentController::insert($data);
-                $inserts += 1;
+        if ($validator->fails()) {
+            return failValidation($validator);
+        } else {
+            $name = CitiesController::getCityName($request->city_id);
+            if (is_null($name)) {
+                return response()->json(["errors" => 'The id does not have a city associated.'],
+                    JsonResponse::HTTP_BAD_REQUEST);
+            } else {
+                $args = $request->all();
+                array_push($args, $name);
+
+                $script = config('python.scripts') . 'scraper_tripadvisor.py';
+                $inserts = 0;
+                //dd(executePython($script, $args));
+                foreach (executePython($script, $args) as $result) {
+                    $data = json_decode($result, true);
+                    $data['city_id'] = $request->city_id;
+                    $data['user_id'] = 1;
+                    CommentController::insert($data);
+                    $inserts += 1;
+                }
+                return response()->json(["total" => $inserts], JsonResponse::HTTP_OK);
             }
-            return response()->json(["total" => $inserts], JsonResponse::HTTP_OK);
         }
     }
 }
