@@ -30,8 +30,8 @@ Route::group(['middleware' => ['jwt.auth', 'admin']], function () {
 // CLIENT or ADMIN
 Route::group(['middleware' => ['jwt.auth']], function () {
     Route::post('/auth/logout', 'AuthController@logout');
-    Route::post('/auth/refresh', 'AuthController@refresh')->name('refresh');
-    
+    Route::post('/auth/refresh', 'AuthController@refresh');
+
     // aqui van las rutas de cualquier usuario que este registrado
 });
 
