@@ -23,19 +23,15 @@ Route::post('/analysis', 'AnalysisController@analyze');
 Route::post('/translate', 'AnalysisController@translate');
 
 // ADMIN
-Route::group(['middleware' => ['jwt.auth', 'jwt.refresh', 'admin']], function () {
+Route::group(['middleware' => ['jwt.auth', 'admin']], function () {
     // aqui van las rutas que solo puede lanzar el admin
 });
 
 // CLIENT or ADMIN
-Route::group(['middleware' => ['jwt.auth', 'jwt.refresh']], function () {
+Route::group(['middleware' => ['jwt.auth']], function () {
     Route::post('/auth/logout', 'AuthController@logout');
     Route::post('/auth/refresh', 'AuthController@refresh')->name('refresh');
-
-    // esto es para una pruebas del JWT [NO BORRAR]
-    Route::post('/token', function () {
-        return response()->json(['msg' => 'hola mundo'], JsonResponse::HTTP_OK);
-    });
+    
     // aqui van las rutas de cualquier usuario que este registrado
 });
 
