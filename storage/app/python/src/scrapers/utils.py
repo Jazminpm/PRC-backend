@@ -13,6 +13,7 @@ from bs4 import BeautifulSoup
 from pyppeteer import launch
 from unidecode import unidecode
 import goslate
+import time
 
 from analysis.utils import textblob_analysis, vader_analysis, translate, textblob_comment
 
@@ -388,7 +389,6 @@ def recommendations_url(pagina):
 
 def comments(urls):
     i = 0  # contador para los nombres de los sitios
-    j = 0  # contador para el numero de comentarios
     gs = goslate.Goslate()  # traductor
     for ruta in urls:
         page2 = requests.get('https://www.tripadvisor.es' + str(ruta))  # obtengo el enlace del sitio
@@ -405,7 +405,7 @@ def comments(urls):
                 if opiniones is not None:
                     comentarios = opiniones.find_all('div', class_='ui_column is-9')  # obtengo todos los comentarios
                     for comment in comentarios:
-                        if comment is not None and j < 50:
+                        if comment is not None:
                             rating_date = comment.find('span', class_='ratingDate')
                             date = rating_date.get('title')  # tengo la fecha en formato "9 de enero de 2020"
                             reversed_date = ' '.join(reversed(date.split(' ')))  # anio-mes-dia
@@ -431,7 +431,7 @@ def comments(urls):
                             # sentiment = textblob_analysis(texto)  # traduce y analiza el sentimiento
 
                             response = {
-                                'date': str(date_time_obj.date()),  # anio, mes, dia
+                                'date_time': str(date_time_obj.date()),  # anio, mes, dia
                                 'place': unidecode(nombres[i]),
                                 'title': unidecode(title),
                                 'original_message': unidecode(texto),
@@ -442,7 +442,7 @@ def comments(urls):
                             }
                             respuesta = json.dumps(response, ensure_ascii=False)
                             print(respuesta)
-                            j += 1
+                            time.sleep(1)
         i += 1
 
 

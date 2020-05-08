@@ -15,13 +15,8 @@ class CommentController extends Controller
     {
         # column => value
         DB::table('comments')->updateOrInsert([
-            'sentiment' => $json['sentiment'],
-            'polarity' => $json['polarity'],
-            'grade' => $json['grade'],
             'original_message' => $json['original_message'],
-            'message' => $json['message'],
-            'library' => '1',  # textblob
-            'date' => $json['date']
+            'date_time' => $json['date_time']
         ], $json);
     }
 }

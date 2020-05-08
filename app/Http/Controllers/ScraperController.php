@@ -8,22 +8,7 @@ use Illuminate\Support\Facades\Validator;
 
 class ScraperController extends Controller
 {
-    function scrapers(Request $request)
-    {
-        $id = $request->id;
-        $script = config('python.scripts') . 'scraper_' . $id . '.py';
-        foreach (executePython($script, $request) as $result) {
-            $data = json_decode($result, true);
-
-            if ($id == 1 or $id == 2) {
-                WeatherController::insert($data);
-            }
-        }
-
-        return response('Execute complete', 200);
-    }
-
-    /**
+     /**
      * @OA\Post(
      *      path="/api/scrapers/weathers/forecast",
      *      operationId="getWeathersForecast",
@@ -848,10 +833,12 @@ class ScraperController extends Controller
             //dd(executePython($script, $args));
             foreach (executePython($script, $args) as $result) {
                 $data = json_decode($result, true);
+                $data['city_id'] = $request->city_id;
+                $data['user_id'] = 1;
                 CommentController::insert($data);
                 $inserts += 1;
             }
-            return response()->json(["total" => $inserts], 200);
+            return response()->json(["total" => $inserts], JsonResponse::HTTP_OK);
         }
     }
 }
