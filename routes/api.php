@@ -39,6 +39,8 @@ Route::group(['middleware' => ['jwt.auth']], function () {
 Route::post('/models/training', 'ModelController@trainingModel');
 Route::post('/models/predict', 'ModelController@predictModel');
 Route::post('/models/updateModel', 'ModelController@updateModelInUse');
+Route::post('models/algorithms', 'ModelController@getAlgorithms');
+Route::post('models/models', 'ModelController@getModels');
 
 // scrapers (admin)
 Route::post('/scrapers/weathers/forecast', 'ScraperController@weatherForecast');

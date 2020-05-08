@@ -148,7 +148,7 @@ class ModelController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return failValidation($validator);
+            return response()->json($request->characteristic, JsonResponse::HTTP_BAD_REQUEST);//failValidation($validator), request->$characteristic;
         } else {
             foreach($request->characteristic as $key => $val)
             {
@@ -492,7 +492,230 @@ class ModelController extends Controller
         return response()->json([],JsonResponse::HTTP_NO_CONTENT);
     }
 
+    /**
+     * @OA\Post(
+     *      path="/api/models/algorithms",
+     *      operationId="getAlgorithms",
+     *      tags={"models"},
+     *      summary="Get all algorithms",
+     *      description="It is used to get all information of each algorithm of the database.",
+     *      @OA\Response(
+     *          response=200,
+     *          description="Ok.",
+     *          content={
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="response",
+     *                          type="array",@OA\Items(type="json"),
+     *                          description="All algorithms"
+     *                      ),
+     *                      example={{"id": 0,
+     *                              "name": "Naive Bayes",
+     *                              "description": "It is a supervised classification and prediction technique that classifies a case maximizing the probability that it will occur under certain conditions. For example, if we want to classify whether we have a pair or a trio in our deck, the algorithm will determine what we are most likely to find in each of our 5-card hands. With Bayes' Theorem we can find the probability that A (hypothesis) will occur, given that B (evidence) has occurred."},
+     *                              {"id": 1,
+     *                              "name": "Random Forest",
+     *                              "description": "Random forest is an Artificial Intelligence algorithm that combines many independent decision trees on random data sets with the same distribution."},
+     *                              {"id": 2,
+     *                              "name": "Gradient Boosting",
+     *                              "description": "Gradient Boosted Tree produces a predictive model in the form of a set of weak decision trees. Construct the model in a staggered fashion like other boosting methods do, and generalize them by allowing arbitrary optimization of a differentiable loss function."},
+     *                              {"id": 3,
+     *                              "name": "Decision Tree",
+     *                              "description": "The goal of this algorithm is to find the simplest tree that best separates the examples. This algorithm is used for classification and regression. It is a supervised learning system and when implemented the 'divide and conquer' strategy is applied."},
+     *                             {"id": 4,
+     *                              "name": "k-nn",
+     *                              "description": "The k-NN algorithm is based on comparing an unknown example with the training examples that are the closest neighbors of the unknown example."},
+     *                              {"id": 5,
+     *                              "name": "Logistic Regression",
+     *                              "description": "Logistic regression is a statistical method of analyzing a data set in which there are one or more independent variables that determine an outcome. The result is measured with a binomial variable Predicts the probability of occurrence of an event by fitting the data to a logit function."}
+     *                      }
+     *                  )
+     *              )
+     *          }
+     *      ),
+     *      @OA\Response(
+     *          response=500,
+     *          description="Internal Server Error.",
+     *          content={
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="message",
+     *                          type="string",
+     *                          description="Server message that contains the error."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="exception",
+     *                          type="string",
+     *                          description="Generated exception."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="file",
+     *                          type="string",
+     *                          description="File that throw the exception."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="line",
+     *                          type="integer",
+     *                          description="Line that thorws the execption."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="trace",
+     *                          type="array",
+     *                          description="Trace route objects.",
+     *                          @OA\Items(type="object")
+     *                      ),
+     *                      example={
+     *                          "messagge": "The command failed.",
+     *                          "exception": "",
+     *                          "file": "",
+     *                          "line": 150,
+     *                          "trace": {"file":"", "line":1, "content":""}
+     *                      }
+     *                  )
+     *              )
+     *          }
+     *      ),
+     *  )
+     *
+     * @param Request $request
+     * @return string
+     */
+    function getAlgorithms(){
+        return response()->json(json_decode(DB::table('algorithms')->select('*')->get(),
+            JsonResponse::HTTP_OK));
+    }
 
+    /**
+     * @OA\Post(
+     *      path="/api/models/models",
+     *      operationId="getModels",
+     *      tags={"models"},
+     *      summary="Get all models",
+     *      description="It is used to get all information of each model of the database.",
+     *      @OA\Response(
+     *          response=200,
+     *          description="Ok.",
+     *          content={
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="response",
+     *                          type="array",@OA\Items(type="json"),
+     *                          description="All models"
+     *                      ),
+     *                      example={{
+     *                          "id": 1,
+     *                          "type": 1,
+     *                          "date": "2020-05-05 01:34:45",
+     *                          "report_num_rows": 179,
+     *                          "report_precision_0": "1.00",
+     *                          "report_precision_1": "1.00",
+     *                          "report_recall_0": "1.00",
+     *                          "report_recall_1": "1.00",
+     *                          "report_f1_score_0": "1.00",
+     *                          "report_f1_score_1": "1.00",
+     *                          "report_accuracy_precision": "1.00",
+     *                          "report_accuracy_recall": "1.00",
+     *                          "report_accuracy_f1_score": "1.00"
+     *                          },
+     *                          {
+     *                          "id": 3,
+     *                          "type": 2,
+     *                          "date": "2020-05-08 23:55:21",
+     *                          "report_num_rows": 27,
+     *                          "report_precision_0": "1.00",
+     *                          "report_precision_1": "1.00",
+     *                          "report_recall_0": "1.00",
+     *                          "report_recall_1": "1.00",
+     *                          "report_f1_score_0": "1.00",
+     *                          "report_f1_score_1": "1.00",
+     *                          "report_accuracy_precision": "1.00",
+     *                          "report_accuracy_recall": "1.00",
+     *                          "report_accuracy_f1_score": "1.00"
+     *                          },
+     *                          {
+     *                          "id": 4,
+     *                          "type": 2,
+     *                          "date": "2020-05-08 23:56:48",
+     *                          "report_num_rows": 27,
+     *                          "report_precision_0": "1.00",
+     *                          "report_precision_1": "1.00",
+     *                          "report_recall_0": "1.00",
+     *                          "report_recall_1": "1.00",
+     *                          "report_f1_score_0": "1.00",
+     *                          "report_f1_score_1": "1.00",
+     *                          "report_accuracy_precision": "1.00",
+     *                          "report_accuracy_recall": "1.00",
+     *                          "report_accuracy_f1_score": "1.00"
+     *                          }
+     *                      }
+     *                  )
+     *              )
+     *          }
+     *      ),
+     *      @OA\Response(
+     *          response=500,
+     *          description="Internal Server Error.",
+     *          content={
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="message",
+     *                          type="string",
+     *                          description="Server message that contains the error."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="exception",
+     *                          type="string",
+     *                          description="Generated exception."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="file",
+     *                          type="string",
+     *                          description="File that throw the exception."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="line",
+     *                          type="integer",
+     *                          description="Line that thorws the execption."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="trace",
+     *                          type="array",
+     *                          description="Trace route objects.",
+     *                          @OA\Items(type="object")
+     *                      ),
+     *                      example={
+     *                          "messagge": "The command failed.",
+     *                          "exception": "",
+     *                          "file": "",
+     *                          "line": 150,
+     *                          "trace": {"file":"", "line":1, "content":""}
+     *                      }
+     *                  )
+     *              )
+     *          }
+     *      ),
+     *  )
+     *
+     * @param Request $request
+     * @return string
+     */
+    function getModels(){
+        $columns = ["id", "type", "date",
+        "report_num_rows", "report_precision_0", "report_precision_1", "report_recall_0", "report_recall_1",
+        "report_f1_score_0", "report_f1_score_1", "report_accuracy_precision", "report_accuracy_recall",
+        "report_accuracy_f1_score"];
+        return response()->json(json_decode(DB::table('models')->select($columns)->get(),
+            JsonResponse::HTTP_OK));
+    }
+
+    /* Others functions*/
     function getData($args, $characteristics){
         $data_structure = "{";
         foreach ($characteristics as $characteristic) {
