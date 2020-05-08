@@ -267,6 +267,91 @@
                 }
             }
         },
+        "/api/auth/refresh": {
+            "post": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Refresh token.",
+                "description": "Refresh JWT token.",
+                "operationId": "authRefresh",
+                "responses": {
+                    "200": {
+                        "description": "Ok.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "access_token": {
+                                            "description": "User name.",
+                                            "type": "string"
+                                        },
+                                        "token_type": {
+                                            "description": "User surnames.",
+                                            "type": "string"
+                                        },
+                                        "expires_in": {
+                                            "description": "Alive time of the token in seconds. Default 3600s",
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC9sb2NhbGhvc3Q6ODAwMFwvYXBpXC9hdXRoXC9yZWdpc3RlciIsImlhdCI6MTU4ODQ5Mjk5MSwiZXhwIjoxNTg4NDk2NTkxLCJuYmYiOjE1ODg0OTI5OTEsImp0aSI6ImRMWjNQcmN0Tm5UUEdtanMiLCJzdWIiOjUsInBydiI6Ijg3ZTBhZjFlZjlmZDE1ODEyZmRlYzk3MTUzYTE0ZTBiMDQ3NTQ2YWEifQ.mNh-Rfalspe1SBH_ltfz_ErIAhExJwDIA8td69fZvWA",
+                                        "token_type": "bearer",
+                                        "expires_in": 3600
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "errors": {
+                                            "description": "List of errors.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "errors": "Invalid credentials."
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "errors": {
+                                            "description": "Token error.",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "errors": "Could not create access token."
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": {
+                    "bearer": []
+                }
+            }
+        },
         "/api/models/training": {
             "post": {
                 "tags": [
@@ -1277,12 +1362,125 @@
                     }
                 }
             }
+        },
+        "/api/scrapers/comments": {
+            "post": {
+                "tags": [
+                    "scrapers"
+                ],
+                "summary": "Get comments from TripAdvisor",
+                "description": "Gets all the comments from tripadvisor based on a query/search",
+                "operationId": "getComments",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "query": {
+                                        "description": "Place or city",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "query": "Madrid"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ok.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "total": {
+                                            "description": "Total inserted documents",
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "total": 24
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "description": "Server message that contains the error.",
+                                            "type": "string"
+                                        },
+                                        "exception": {
+                                            "description": "Generated exception.",
+                                            "type": "string"
+                                        },
+                                        "file": {
+                                            "description": "File that throw the exception.",
+                                            "type": "string"
+                                        },
+                                        "line": {
+                                            "description": "Line that thorws the exception.",
+                                            "type": "integer"
+                                        },
+                                        "trace": {
+                                            "description": "Trace route objects.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "messagge": "The command failed.",
+                                        "exception": "",
+                                        "file": "",
+                                        "line": 150,
+                                        "trace": {
+                                            "file": "",
+                                            "line": 1,
+                                            "content": ""
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "tags": [
         {
             "name": "scrapers",
-            "description": "Operations with scrapers"
+            "description": "Operations with scrapers."
+        },
+        {
+            "name": "auth",
+            "description": "Authentication operations."
         }
-    ]
+    ],
+    "components": {
+        "securitySchemes": {
+            "bearer": {
+                "type": "http",
+                "description": "Authorization token obtained from logging in.",
+                "name": "Authorization",
+                "in": "header",
+                "scheme": "bearer"
+            }
+        }
+    }
 }

@@ -320,7 +320,7 @@ class AuthController extends Controller
         $credentials = $request->only('email', 'password');
         try {
             if (!$token = JWTAuth::attempt($credentials)) {
-                return response()->json(['errors' => 'Invalid credentials'], JsonResponse::HTTP_UNAUTHORIZED);
+                return response()->json(['errors' => 'Invalid credentials.'], JsonResponse::HTTP_UNAUTHORIZED);
             }
         } catch (JWTException $e) {
             return response()->json(['errors' => 'Could not create access token'], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
@@ -332,7 +332,88 @@ class AuthController extends Controller
             JsonResponse::HTTP_OK);
     }
 
-    public function refresh(Request $request)
+    /**
+     * @OA\Post(
+     *      path="/api/auth/refresh",
+     *      operationId="authRefresh",
+     *      tags={"auth"},
+     *      summary="Refresh token.",
+     *      description="Refresh JWT token.",
+     *      @OA\Response(
+     *          response=200,
+     *          description="Ok.",
+     *          content={
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="access_token",
+     *                          type="string",
+     *                          description="User name."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="token_type",
+     *                          type="string",
+     *                          description="User surnames."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="expires_in",
+     *                          type="integer",
+     *                          description="Alive time of the token in seconds. Default 3600s"
+     *                      ),
+     *                      example={
+     *                              "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC9sb2NhbGhvc3Q6ODAwMFwvYXBpXC9hdXRoXC9yZWdpc3RlciIsImlhdCI6MTU4ODQ5Mjk5MSwiZXhwIjoxNTg4NDk2NTkxLCJuYmYiOjE1ODg0OTI5OTEsImp0aSI6ImRMWjNQcmN0Tm5UUEdtanMiLCJzdWIiOjUsInBydiI6Ijg3ZTBhZjFlZjlmZDE1ODEyZmRlYzk3MTUzYTE0ZTBiMDQ3NTQ2YWEifQ.mNh-Rfalspe1SBH_ltfz_ErIAhExJwDIA8td69fZvWA",
+     *                              "token_type": "bearer",
+     *                              "expires_in": 3600
+     *                      }
+     *                  )
+     *              )
+     *          }
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthorized.",
+     *          content={
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="errors",
+     *                          type="array",
+     *                          description="List of errors.",
+     *                          @OA\Items(type="string")
+     *                      ),
+     *                      example={
+     *                          "errors": "Invalid credentials.",
+     *                      }
+     *                  )
+     *              )
+     *          }
+     *      ),
+     *      @OA\Response(
+     *          response=500,
+     *          description="Internal Server Error.",
+     *          content={
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="errors",
+     *                          type="string",
+     *                          description="Token error."
+     *                      ),
+     *                      example={
+     *                          "errors": "Could not create access token.",
+     *                      }
+     *                  )
+     *              )
+     *          }
+     *      ),
+     *  )
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function refresh()
     {
         $token = JWTAuth::getToken();
         $newToken = JWTAuth::refresh($token);
@@ -345,10 +426,8 @@ class AuthController extends Controller
 
     public function logout()
     {
-        // Get JWT Token from the request header key "Authorization"
         $token = JWTAuth::getToken();
 
-        // Invalidate the token
         try {
             JWTAuth::invalidate($token);
             return response()->json(['message' => 'Token invalidated successfully.',], JsonResponse::HTTP_OK);
