@@ -446,7 +446,7 @@ class AirlinesTableSeeder extends Seeder
         ]);
         Airline::create([
             "id" => 492,
-            "name" => "Arkia Israel Airlines",
+            "name" => "Arkia Israeli Airlines",
             "alias" => null,
             "iata" => "IZ",
             "icao" => "AIZ",
@@ -2822,7 +2822,7 @@ class AirlinesTableSeeder extends Seeder
         ]);
         Airline::create([
             "id" => 374,
-            "name" => "Eurowings",
+            "name" => "Eurowings Europe",
             "alias" => null,
             "iata" => "EW",
             "icao" => "EWG",
@@ -2876,7 +2876,7 @@ class AirlinesTableSeeder extends Seeder
         ]);
         Airline::create([
             "id" => 1045,
-            "name" => "easyJet",
+            "name" => "EasyJet Europe",
             "alias" => "EasyJet Airline",
             "iata" => "U2",
             "icao" => "EZY",
@@ -3254,7 +3254,7 @@ class AirlinesTableSeeder extends Seeder
         ]);
         Airline::create([
             "id" => 391,
-            "name" => "TUIfly",
+            "name" => "TUI fly Germany",
             "alias" => null,
             "iata" => "X3",
             "icao" => "HLX",
@@ -3920,7 +3920,7 @@ class AirlinesTableSeeder extends Seeder
         ]);
         Airline::create([
             "id" => 986,
-            "name" => "Kuzu Airlines Cargo",
+            "name" => "ULS Airlines Cargo",
             "alias" => null,
             "iata" => "GO",
             "icao" => "KZU",
@@ -5819,7 +5819,7 @@ class AirlinesTableSeeder extends Seeder
         ]);
         Airline::create([
             "id" => 117,
-            "name" => "TAM Brazilian Airlines",
+            "name" => "TAM Linhas Aereas",
             "alias" => null,
             "iata" => "JJ",
             "icao" => "TAM",
@@ -5828,7 +5828,7 @@ class AirlinesTableSeeder extends Seeder
         ]);
         Airline::create([
             "id" => 736,
-            "name" => "TAP Portugal",
+            "name" => "TAP Express Portugal",
             "alias" => "TAP Air Portugal",
             "iata" => "TP",
             "icao" => "TAP",
@@ -6026,7 +6026,7 @@ class AirlinesTableSeeder extends Seeder
         ]);
         Airline::create([
             "id" => 735,
-            "name" => "TACV",
+            "name" => "TACV Cape Verde Airlines",
             "alias" => null,
             "iata" => "VR",
             "icao" => "TCV",
@@ -6242,7 +6242,7 @@ class AirlinesTableSeeder extends Seeder
         ]);
         Airline::create([
             "id" => 1011,
-            "name" => "Ukraine International Airlines",
+            "name" => "Ukraine Int. Airlines",
             "alias" => null,
             "iata" => "PS",
             "icao" => "AUI",
@@ -10031,7 +10031,7 @@ class AirlinesTableSeeder extends Seeder
         ]);
         Airline::create([
             "id" => 721,
-            "name" => "FLYJET",
+            "name" => "Fastjet",
             "alias" => "",
             "iata" => "",
             "icao" => "FYJ",
@@ -10157,7 +10157,7 @@ class AirlinesTableSeeder extends Seeder
         ]);
         Airline::create([
             "id" => 841,
-            "name" => "Air Serbia",
+            "name" => "AirSERBIA",
             "alias" => null,
             "iata" => "JU",
             "icao" => "ASL",
@@ -10589,7 +10589,7 @@ class AirlinesTableSeeder extends Seeder
         ]);
         Airline::create([
             "id" => 747,
-            "name" => "Fly Romania",
+            "name" => "Ten Airways",
             "alias" => "",
             "iata" => "X5",
             "icao" => "OTJ",
@@ -11102,7 +11102,7 @@ class AirlinesTableSeeder extends Seeder
         ]);
         Airline::create([
             "id" => 258,
-            "name" => "COBALT",
+            "name" => "Cobalt Air",
             "alias" => "COBALT",
             "iata" => "",
             "icao" => "FCB",
@@ -11288,6 +11288,170 @@ class AirlinesTableSeeder extends Seeder
             "icao" => "SJM",
             "callsign" => "RussianConnecty",
             "country_id" => 177
+        ]);
+        Airline::create([
+            "id" => 17000,
+            "name" => "Evelop Airlines",
+            "alias" => "Evelop",
+            "iata" => "E9",
+            "icao" => "EVE",
+            "callsign" => "",
+            "country_id" => 199
+        ]);
+        Airline::create([
+            "id" => 17001,
+            "name" => "Israir Airlines",
+            "alias" => "Israir",
+            "iata" => "6H",
+            "icao" => "ISR",
+            "callsign" => "",
+            "country_id" => 104
+        ]);
+        Airline::create([
+            "id" => 17002,
+            "name" => "Swiftair",
+            "alias" => "",
+            "iata" => "WT",
+            "icao" => "SWT",
+            "callsign" => "",
+            "country_id" => 199
+        ]);
+        Airline::create([
+            "id" => 17003,
+            "name" => "Neos S.p.A",
+            "alias" => "Neos",
+            "iata" => "NO",
+            "icao" => "NOS",
+            "callsign" => "",
+            "country_id" => 105
+        ]);
+        Airline::create([
+            "id" => 17004,
+            "name" => "Wamos Air",
+            "alias" => "Wamos",
+            "iata" => "EB",
+            "icao" => "PLM",
+            "callsign" => "",
+            "country_id" => 199
+        ]);
+        Airline::create([
+            "id" => 17005,
+            "name" => "Kalitta Air",
+            "alias" => null,
+            "iata" => "K4",
+            "icao" => "CKS",
+            "callsign" => "",
+            "country_id" => 224
+        ]);
+        Airline::create([
+            "id" => 17006,
+            "name" => "Privilege Style",
+            "alias" => null,
+            "iata" => "P6",
+            "icao" => "PVG",
+            "callsign" => "",
+            "country_id" => 199
+        ]);
+        Airline::create([
+            "id" => 17007,
+            "name" => "LAN Cargo",
+            "alias" => "LATAM Cargo",
+            "iata" => "UC",
+            "icao" => "LCO",
+            "callsign" => "",
+            "country_id" => 43
+        ]);
+        Airline::create([
+            "id" => 17008,
+            "name" => "Estelar",
+            "alias" => null,
+            "iata" => "ES",
+            "icao" => "ETR",
+            "callsign" => "",
+            "country_id" => 228
+        ]);
+        Airline::create([
+            'id' => 17009,
+            'name' => "Plus Ultra",
+            "alias" => null,
+            'iata' => "PU",
+            'icao' => "PUE",
+            "callsign" => "",
+            "country_id" => 199
+        ]);
+        Airline::create([
+            'id' => 17010,
+            'name' => "Air Senegal",
+            "alias" => null,
+            'iata' => "HC",
+            'icao' => "SZN",
+            "callsign" => "",
+            "country_id" => 187
+        ]);
+        Airline::create([
+            'id' => 17011,
+            'name' => "SkyUp Airlines",
+            "alias" => null,
+            'iata' => "PQ",
+            'icao' => "SPQ",
+            "callsign" => "",
+            "country_id" => 221
+        ]);
+
+        // Airportia pone destinos de aerolineas que son aeropuertos
+        Airline::create([
+            'id' => 18000,
+            'name' => "LWO",
+            "alias" => null,
+            'iata' => "LWO",
+            'icao' => "UKLL",
+            "callsign" => "",
+            "country_id" => 221
+        ]);
+        Airline::create([
+            'id' => 18001,
+            'name' => "KBP",
+            "alias" => null,
+            'iata' => "KBP",
+            'icao' => "UKBB",
+            "callsign" => "",
+            "country_id" => 221
+        ]);
+        Airline::create([
+            'id' => 18002,
+            'name' => "LPA",
+            "alias" => null,
+            'iata' => "LPA",
+            'icao' => "GCLP",
+            "callsign" => "",
+            "country_id" => 199
+        ]);
+        Airline::create([
+            'id' => 18003,
+            'name' => "MEA",
+            "alias" => null,
+            'iata' => "MEA",
+            'icao' => "SBME",
+            "callsign" => "",
+            "country_id" => 28
+        ]);
+        Airline::create([
+            'id' => 18004,
+            'name' => "KRK",
+            "alias" => null,
+            'iata' => "KRK",
+            'icao' => "EPKK",
+            "callsign" => "",
+            "country_id" => 171
+        ]);
+        Airline::create([
+            'id' => 18005,
+            'name' => "WAW",
+            "alias" => null,
+            'iata' => "WAW",
+            'icao' => "EPWA",
+            "callsign" => "",
+            "country_id" => 171
         ]);
     }
 }

@@ -14,12 +14,14 @@ class CreateCommentsTable extends Migration
     public function up()
     {
         Schema::create('comments', function (Blueprint $table) {
-            $table->increments('id');
             $table->string('sentiment')->nullable();
             $table->decimal('polarity', 8, 2)->nullable();
-            $table->string('message');
+            $table->decimal('grade', 8, 2)->default(0.0);
+            $table->string('original_message');
+            $table->string('message'); # primary
             $table->string('library')->nullable();
-            $table->dateTime('date');
+            $table->dateTime('date_time'); # primary
+            $table->primary(['original_message', 'date_time']);
             $table->integer('city_id')->unsigned();
             $table->foreign('city_id')->references('id')->on('cities')->onDelete('cascade');
             $table->integer('user_id')->unsigned();

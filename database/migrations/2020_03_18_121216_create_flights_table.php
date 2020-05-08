@@ -15,15 +15,23 @@ class CreateFlightsTable extends Migration
     {
         Schema::create('flights', function (Blueprint $table) {
             $table->string('id');
-            $table->dateTime('date');
-            $table->primary(['id', 'date']);
+            $table->dateTime('date_time');
+            $table->primary(['id', 'date_time']);
+
             $table->integer('airline_id')->unsigned();
-            $table->foreign('airline_id')->references('id')->on('airlines');
-            $table->string('destination');
-            $table->integer('delay'); // retraso(mins)
-            $table->dateTime('expected_departure_time');
+            $table->foreign('airline_id')->references('id')->on('airlines')->onDelete('cascade');
+
+            $table->integer('city_id')->unsigned();
+            $table->foreign('city_id')->references('id')->on('cities')->onDelete('cascade');
+
+            $table->tinyInteger('delay');// retraso(mins)
+            $table->foreign('delay')->references('id')->on('flight_statuses')->onDelete('cascade');
+
             $table->integer('airport_id')->unsigned();
             $table->foreign('airport_id')->references('id')->on('airports')->onDelete('cascade');
+
+            $table->tinyInteger('prediction');// retraso(mins)
+            $table->foreign('prediction')->references('id')->on('flight_statuses')->onDelete('cascade');
         });
     }
 

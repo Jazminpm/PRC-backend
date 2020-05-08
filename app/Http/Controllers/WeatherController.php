@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class WeatherController extends Controller
@@ -10,11 +9,10 @@ class WeatherController extends Controller
     /**
      * INSERT weather data if possible. UPDATE otherwise.
      *
-     * @param Request $request json encoded data
+     * @param $json
      */
-    function insert(Request $request)
+    public static function insert($json)
     {
-        $json = json_decode($request->getContent(), true);
         DB::table('weathers')->updateOrInsert([
             'date_time' => $json['date_time'],
             'airport_id' => $json['airport_id']

@@ -23,19 +23,17 @@ import pandas as pd  # CSV
 from datetime import datetime
 import os
 
-def import_model(characteristic, select_classifier):
-    os.chdir(os.path.dirname(__file__))
-    pd.set_option('mode.chained_assignment', None)
-    data_train = pd.read_csv('dataset_TRAIN.csv', delimiter=";",
-                             encoding="ISO-8859-1")  # encoding = "ISO-8859-1" --> Permite importar caracteres especiales
+#Print model
+import json
 
+def import_model(select_classifier, data_train):
+    os.chdir(os.path.dirname(__file__))
+    characteristic = list(data_train.head())
+
+    # -------------1. Select characteristic and label
     # -------------1. Select characteristic and label
     label = data_train['delay']
     data_train = data_train.drop(['delay'], axis=1)
-
-    for key in list(data_train.head()):
-        if key not in characteristic:
-            data_train = data_train.drop([key], axis=1)
 
     # -------------2. Preparing Data For Training (divides data into attributes and labels)
     df_object = data_train.select_dtypes(include=[object])
@@ -63,21 +61,21 @@ def import_model(characteristic, select_classifier):
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20)
 
     # -------------4. Select, create and train the Algorithm
-    if select_classifier == 0:
+    if select_classifier == 1:
         classifier = GaussianNB()
         model_name = 'naive_bayes'
-    elif select_classifier == 1:
+    elif select_classifier == 2:
         classifier = RandomForestClassifier(n_estimators=3,
                                             random_state=0)
         model_name = 'random_forest'
-    elif select_classifier == 2:
+    elif select_classifier == 3:
         classifier = GradientBoostingClassifier(n_estimators=3, learning_rate=0.5, max_features=2, max_depth=2,
                                                 random_state=0)
         model_name = 'gradient_boosting'
-    elif select_classifier == 3:
+    elif select_classifier == 4:
         classifier = tree.DecisionTreeClassifier()
         model_name = 'decision_tree'
-    elif select_classifier == 4:
+    elif select_classifier == 5:
         classifier = KNeighborsClassifier()
         model_name = 'k-nn'
     else:
@@ -92,9 +90,9 @@ def import_model(characteristic, select_classifier):
 
     report = pd.DataFrame(classification_report(y_test, y_pred, output_dict=True)).transpose()
     response = {
-        'type': str(model_name),
+        'type': select_classifier,
         'date': str(datetime.now().strftime("%Y-%m-%d %H:%M:%S")),
-        'report_n_rows': len(data_train),
+        'report_num_rows': len(data_train),
         'report_precision_0': str(report['precision'][0]),
         'report_precision_1': str(report['precision'][1]),
         'report_recall_0': str(report['recall'][0]),
@@ -105,17 +103,18 @@ def import_model(characteristic, select_classifier):
         'report_accuracy_recall': str(report['recall'][2]),
         'report_accuracy_f1_score': str(report['f1-score'][2]),
         'attribute_date': int('date' in characteristic),
-        'attribute_time': int('expected_departure_time' in characteristic),
+        'attribute_time': int('time' in characteristic),
         'attribute_id': int('id' in characteristic),
-        'attribute_airline': int('airline' in characteristic),
-        'attribute_destination': int('destination' in characteristic),
+        'attribute_airline': int('airline_id' in characteristic),
+        'attribute_destination': int('city_id' in characteristic),
         'attribute_temperature': int('temperature' in characteristic),
         'attribute_humidity': int('humidity' in characteristic),
-        'attribute_wind': int('wind' in characteristic),
+        'attribute_wind_speed': int('wind_speed' in characteristic),
         'attribute_wind_direction': int('wind_direction' in characteristic),
-        'attribute_wind_pressure': int('pressure' in characteristic)
+        'attribute_pressure': int('pressure' in characteristic),
+        'attribute_airport_id': int('airport_id' in characteristic)
     }
-    print(response)
+    print(json.dumps(response))
 
 
 def save_model(classifier, model_name, le):
@@ -135,28 +134,23 @@ def save_model(classifier, model_name, le):
     pickle.dump(classifier, my_file)
 
 
-def prediction(characteristic, model_name, model_date):
+def prediction(num_model, model_date, data_test):
     os.chdir(os.path.dirname(__file__))
+
+    model_name = ['', 'naive_bayes', 'random_forest', 'gradient_boosting', 'decision_tree', 'k-nn',
+    'logistic_regression']
 
     # 1. Import from directories
     date = datetime.strptime(model_date, "%Y-%m-%d %H:%M:%S")
-    filename = model_name + "_" + str(date.date()) + "_" + str(date.hour) + "." + str(date.minute) + "." + str(
+    filename = str(model_name[num_model]) + "_" + str(date.date()) + "_" + str(date.hour) + "." + str(date.minute) + "." + str(
         date.second)
 
-    model_path = Path("..") / Path("..") / Path("..") / Path("..") / "models" / "training_models" / model_name / (filename + ".sav")
+    model_path = Path("..") / Path("..") / Path("..") / Path("..") / "models" / "training_models" / str(model_name[num_model]) / (filename + ".sav")
     with open(model_path, 'rb') as pickle_file:
         model = pickle.load(pickle_file)
 
-    preprocess_path = Path("..") / Path("..") / Path("..") / Path("..") / "models" / "preprocess_characteristic" / model_name / (filename + ".pkl")
+    preprocess_path = Path("..") / Path("..") / Path("..") / Path("..") / "models" / "preprocess_characteristic" / str(model_name[num_model]) / (filename + ".pkl")
     preprocess_obj = pickle.load(open(preprocess_path, 'rb'))
-
-    # 2. Import data for test
-    pd.set_option('mode.chained_assignment', None)
-    data_test = pd.read_csv('dataset_test.csv', delimiter=";",
-                            encoding="ISO-8859-1")
-    for key in list(data_test.head()):
-        if key not in characteristic:
-            data_test = data_test.drop([key], axis=1)
 
     # -------------2. Preparing Data For Training (divides data into attributes and labels)
     df_object = data_test.select_dtypes(include=[object])

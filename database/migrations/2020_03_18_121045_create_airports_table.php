@@ -29,6 +29,8 @@ class CreateAirportsTable extends Migration
             $table->string('timezone')->nullable();
             $table->string('dst')->nullable();
             $table->string('tz')->nullable();
+
+            $table->string('airport_url')->nullable();
         });
     }
 
