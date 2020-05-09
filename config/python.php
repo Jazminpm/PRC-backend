@@ -16,7 +16,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Python exec path
+    | python exec path
     |--------------------------------------------------------------------------
     |
     | This value is the path of the python environment. This value is used when
@@ -29,7 +29,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Python scripts path
+    | python scripts path
     |--------------------------------------------------------------------------
     |
     | This value is the path of the python scripts folder. This value is used when
@@ -37,5 +37,5 @@ return [
     |
     */
 
-    'scripts' => storage_path('app' . DIRECTORY_SEPARATOR . 'python' . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR),
+    'scripts' => app_path('Python' . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR),
 ];
