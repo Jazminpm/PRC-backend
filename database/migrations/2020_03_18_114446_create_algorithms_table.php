@@ -16,7 +16,7 @@ class CreateAlgorithmsTable extends Migration
         Schema::create('algorithms', function (Blueprint $table) {
             $table->tinyInteger('id');
             $table->string('name');
-            $table->string('description');
+            $table->longText('description');
             $table->primary('id');
         });
     }

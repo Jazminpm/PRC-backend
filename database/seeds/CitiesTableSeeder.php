@@ -7130,6 +7130,6 @@ class CitiesTableSeeder extends Seeder
         City::create(['id' => 7116, 'name' => "Luqa", 'country_id' => 131]);
         City::create(['id' => 7117, 'name' => "Lamezia Terme", 'country_id' => 105]);
         City::create(['id' => 7118, 'name' => "Trieste", 'country_id' => 105]);
-        City::create(['id' => 7118, 'name' => "Trieste", 'country_id' => 105]);
+        City::create(['id' => 7119, 'name' => "Trieste", 'country_id' => 105]);
     }
 }
