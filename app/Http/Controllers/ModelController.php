@@ -4,11 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
 
 class ModelController extends Controller
 {
@@ -138,10 +136,11 @@ class ModelController extends Controller
      * @param Request $request
      * @return string
      */
-    function trainingModel(Request $request){
+    function trainingModel(Request $request)
+    {
 
         $validator = Validator::make($request->json()->all(), [
-            'characteristic' => ['required','array'],
+            'characteristic' => ['required', 'array'],
             'start_date' => ['required', 'date', 'date_format:Y-m-d', 'before_or_equal:yesterday'],
             'end_date' => ['required', 'date', 'date_format:Y-m-d', 'before_or_equal:today'],
             'algorithm_id' => ['required', 'integer', 'exists:algorithms,id']
@@ -150,17 +149,16 @@ class ModelController extends Controller
         if ($validator->fails()) {
             return response()->json($request->characteristic, JsonResponse::HTTP_BAD_REQUEST);//failValidation($validator), request->$characteristic;
         } else {
-            foreach($request->characteristic as $key => $val)
-            {
+            foreach ($request->characteristic as $key => $val) {
                 if (!Schema::hasColumn('flights', $val) and !Schema::hasColumn('weathers', $val) and
-                    $val != 'date' and $val != 'time')  {
+                    $val != 'date' and $val != 'time') {
                     return response()->json(["errors" => 'Not all characteristic exists.'],
                         JsonResponse::HTTP_BAD_REQUEST);
                 }
             }
 
             $characteristic = $request->characteristic;
-            if (in_array("airport_id", $characteristic)){
+            if (in_array("airport_id", $characteristic)) {
                 $pos = array_keys($characteristic, "airport_id")[0];
                 $characteristic[$pos] = "airport_id";
             } else {
@@ -168,20 +166,21 @@ class ModelController extends Controller
             }
 
             $args = FlightsController::getModelDataTrain($characteristic, $request->start_date, $request->end_date);
-
             if (sizeof($args) > 0) {
-                $data = ModelController::getData($args, $characteristic);
-                $airports = collect(array_unique($data['airport_id']))->implode('-');
-                if (!in_array("airport_id", $request->characteristic)){
-                    unset($data['airport_id']);
+                ModelController::export($args, $characteristic, '../storage/modelsData/dataTrain.csv');
+                $airports['airport_id'] = [];
+                foreach ($args as $arg) {
+                    array_push($airports['airport_id'], $arg['airport_id']);
                 }
+                $airports = collect(array_unique($airports['airport_id']))->implode('-');
+
                 $args = $request->all();
-                array_push($args, $data);
                 $script = config('python.scripts') . 'model_1.py';
+
                 $data = json_decode(executePython($script, $args)[0], true);
                 $data['airports'] = $airports;
                 DB::table('models')->Insert($data); // Insert data in the BBDD
-                return response()->json([],JsonResponse::HTTP_NO_CONTENT);
+                return response()->json([], JsonResponse::HTTP_NO_CONTENT);
             } else {
                 return response()->json(["errors" => 'There are no registered flights for these dates.'],
                     JsonResponse::HTTP_BAD_REQUEST);
@@ -313,7 +312,8 @@ class ModelController extends Controller
      * @param Request $request
      * @return string
      */
-    function predictModel(Request $request){
+    function predictModel(Request $request)
+    {
         $validator = Validator::make($request->json()->all(), [
             'start_date' => ['required', 'date', 'date_format:Y-m-d', 'before_or_equal:today'],
             'end_date' => ['required', 'date', 'date_format:Y-m-d', 'before_or_equal:today']
@@ -323,49 +323,26 @@ class ModelController extends Controller
             return failValidation($validator);
         } else {
             $selectedModel = ModelController::selectedModel();
-            // Attributes that we need for save de prediction.
-            $select_id = ($selectedModel->attribute_id == 1);
-            $select_date = ($selectedModel->attribute_date == 1);
-            $select_time = ($selectedModel->attribute_time == 1);
-
 
             $airports = array_map('intval', explode('-', $selectedModel->airports));
             $characteristic = ModelController::getCharacteristic($selectedModel);
 
             $args = FlightsController::getModelDataPredict($characteristic, $request->start_date, $request->end_date, $airports);
+
             if (sizeof($args) > 0) {
-                $data = ModelController::getData($args, $characteristic);
+                modelController::export($args, $characteristic, '../storage/modelsData/dataPredict.csv');
 
-                # Copy keys.
-                $id = $data['id'];
-                $date = $data['date'];
-                $time = $data['time'];
-                if ($select_id == False){
-                    unset($data['id']);
-                }
-                if ($select_date == False){
-                    unset($data['date']);
-                }
-                if ($select_time == False){
-                    unset($data['time']);
-                }
-
-                $args = $request->all();
-                array_push($args, $selectedModel->type);
-                array_push($args, $selectedModel->date);
-                array_push($args, $data);
-
+                $data = $request->all();
+                array_push($data, $selectedModel->type);
+                array_push($data, $selectedModel->date);
                 $script = config('python.scripts') . 'model_2.py';
-                $result = executePython($script, $args);
+
+                $result = executePython($script, $data);
                 preg_match_all('!\d!', $result[0], $matches);
                 $inserts = 0;
-
-                for ($i=0; $i<sizeof($matches[0]); $i++){
-                    $data = [$matches[0][$i]];
-                    array_push($data, $id[$i]);
-                    array_push($data, $date[$i]);
-                    array_push($data, $time[$i]);
-                    FlightsController::updatePrediction($data);
+                for ($i = 0; $i < sizeof($matches[0]); $i++) {
+                    $args[$i]['prediction'] =  $matches[0][$i];
+                    FlightsController::updatePrediction($args[$i]);
                     $inserts += 1;
                 }
                 return response()->json(["total" => $inserts], JsonResponse::HTTP_OK);
@@ -472,7 +449,8 @@ class ModelController extends Controller
      * @param Request $request
      * @return string
      */
-    function updateModelInUse(Request $request){
+    function updateModelInUse(Request $request)
+    {
         $validator = Validator::make($request->json()->all(), [
             'model' => ['required', 'integer', 'exists:models,id']
         ]);
@@ -481,7 +459,7 @@ class ModelController extends Controller
             return failValidation($validator);
         } else {
             $model = DB::table('in_uses')->select('model')->first();
-            if (is_null($model)){
+            if (is_null($model)) {
                 DB::table('in_uses')->insert(['model' => $request->model, 'analysis' => 0]);
             } else {
                 DB::table('in_uses')->where('model', $model->model)
@@ -489,7 +467,7 @@ class ModelController extends Controller
             }
         }
 
-        return response()->json([],JsonResponse::HTTP_NO_CONTENT);
+        return response()->json([], JsonResponse::HTTP_NO_CONTENT);
     }
 
     /**
@@ -583,7 +561,8 @@ class ModelController extends Controller
      * @param Request $request
      * @return string
      */
-    function getAlgorithms(){
+    function getAlgorithms()
+    {
         return response()->json(json_decode(DB::table('algorithms')->select('*')->get(),
             JsonResponse::HTTP_OK));
     }
@@ -706,34 +685,18 @@ class ModelController extends Controller
      * @param Request $request
      * @return string
      */
-    function getModels(){
+    function getModels()
+    {
         $columns = ["id", "type", "date",
-        "report_num_rows", "report_precision_0", "report_precision_1", "report_recall_0", "report_recall_1",
-        "report_f1_score_0", "report_f1_score_1", "report_accuracy_precision", "report_accuracy_recall",
-        "report_accuracy_f1_score"];
+            "report_num_rows", "report_precision_0", "report_precision_1", "report_recall_0", "report_recall_1",
+            "report_f1_score_0", "report_f1_score_1", "report_accuracy_precision", "report_accuracy_recall",
+            "report_accuracy_f1_score"];
         return response()->json(json_decode(DB::table('models')->select($columns)->get(),
             JsonResponse::HTTP_OK));
     }
 
-    /* Others functions*/
-    function getData($args, $characteristics){
-        $data_structure = "{";
-        foreach ($characteristics as $characteristic) {
-            $data_structure .= '"'.$characteristic.'":[],';
-        }
-        $data_structure = substr($data_structure, 0, -1)."}";
-        $data  = json_decode($data_structure, true);
-
-        foreach ($args as $arg) {
-            foreach ($characteristics as $characteristic) {
-                array_push($data[$characteristic], $arg[$characteristic]);
-            }
-        }
-        return $data;
-    }
-
-
-    function getCharacteristic($data){
+    function getCharacteristic($data)
+    {
         $characteristic = [];
 
         array_push($characteristic, 'date');
@@ -768,9 +731,10 @@ class ModelController extends Controller
         return $characteristic;
     }
 
-    function selectedModel() {
+    function selectedModel()
+    {
         $selectModel = DB::table('in_uses')->select('model')->first();
-        if (!is_null($selectModel)){
+        if (!is_null($selectModel)) {
             $data = DB::table("models")->select(DB::raw('*'))
                 ->where('id', $selectModel->model)->first();
 
@@ -780,4 +744,16 @@ class ModelController extends Controller
         }
     }
 
+    public function export($args, $characteristic, $name)
+    {
+        $fp = fopen($name, 'w');
+
+        fputcsv($fp, $characteristic);
+        foreach ($args as $campos) {
+            fputcsv($fp, $campos);
+        }
+
+        fclose($fp);
+    }
 }
+

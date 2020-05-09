@@ -90,9 +90,9 @@ class FlightsController extends Controller
 
     public static function updatePrediction($data){
         DB::table('flights')
-            ->where('id', $data[1])
-            ->where('date_time', $data[2].' '.$data[3])
-            ->update(array('prediction' => $data[0]));
+            ->where('id', $data['id'])
+            ->where('date_time', $data['date'].' '.$data['time'])
+            ->update(array('prediction' => $data['prediction']));
     }
 
 
