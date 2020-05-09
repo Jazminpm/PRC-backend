@@ -695,6 +695,146 @@ class ModelController extends Controller
             JsonResponse::HTTP_OK));
     }
 
+    /**
+     * @OA\Post(
+     *      path="/api/models/lastModels",
+     *      operationId="getLastModels",
+     *      tags={"models"},
+     *      summary="Get info about last models",
+     *      description="It is used to get all information for get the last models created in the database.",
+     *      @OA\RequestBody(
+     *          @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema(
+     *                  @OA\Property(
+     *                      property="model_id",
+     *                      type="int",
+     *                  ),
+     *                  example={"model_id":3}
+     *              )
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Ok.",
+     *          content={
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="response",
+     *                          type="array",@OA\Items(type="json"),
+     *                          description="All models"
+     *                      ),
+     *                      example={{
+     *                          "id": 8,
+     *                          "type": 1,
+     *                          "date": "2020-05-05 01:34:45",
+     *                          "report_num_rows": 179,
+     *                          "report_precision_0": "1.00",
+     *                          "report_precision_1": "1.00",
+     *                          "report_recall_0": "1.00",
+     *                          "report_recall_1": "1.00",
+     *                          "report_f1_score_0": "1.00",
+     *                          "report_f1_score_1": "1.00",
+     *                          "report_accuracy_precision": "1.00",
+     *                          "report_accuracy_recall": "1.00",
+     *                          "report_accuracy_f1_score": "1.00"
+     *                          },
+     *                          {
+     *                          "id": 9,
+     *                          "type": 2,
+     *                          "date": "2020-05-08 23:55:21",
+     *                          "report_num_rows": 27,
+     *                          "report_precision_0": "1.00",
+     *                          "report_precision_1": "1.00",
+     *                          "report_recall_0": "1.00",
+     *                          "report_recall_1": "1.00",
+     *                          "report_f1_score_0": "1.00",
+     *                          "report_f1_score_1": "1.00",
+     *                          "report_accuracy_precision": "1.00",
+     *                          "report_accuracy_recall": "1.00",
+     *                          "report_accuracy_f1_score": "1.00"
+     *                          },
+     *                          {
+     *                          "id": 10,
+     *                          "type": 2,
+     *                          "date": "2020-05-08 23:56:48",
+     *                          "report_num_rows": 27,
+     *                          "report_precision_0": "1.00",
+     *                          "report_precision_1": "1.00",
+     *                          "report_recall_0": "1.00",
+     *                          "report_recall_1": "1.00",
+     *                          "report_f1_score_0": "1.00",
+     *                          "report_f1_score_1": "1.00",
+     *                          "report_accuracy_precision": "1.00",
+     *                          "report_accuracy_recall": "1.00",
+     *                          "report_accuracy_f1_score": "1.00"
+     *                          }
+     *                      }
+     *                  )
+     *              )
+     *          }
+     *      ),
+     *      @OA\Response(
+     *          response=500,
+     *          description="Internal Server Error.",
+     *          content={
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="message",
+     *                          type="string",
+     *                          description="Server message that contains the error."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="exception",
+     *                          type="string",
+     *                          description="Generated exception."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="file",
+     *                          type="string",
+     *                          description="File that throw the exception."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="line",
+     *                          type="integer",
+     *                          description="Line that thorws the execption."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="trace",
+     *                          type="array",
+     *                          description="Trace route objects.",
+     *                          @OA\Items(type="object")
+     *                      ),
+     *                      example={
+     *                          "messagge": "The command failed.",
+     *                          "exception": "",
+     *                          "file": "",
+     *                          "line": 150,
+     *                          "trace": {"file":"", "line":1, "content":""}
+     *                      }
+     *                  )
+     *              )
+     *          }
+     *      ),
+     *  )
+     *
+     * @param Request $request
+     * @return string
+     */
+    function getLastModels(Request $request){
+        $columns = ["id", "type", "date",
+            "report_num_rows", "report_precision_0", "report_precision_1", "report_recall_0", "report_recall_1",
+            "report_f1_score_0", "report_f1_score_1", "report_accuracy_precision", "report_accuracy_recall",
+            "report_accuracy_f1_score"];
+        return response()->json(json_decode(DB::table('models')->select($columns)->
+            where('id', '>' ,$request->model_id)->get(),
+            JsonResponse::HTTP_OK));
+    }
+
     function getCharacteristic($data)
     {
         $characteristic = [];
