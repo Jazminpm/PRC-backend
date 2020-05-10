@@ -5079,7 +5079,7 @@ class CitiesTableSeeder extends Seeder
         City::create(['id' => 5065, 'name' => "Santiago", 'country_id' => 199]);
         City::create(['id' => 5066, 'name' => "Segovia", 'country_id' => 199]);
         City::create(['id' => 5067, 'name' => "Seo De Urgel", 'country_id' => 199]);
-        City::create(['id' => 5068, 'name' => "Sevilla", 'country_id' => 199]);
+        City::create(['id' => 5068, 'name' => "Seville", 'country_id' => 199]);
         City::create(['id' => 5069, 'name' => "Son Bonet", 'country_id' => 199]);
         City::create(['id' => 5070, 'name' => "Tenerife", 'country_id' => 199]);
         City::create(['id' => 5071, 'name' => "Teruel", 'country_id' => 199]);
