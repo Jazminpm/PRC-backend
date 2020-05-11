@@ -383,7 +383,6 @@ def recommendations_url(pagina):
                     enlaces.append(href)  # guardo los enlaces a cada actividad recomendada en el diccionario
                 if nombre is not None:
                     nombres.append(nombre.get_text())
-        print(len(enlaces))
         return nombres, enlaces
 
 
@@ -397,6 +396,7 @@ def comments(urls):
         paginas = soup2.find('div', class_="pageNumbers")
         if paginas is not None:
             pag_enlaces = paginas.find_all('a', class_="pageNum")
+            text_to_translate = ''
             for link in pag_enlaces:
                 pag_href = link['href']
                 page3 = requests.get('https://www.tripadvisor.es' + str(pag_href))
@@ -425,7 +425,8 @@ def comments(urls):
                             rate = float(numero.split('_')[1]) / 10.0
 
                             #translate_text = translate(texto) # traduce con google trans
-                            translate_text = gs.translate(texto, 'en')  # traduce con goslate
+                            # translate_text = gs.translate(texto, 'en')  # traduce con goslate
+                            translate_text = str(translate(texto, 'en'))  # traduce con goslate
 
                             sentiment = textblob_comment(translate_text) # analiza el sentimiento
                             # sentiment = textblob_analysis(texto)  # traduce y analiza el sentimiento
@@ -442,7 +443,7 @@ def comments(urls):
                             }
                             respuesta = json.dumps(response, ensure_ascii=False)
                             print(respuesta)
-                            time.sleep(1)
+                            time.sleep(0.5)
         i += 1
 
 
