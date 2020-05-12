@@ -38,7 +38,7 @@ npm install
 # create the virtual environment for Linux
 virtualenv -p python3 --no-site-packages vendor/python/venv
 # install requirements
-$ vendor/python/venv/bin/python -m pip install -r storage/app/python/requirements.txt
+$ vendor/python/venv/bin/python -m pip install -r app/Python/requirements.txt
 
 # create the virtual environment for Windows
 virtualenv -p python3 vendor/python/venv
