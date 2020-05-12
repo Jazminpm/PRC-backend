@@ -337,9 +337,15 @@ async def buscar(query):
     page = await browser.newPage()  # nueva pagina dentro del navegador
     await page.goto('https://www.tripadvisor.es/')  # busco la pagina web
 
-    selector_search = "input._3qLQ-U8m"  # escribo la consulta del parametro
-    await page.type(selector_search, query)
-    await page.click('._2a_Ua4Qv')  # hago click en el boton de buscar
+    buscador = await page.querySelector('input[placeholder = "' + '¿Adónde vas?' + '"]')
+    await page.waitFor(3000)
+
+    await buscador.type(query)
+
+    boton = await page.querySelectorAll('._2a_Ua4Qv')
+    prueba3 = boton[1]
+    await prueba3.click()
+
     await page.waitFor(3000)
     html = await page.evaluate('new XMLSerializer().serializeToString(document.doctype) + '
                                'document.documentElement.outerHTML')
@@ -366,18 +372,24 @@ def find_url(html):
 
 enlaces = []
 nombres = []
+
+
 def recommendations_url(pagina):
     # obtengo las recomendaciones de la ciudad consultada
     page = requests.get(str(pagina))
     soup = BeautifulSoup(page.content, 'html.parser')
-    main = soup.find('div', id="content")  # obtengo el contenido central de la pagina
+
+    descripcion = soup.find('div', class_='_3y4w8kK3 _1Eip5_6m').get_text()
+
+    main = soup.find('div', class_="_1HQROFP")  # obtengo el contenido central de la pagina
+
     if main is not None:
-        containers = main.find_all('div', class_="ui_container")  # obtengo todos los contenedores de recomendacion
+        containers = main.find_all('ul', class_="_34quJKuC")  # obtengo todos los contenedores de recomendacion
         for container in containers:
-            items = container.find_all('div', class_="ui_column")
+            items = container.find_all('li', class_="_2QEBhH6t")
             for item in items:
-                enlace = item.find('a', class_='ui_poi_thumbnail')
-                nombre = item.find('span', class_='social-shelf-items-ShelfLocationSection__name--CdA_A')
+                enlace = item.find('a', class_='_3uYDFt8_')
+                nombre = item.find('div', class_='_1fB4MOGz')
                 if enlace is not None:
                     href = enlace['href']  # enlace
                     enlaces.append(href)  # guardo los enlaces a cada actividad recomendada en el diccionario
