@@ -16,7 +16,7 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $fillable = [
-        'dni', 'name', 'surnames', 'email', 'password', 'phoneNumber', 'role',
+        'dni', 'name', 'surnames', 'email', 'password', 'phoneNumber','role',
     ];
 
 
@@ -26,7 +26,7 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'password', 'remember_token', 'refresh_token'
     ];
 
     /**
@@ -38,6 +38,10 @@ class User extends Authenticatable implements JWTSubject
         'email_verified_at' => 'datetime',
     ];
 
+    public function getUser($email)
+    {
+        return User::Where('email', $email)->get();
+    }
 
     public function getJWTIdentifier()
     {
