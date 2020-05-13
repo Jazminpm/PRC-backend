@@ -147,16 +147,16 @@ class AuthController extends Controller
             'dni' => ['required', 'size:9', 'unique:users'],
             'name' => ['required', 'string', 'max:255'],
             'surnames' => ['string', 'max:255', 'required'],
-            'phoneNumber' => ['required', 'string', 'size:9', 'unique:users'],
+            'phoneNumber' => ['required', 'numeric', 'unique:users'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => [
                 'required',
                 'string',
-                'min:10',             // must be at least 10 characters in length
+                'min:8',              // must be at least 8 characters in length
                 'regex:/[a-z]/',      // must contain at least one lowercase letter
                 'regex:/[A-Z]/',      // must contain at least one uppercase letter
                 'regex:/[0-9]/',      // must contain at least one digit
-                'regex:/[@$!%*#?&]/', // must contain a special character
+                'regex:/[@$!_%*#?&]/', // must contain a special character
                 'confirmed'],
             'role' => ['required', 'digits:1', 'integer'],
         ]);
