@@ -21,8 +21,6 @@ class CreateUsersTable extends Migration
             $table->string('password');
             $table->string('dni')->unique()->nullable();
             $table->string('phoneNumber')->nullable();
-            $table->string('remember_token')->nullable();
-            $table->string('refresh_token')->nullable();
             $table->integer('role')->unsigned()->default(2);
             $table->foreign('role')->references('id')->on('roles');
             $table->timestamps();
