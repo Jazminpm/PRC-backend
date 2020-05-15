@@ -14,6 +14,7 @@ from pyppeteer import launch
 from unidecode import unidecode
 import goslate
 import time
+import emoji
 
 from analysis.utils import textblob_analysis, vader_analysis, translate, textblob_comment
 
@@ -367,7 +368,7 @@ def find_url(html):
 
         # llamar a encontrar las recomendaciones de esa pagina y luego imprimir todos los comentarios de cada pagina
         rutas = recommendations_url('https://www.tripadvisor.es' + str(enlace[0]))
-        comments(rutas[1])
+        comments(rutas)
 
 
 enlaces = []
@@ -379,7 +380,7 @@ def recommendations_url(pagina):
     page = requests.get(str(pagina))
     soup = BeautifulSoup(page.content, 'html.parser')
 
-    descripcion = soup.find('div', class_='_3y4w8kK3 _1Eip5_6m').get_text()
+    # descripcion = soup.find('div', class_='_3y4w8kK3 _1Eip5_6m').get_text()
 
     main = soup.find('div', class_="_1HQROFP")  # obtengo el contenido central de la pagina
 
@@ -389,21 +390,21 @@ def recommendations_url(pagina):
             items = container.find_all('li', class_="_2QEBhH6t")
             for item in items:
                 enlace = item.find('a', class_='_3uYDFt8_')
-                nombre = item.find('div', class_='_1fB4MOGz')
                 if enlace is not None:
                     href = enlace['href']  # enlace
                     enlaces.append(href)  # guardo los enlaces a cada actividad recomendada en el diccionario
-                if nombre is not None:
-                    nombres.append(nombre.get_text())
-        return nombres, enlaces
+        return enlaces
 
 
 def comments(urls):
-    i = 0  # contador para los nombres de los sitios
     gs = goslate.Goslate()  # traductor
     for ruta in urls:
         page2 = requests.get('https://www.tripadvisor.es' + str(ruta))  # obtengo el enlace del sitio
         soup2 = BeautifulSoup(page2.content, 'html.parser')  # accedo al html de la pagina
+
+        # obtengo el nombre del sitio
+        place = soup2.find('h1').get_text()  # class_='ui-header', id = 'HEADING'
+
         # obtengo todas las paginas de comentarios
         paginas = soup2.find('div', class_="pageNumbers")
         if paginas is not None:
@@ -428,9 +429,25 @@ def comments(urls):
                             date_time_obj = datetime.strptime(final_date, '%Y-%m-%d')
 
                             title = comment.find('div', class_='quote').get_text()
+                            final_title = unidecode(title)
 
                             text = comment.find('p', class_='partial_entry').get_text()
-                            texto = text.replace('\n', ' ')
+                            texto = text.replace('\n', ' ').replace('ñ', 'n').replace('"', '')
+
+                            # eliminar tildes
+                            L = {"Á":"A","É":"E","Í":"I","Ó":"O","Ú":"U","á":"a","é":"e","í":"i","ó":"o","ú":"u"}
+                            l = {"\xc1":"A","\xc9":"E","\xcd":"I","\xd3":"O","\xda":"U","\xe1":"a","\xe9":"e","\xed":"i","\xf3":"o","\xfa":"u"}
+                            for word in texto:
+                               if word in L.keys():
+                                  texto = texto.replace(word,L[word])
+
+                            # elimino los emoticonos
+                            clean_text = remove_emoji(texto)
+                            emojis = {'\U0001f60b': ':)'}
+                            for word in clean_text:
+                                if word in emojis.keys():
+                                    clean_text = clean_text.replace(word, emojis[word])
+                            final_text = clean_text
 
                             rating = comment.find('span', class_='ui_bubble_rating')
                             numero = rating.get('class')[1]
@@ -438,28 +455,36 @@ def comments(urls):
 
                             #translate_text = translate(texto) # traduce con google trans
                             # translate_text = gs.translate(texto, 'en')  # traduce con goslate
-                            translate_text = str(translate(texto, 'en'))  # traduce con goslate
+                            translate_text = str(translate(texto, 'en'))
 
                             sentiment = textblob_comment(translate_text) # analiza el sentimiento
                             # sentiment = textblob_analysis(texto)  # traduce y analiza el sentimiento
 
                             response = {
                                 'date_time': str(date_time_obj.date()),  # anio, mes, dia
-                                'place': unidecode(nombres[i]),
-                                'title': unidecode(title),
-                                'original_message': unidecode(texto),
+                                'place': safe_str(unidecode(place)),
+                                'title': safe_str(final_title),
+                                'original_message': safe_str(unidecode(final_text)),
                                 'message': translate_text,
                                 'grade': rate,
                                 'polarity': sentiment[0],
                                 'sentiment': sentiment[1]
                             }
-                            respuesta = json.dumps(response, ensure_ascii=False)
+                            respuesta = json.dumps(response, ensure_ascii=True)
                             print(respuesta)
                             time.sleep(0.5)
-        i += 1
 
 
 def month_str_to_number(month):
     months = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
               'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
     return months.index(month) + 1
+
+def safe_str(obj):
+    try: return str(obj)
+    except UnicodeEncodeError:
+        return obj.encode('ascii', 'ignore').decode('ascii')
+    return ""
+
+def deEmojify(inputString):
+    return inputString.encode('ascii', 'ignore').decode('ascii')
