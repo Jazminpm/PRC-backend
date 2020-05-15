@@ -19,11 +19,10 @@ class CreateCommentsTable extends Migration
             $table->decimal('grade', 8, 2)->default(0.0);
             $table->string('title')->nullable();
             $table->string('place')->nullable();
-            $table->string('original_message');
-            $table->string('message'); # primary
+            $table->text('original_message');
+            $table->text('message'); # primary
             $table->string('library')->nullable();
             $table->dateTime('date_time'); # primary
-            $table->primary(['original_message', 'date_time']);
             $table->integer('city_id')->unsigned();
             $table->foreign('city_id')->references('id')->on('cities')->onDelete('cascade');
             $table->integer('user_id')->unsigned();
