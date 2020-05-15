@@ -50,3 +50,8 @@ Route::post('/scrapers/flights/history', 'ScraperController@flightsHistory');
 Route::post('/scrapers/flights/forecast', 'ScraperController@flightsForecast');
 Route::post('/scrapers/airportia/url', 'ScraperController@airportUrl');
 Route::post('/scrapers/comments', 'ScraperController@comments');
+
+// airports
+Route::get('/airports/coordinates', 'AirportsController@getAirportsCoordinates');
+
+

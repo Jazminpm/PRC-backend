@@ -45,4 +45,15 @@ class AirportsController extends Controller
             return $data->icao;
         }
     }
+
+    public static function getAirportsCoordinates()
+    {
+        $data = DB::table('airports')
+            ->select(['longitude', 'latitude'])->whereNotNull('airport_url')->get()->toJson();
+        if (is_null($data)){
+            return null;
+        } else {
+            return json_decode($data);
+        }
+    }
 }
