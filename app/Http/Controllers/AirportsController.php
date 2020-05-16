@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -58,7 +59,7 @@ class AirportsController extends Controller
         if (is_null($data)){
             return null;
         } else {
-            return json_decode($data);
+            return response()->json(compact('data'), JsonResponse::HTTP_OK);
         }
     }
 }
