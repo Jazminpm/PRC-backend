@@ -114,7 +114,7 @@ class FlightsController extends Controller
             ->select(['fs.name AS status', DB::raw('COUNT(fl.delay) AS daily_count')])
             ->join('flight_statuses as fs', 'fs.id', '=', 'fl.delay')
             ->groupBy('fl.delay')
-            ->whereRaw('fl.delay >= 0 AND fl.delay <= 2 AND DATE_FORMAT(fl.date_time, \'%Y-%m-%d\') = CURDATE()')
+             ->whereRaw('fl.delay >= 0 AND fl.delay <= 2 AND DATE_FORMAT(fl.date_time, \'%Y-%m-%d\') = CURDATE()')
             ->get();
         return response()->json(compact('data'), JsonResponse::HTTP_OK);
     }
