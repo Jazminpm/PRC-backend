@@ -31,7 +31,7 @@ class FlightsController extends Controller
                 'date_time' => $json['date_time'],
             ], $json);
         } catch (Throwable $e) {
-            dd($json);
+            // dd($json);
         }
 
     }
