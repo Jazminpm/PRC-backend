@@ -56,5 +56,7 @@ Route::get('/airports/coordinates', 'AirportsController@getAirportsCoordinates')
 
 // flights
 Route::get('/flights/dailyStats', 'FlightsController@getDailyStats');
+Route::get('/cities/top', 'CommentController@getTopDestinations');
+
 
 
