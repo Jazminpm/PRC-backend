@@ -864,7 +864,7 @@ class ScraperController extends Controller
                 foreach (executePython($script, $args) as $result) {
                     $data = json_decode($result, true);
                     $data['city_id'] = $request->city_id;
-                    $data['user_id'] = 1;
+                    $data['user_id'] = 2;
                     CommentController::insert($data);
                     $inserts += 1;
                 }
