@@ -1,4 +1,6 @@
-<strong>{{$name}}</strong> has sent a message using the contact form.
-<p>Message sent using the following mail direction: {{$mail}}</p>
+<strong>{{$name}}</strong> ({{$mail}}) has sent a message using the contact form.
 <hr>
-<p>{{$body}}</p>
+<p>
+    <strong>Message:</strong>
+    <br>{{$body}}
+</p>
