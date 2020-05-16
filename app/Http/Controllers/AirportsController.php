@@ -55,7 +55,7 @@ class AirportsController extends Controller
     public static function getAirportsCoordinates()
     {
         $data = DB::table('airports')
-            ->select(['longitude', 'latitude'])->whereNotNull('airport_url')->get()->toJson();
+            ->select(['longitude', 'latitude'])->whereNotNull('airport_url')->get();
         if (is_null($data)){
             return null;
         } else {
