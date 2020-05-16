@@ -22,7 +22,7 @@ Route::post('/auth/register', 'AuthController@register');
 Route::post('/analysis', 'AnalysisController@analyze');
 Route::post('/translate', 'AnalysisController@translate');
 
-Route::get('/send-mail', 'MailController@sendMail');
+Route::post('/send-mail', 'MailController@sendMail');
 
 // ADMIN
 Route::group(['middleware' => ['jwt.auth', 'admin']], function () {
