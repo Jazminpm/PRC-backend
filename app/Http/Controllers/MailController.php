@@ -8,9 +8,83 @@ use Illuminate\Support\Facades\Mail;
 
 class MailController extends Controller
 {
+
     /**
-     * Send mail function
+     * @OA\Post(
+     *      path="/api/send-mail",
+     *      operationId="sendMail",
+     *      tags={"mail"},
+     *      summary="Send a mail",
+     *      description="After filling the contact form, it sends an email to our group Gmail account",
+     *      @OA\RequestBody(
+     *          @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema(
+     *                  @OA\Property(
+     *                      property="name",
+     *                      type="string",
+     *                      description="name and surname"
+     *                  ),
+     *                  @OA\Property(
+     *                      property="email",
+     *                      type="string",
+     *                      description="personal mail"
+     *                  ),
+     *                  @OA\Property(
+     *                      property="message",
+     *                      type="string",
+     *                      description="The message you want to send on the mail"
+     *                  ),
+     *                  example={{"name": "Name Surname", "email": "test@mail.com", "message": "Test message"}}
+     *              )
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Ok.",
+     *          content={
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="output",
+     *                          type="string",
+     *                          description="Email sent correctly"
+     *                      ),
+     *                      example={
+     *                          "msg": "Email sent correctly"
+     *                      }
+     *                  )
+     *              )
+     *          }
+     *      ),
+     *      @OA\Response(
+     *          response=500,
+     *          description="Internal Server Error.",
+     *          content={
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="message",
+     *                          type="string",
+     *                          description="Server message that contains the error."
+     *                      ),
+     *                      example={
+     *                          "error": "Unable to send the message"
+     *                      }
+     *                  )
+     *              )
+     *          }
+     *      ),
+     *  )
      *
+     * @param Request $request
+     * @return JsonResponse
+     */
+
+    /*
+     * Send mail function
      */
     public function sendMail(Request $request)
     {
