@@ -59,7 +59,11 @@ Route::get('/airports/coordinates', 'AirportsController@getAirportsCoordinates')
 
 // flights
 Route::get('/flights/dailyStats', 'FlightsController@getDailyStats');
+Route::post('/flights/groupFlights', 'FlightsController@getGroupFlights');
+
+//cities
 Route::get('/cities/top', 'CommentController@getTopDestinations');
+
 
 
 

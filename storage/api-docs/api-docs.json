@@ -349,6 +349,210 @@
                 }
             }
         },
+        "/api/flights/groupFlights": {
+            "post": {
+                "tags": [
+                    "flights"
+                ],
+                "summary": "Get flights data (Group by)",
+                "description": "Returns flights grouped between the date given by days, weeks, months or years.",
+                "operationId": "getGroupFlights",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "start_date": {
+                                        "description": "Date in format Y-m-d",
+                                        "type": "date"
+                                    },
+                                    "end_date": {
+                                        "description": "Date in format Y-m-d",
+                                        "type": "date"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "start_date": "2019-06-10",
+                                    "end_date": "2020-05-09"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ok.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "description": "All models",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "json"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": [
+                                        {
+                                            "groupDate": "2019\\/10",
+                                            "delay": 0,
+                                            "countDelay": 4809,
+                                            "prediction": null,
+                                            "countPrediction": 0
+                                        },
+                                        {
+                                            "groupDate": "2019\\/10",
+                                            "delay": 1,
+                                            "countDelay": 6180,
+                                            "prediction": null,
+                                            "countPrediction": 0
+                                        },
+                                        {
+                                            "groupDate": "2019\\/11",
+                                            "delay": 0,
+                                            "countDelay": 6250,
+                                            "prediction": null,
+                                            "countPrediction": 0
+                                        },
+                                        {
+                                            "groupDate": "2019\\/12",
+                                            "delay": 0,
+                                            "countDelay": 4965,
+                                            "prediction": null,
+                                            "countPrediction": 0
+                                        },
+                                        {
+                                            "groupDate": "2019\\/12",
+                                            "delay": 1,
+                                            "countDelay": 8567,
+                                            "prediction": null,
+                                            "countPrediction": 0
+                                        },
+                                        {
+                                            "groupDate": "2019\\/6",
+                                            "delay": 0,
+                                            "countDelay": 3988,
+                                            "prediction": null,
+                                            "countPrediction": 0
+                                        },
+                                        {
+                                            "groupDate": "2019\\/6",
+                                            "delay": 1,
+                                            "countDelay": 6941,
+                                            "prediction": null,
+                                            "countPrediction": 0
+                                        },
+                                        {
+                                            "groupDate": "2019\\/7",
+                                            "delay": 0,
+                                            "countDelay": 5847,
+                                            "prediction": null,
+                                            "countPrediction": 0
+                                        },
+                                        {
+                                            "groupDate": "2019\\/7",
+                                            "delay": 1,
+                                            "countDelay": 10692,
+                                            "prediction": null,
+                                            "countPrediction": 0
+                                        },
+                                        {
+                                            "groupDate": "2019\\/8",
+                                            "delay": 0,
+                                            "countDelay": 6141,
+                                            "prediction": null,
+                                            "countPrediction": 0
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "errors": {
+                                            "description": "List of errors.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "errors": [
+                                            "The start date field is required.",
+                                            "The start date is not a valid date.",
+                                            "The start date does not match the format Y-m-d.",
+                                            "The start date must be a date before or equal to yesterday.",
+                                            "The end date field is required.",
+                                            "The end date is not a valid date.",
+                                            "The end date does not match the format Y-m-d.",
+                                            "The end date must be a date before or equal to yesterday.",
+                                            "There is no data for the specified date."
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "description": "Server message that contains the error.",
+                                            "type": "string"
+                                        },
+                                        "exception": {
+                                            "description": "Generated exception.",
+                                            "type": "string"
+                                        },
+                                        "file": {
+                                            "description": "File that throw the exception.",
+                                            "type": "string"
+                                        },
+                                        "line": {
+                                            "description": "Line that throws the exception.",
+                                            "type": "integer"
+                                        },
+                                        "trace": {
+                                            "description": "Trace route objects.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "messagge": "The command failed.",
+                                        "exception": "",
+                                        "file": "",
+                                        "line": 150,
+                                        "trace": {
+                                            "file": "",
+                                            "line": 1,
+                                            "content": ""
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/models/training": {
             "post": {
                 "tags": [
