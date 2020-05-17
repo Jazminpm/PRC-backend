@@ -1107,6 +1107,84 @@
                 }
             }
         },
+        "/api/models/deleteModel": {
+            "post": {
+                "tags": [
+                    "models"
+                ],
+                "summary": "Delete a selected model",
+                "description": "It is used for delete a model in the database.",
+                "operationId": "deleteModel",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "model_id": {
+                                        "type": "int"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "model_id": 1
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "Ok. No Content."
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "description": "Server message that contains the error.",
+                                            "type": "string"
+                                        },
+                                        "exception": {
+                                            "description": "Generated exception.",
+                                            "type": "string"
+                                        },
+                                        "file": {
+                                            "description": "File that throw the exception.",
+                                            "type": "string"
+                                        },
+                                        "line": {
+                                            "description": "Line that thorws the execption.",
+                                            "type": "integer"
+                                        },
+                                        "trace": {
+                                            "description": "Trace route objects.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "messagge": "The command failed.",
+                                        "exception": "",
+                                        "file": "",
+                                        "line": 150,
+                                        "trace": {
+                                            "file": "",
+                                            "line": 1,
+                                            "content": ""
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/scrapers/weathers/forecast": {
             "post": {
                 "tags": [

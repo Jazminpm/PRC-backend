@@ -835,6 +835,84 @@ class ModelController extends Controller
             JsonResponse::HTTP_OK));
     }
 
+    /**
+     * @OA\Post(
+     *      path="/api/models/deleteModel",
+     *      operationId="deleteModel",
+     *      tags={"models"},
+     *      summary="Delete a selected model",
+     *      description="It is used for delete a model in the database.",
+     *      @OA\RequestBody(
+     *          @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema(
+     *                  @OA\Property(
+     *                      property="model_id",
+     *                      type="int",
+     *                  ),
+     *                  example={"model_id":1}
+     *              )
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=204,
+     *          description="Ok. No Content."
+     *      ),
+     *      @OA\Response(
+     *          response=500,
+     *          description="Internal Server Error.",
+     *          content={
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="message",
+     *                          type="string",
+     *                          description="Server message that contains the error."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="exception",
+     *                          type="string",
+     *                          description="Generated exception."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="file",
+     *                          type="string",
+     *                          description="File that throw the exception."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="line",
+     *                          type="integer",
+     *                          description="Line that thorws the execption."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="trace",
+     *                          type="array",
+     *                          description="Trace route objects.",
+     *                          @OA\Items(type="object")
+     *                      ),
+     *                      example={
+     *                          "messagge": "The command failed.",
+     *                          "exception": "",
+     *                          "file": "",
+     *                          "line": 150,
+     *                          "trace": {"file":"", "line":1, "content":""}
+     *                      }
+     *                  )
+     *              )
+     *          }
+     *      ),
+     *  )
+     *
+     * @param Request $request
+     * @return string
+     */
+    function deleteModel(Request $request){
+        DB::table('models')->where('id',$request->model_id)->delete();
+        return response()->json(null, JsonResponse::HTTP_NO_CONTENT);
+    }
+
+    //OTRAS FUNCIONES
     function getCharacteristic($data)
     {
         $characteristic = [];
