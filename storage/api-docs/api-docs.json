@@ -492,11 +492,11 @@
                                             "The start date field is required.",
                                             "The start date is not a valid date.",
                                             "The start date does not match the format Y-m-d.",
-                                            "The start date must be a date before or equal to yesterday.",
+                                            "The start date must be a date before or equal to today.",
                                             "The end date field is required.",
                                             "The end date is not a valid date.",
                                             "The end date does not match the format Y-m-d.",
-                                            "The end date must be a date before or equal to yesterday.",
+                                            "The end date must be a date before or equal to today.",
                                             "There is no data for the specified date."
                                         ]
                                     }
@@ -545,6 +545,86 @@
                                             "line": 1,
                                             "content": ""
                                         }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/send-mail": {
+            "post": {
+                "tags": [
+                    "mail"
+                ],
+                "summary": "Send a mail",
+                "description": "After filling the contact form, it sends an email to our group Gmail account",
+                "operationId": "sendMail",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "description": "name and surname",
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "description": "personal mail",
+                                        "type": "string"
+                                    },
+                                    "message": {
+                                        "description": "The message you want to send on the mail",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object",
+                                "example": [
+                                    {
+                                        "name": "Name Surname",
+                                        "email": "test@mail.com",
+                                        "message": "Test message"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ok.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "output": {
+                                            "description": "Email sent correctly",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "msg": "Email sent correctly"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "description": "Server message that contains the error.",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "error": "Unable to send the message"
                                     }
                                 }
                             }

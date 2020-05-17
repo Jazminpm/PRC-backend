@@ -193,11 +193,11 @@ class FlightsController extends Controller
      *                              "The start date field is required.",
      *                              "The start date is not a valid date.",
      *                              "The start date does not match the format Y-m-d.",
-     *                              "The start date must be a date before or equal to yesterday.",
+     *                              "The start date must be a date before or equal to today.",
      *                              "The end date field is required.",
      *                              "The end date is not a valid date.",
      *                              "The end date does not match the format Y-m-d.",
-     *                              "The end date must be a date before or equal to yesterday.",
+     *                              "The end date must be a date before or equal to today.",
      *                              "There is no data for the specified date.",
      *                          }
      *                      }
@@ -257,7 +257,7 @@ class FlightsController extends Controller
     public function getGroupFlights(Request $request){
         $validator = Validator::make($request->json()->all(), [
             'start_date' => ['required', 'date', 'date_format:Y-m-d', 'before_or_equal:today'],
-            'end_date' => ['required', 'date', 'date_format:Y-m-d', 'before_or_equal:yesterday']
+            'end_date' => ['required', 'date', 'date_format:Y-m-d', 'before_or_equal:today']
         ]);
 
         if ($validator->fails()) {
