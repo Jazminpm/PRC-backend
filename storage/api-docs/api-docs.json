@@ -349,6 +349,216 @@
                 }
             }
         },
+        "/api/cities/cities": {
+            "get": {
+                "tags": [
+                    "comments"
+                ],
+                "summary": "Get cities with comment",
+                "description": "Returns all the cities that have a comment.",
+                "operationId": "getCities",
+                "responses": {
+                    "200": {
+                        "description": "Ok.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "": {
+                                            "description": "All models",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "json"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": [
+                                        {
+                                            "city": "Paris",
+                                            "city_id": 2296
+                                        },
+                                        {
+                                            "city": "Pisa",
+                                            "city_id": 3336
+                                        },
+                                        {
+                                            "city": "Barcelona",
+                                            "city_id": 5029
+                                        },
+                                        {
+                                            "city": "Burgos",
+                                            "city_id": 5031
+                                        },
+                                        {
+                                            "city": "Madrid",
+                                            "city_id": 5049
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "description": "Server message that contains the error.",
+                                            "type": "string"
+                                        },
+                                        "exception": {
+                                            "description": "Generated exception.",
+                                            "type": "string"
+                                        },
+                                        "file": {
+                                            "description": "File that throw the exception.",
+                                            "type": "string"
+                                        },
+                                        "line": {
+                                            "description": "Line that throws the exception.",
+                                            "type": "integer"
+                                        },
+                                        "trace": {
+                                            "description": "Trace route objects.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "messagge": "The command failed.",
+                                        "exception": "",
+                                        "file": "",
+                                        "line": 150,
+                                        "trace": {
+                                            "file": "",
+                                            "line": 1,
+                                            "content": ""
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/cities/data": {
+            "post": {
+                "tags": [
+                    "comments"
+                ],
+                "summary": "Get polarity and grade",
+                "description": "Returns the polarity and the grades of all comments from a specific city.",
+                "operationId": "getCityData",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "city_id": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "city_id": 5049
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ok.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "": {
+                                            "description": "All models",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "json"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": [
+                                        {
+                                            "polarity": "0.78",
+                                            "sentiment": "0.91428571428571",
+                                            "grade": "5.00"
+                                        },
+                                        {
+                                            "polarity": "0.53",
+                                            "sentiment": "0.77",
+                                            "grade": "5.00"
+                                        },
+                                        {
+                                            "polarity": "0.62",
+                                            "sentiment": "0.7875",
+                                            "grade": "5.00"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "description": "Server message that contains the error.",
+                                            "type": "string"
+                                        },
+                                        "exception": {
+                                            "description": "Generated exception.",
+                                            "type": "string"
+                                        },
+                                        "file": {
+                                            "description": "File that throw the exception.",
+                                            "type": "string"
+                                        },
+                                        "line": {
+                                            "description": "Line that throws the exception.",
+                                            "type": "integer"
+                                        },
+                                        "trace": {
+                                            "description": "Trace route objects.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "messagge": "The command failed.",
+                                        "exception": "",
+                                        "file": "",
+                                        "line": 150,
+                                        "trace": {
+                                            "file": "",
+                                            "line": 1,
+                                            "content": ""
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/flights/groupFlights": {
             "post": {
                 "tags": [
@@ -387,7 +597,7 @@
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "data": {
+                                        "": {
                                             "description": "All models",
                                             "type": "array",
                                             "items": {

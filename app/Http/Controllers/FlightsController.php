@@ -155,7 +155,6 @@ class FlightsController extends Controller
      *                  mediaType="application/json",
      *                  @OA\Schema(
      *                      @OA\Property(
-     *                          property="data",
      *                          type="array",@OA\Items(type="json"),
      *                          description="All models"
      *                      ),
