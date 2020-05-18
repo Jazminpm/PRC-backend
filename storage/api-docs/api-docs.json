@@ -349,7 +349,7 @@
                 }
             }
         },
-        "/api/cities/cities": {
+        "/api/comments/cities": {
             "get": {
                 "tags": [
                     "comments"
@@ -448,13 +448,13 @@
                 }
             }
         },
-        "/api/cities/data": {
+        "/api/comments/data": {
             "post": {
                 "tags": [
                     "comments"
                 ],
                 "summary": "Get polarity and grade",
-                "description": "Returns the polarity and the grades of all comments from a specific city.",
+                "description": "Returns the sentiment, polarity and the grades of all comments from a specific city.",
                 "operationId": "getCityData",
                 "requestBody": {
                     "content": {

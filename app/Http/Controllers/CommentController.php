@@ -41,7 +41,7 @@ class CommentController extends Controller
 
     /**
      * @OA\GET(
-     *      path="/api/cities/cities",
+     *      path="/api/comments/cities",
      *      operationId="getCities",
      *      tags={"comments"},
      *      summary="Get cities with comment",
@@ -126,7 +126,7 @@ class CommentController extends Controller
 
     /**
      * @OA\POST(
-     *      path="/api/cities/data",
+     *      path="/api/comments/data",
      *      operationId="getCityData",
      *      tags={"comments"},
      *      summary="Get polarity and grade",

@@ -63,8 +63,8 @@ Route::post('/flights/groupFlights', 'FlightsController@getGroupFlights');
 
 //cities -> comments
 Route::get('/cities/top', 'CommentController@getTopDestinations');
-Route::get('/cities/cities', 'CommentController@getCities');
-Route::post('/cities/data', 'CommentController@getCityData');
+Route::get('/comments/cities', 'CommentController@getCities');
+Route::post('/comments/data', 'CommentController@getCityData');
 
 
 
