@@ -40,6 +40,7 @@ class AirportsController extends Controller
         }
     }
 
+    // todo: API documentation
     public static function getAirportIcao($arg)
     {
         $data = DB::table('airports')
@@ -52,6 +53,7 @@ class AirportsController extends Controller
         }
     }
 
+    // todo: API documentation
     public static function getAirportsCoordinates()
     {
         $data = DB::table('airports')
@@ -148,6 +150,36 @@ class AirportsController extends Controller
             return null;
         } else {
             return response()->json($data, JsonResponse::HTTP_OK);
+        }
+    }
+
+    // todo: API documentation
+    public static function getAirportsPreview()
+    {
+        $data = DB::select(DB::raw(
+            "
+            select arp.id                                                 as airport_id,
+                   arp.name                                               as airport_name,
+                   arp.longitude                                          as airport_lon,
+                   arp.latitude                                           as airport_lat,
+                   intermediare.flight_id                                 as fligth_id,
+                   DATE_FORMAT(intermediare.schedulated_date, '%Y-%m-%d') as schedulated_date
+            from airports arp
+                     inner join
+                 (select f.id        as flight_id,
+                         f.date_time as schedulated_date,
+                         fs.name     as flight_statis
+                  from flights f
+                           join flight_statuses fs on f.delay = fs.id
+                  where DATE_FORMAT(f.date_time, '%Y-%m-%d') = CURDATE()
+                  order by f.date_time desc
+                  limit 5) intermediare
+            order by airport_id, schedulated_date;"
+        ));
+        if (is_null($data)){
+            return null;
+        } else {
+            return response()->json(compact('data'), JsonResponse::HTTP_OK);
         }
     }
 }

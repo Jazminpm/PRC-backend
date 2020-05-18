@@ -56,6 +56,7 @@ Route::post('/scrapers/comments', 'ScraperController@comments');
 
 // airports
 Route::get('/airports/coordinates', 'AirportsController@getAirportsCoordinates');
+Route::get('/airports/coordinates', 'AirportsController@getAirportsPreview');
 Route::get('/airports/airports', 'AirportsController@getAirports');
 
 // flights
