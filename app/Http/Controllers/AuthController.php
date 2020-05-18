@@ -164,7 +164,19 @@ class AuthController extends Controller
         if ($validator->fails()) {
             return failValidation($validator);
         }
-        $user = User::create([
+
+        $user = new User();
+        $user->name = $request->get('name');
+        $user->surnames = $request->get('surnames');
+        $user->dni = $request->get('dni');
+        $user->email = $request->get('email');
+        $user->phoneNumber = $request->get('phoneNumber');
+        $user->role = $request->get('role');
+        $user->password = Hash::make($request->get('password'));
+        $user->save();
+
+
+        /*$user = User::create([
             'name' => $request->get('name'),
             'surnames' => $request->get('surnames'),
             'dni' => $request->get('dni'),
@@ -172,7 +184,7 @@ class AuthController extends Controller
             'phoneNumber' => $request->get('phoneNumber'),
             'role' => $request->get('role'),
             'password' => Hash::make($request->get('password')),
-        ]);
+        ]);*/
 
         $token = JWTAuth::fromUser($user);
 
