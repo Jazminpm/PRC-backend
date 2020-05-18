@@ -56,6 +56,7 @@ Route::post('/scrapers/comments', 'ScraperController@comments');
 
 // airports
 Route::get('/airports/coordinates', 'AirportsController@getAirportsCoordinates');
+Route::get('/airports/airports', 'AirportsController@getAirports');
 
 // flights
 Route::get('/flights/dailyStats', 'FlightsController@getDailyStats');
@@ -66,6 +67,11 @@ Route::get('/cities/top', 'CommentController@getTopDestinations');
 Route::get('/comments/cities', 'CommentController@getCities');
 Route::post('/comments/data', 'CommentController@getCityData');
 
+//cities
+Route::get('/cities/cities', 'CitiesController@getCities');
+
+//countries
+Route::get('/countries/countries', 'CountriesController@getCountries');
 
 
 

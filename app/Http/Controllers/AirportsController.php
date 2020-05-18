@@ -62,4 +62,92 @@ class AirportsController extends Controller
             return response()->json(compact('data'), JsonResponse::HTTP_OK);
         }
     }
+
+    /**
+     * @OA\GET(
+     *      path="/api/airports/airports",
+     *      operationId="getAirports",
+     *      tags={"airports"},
+     *      summary="Get all airports with URL",
+     *      description="Returns all the airports that have an URL.",
+     *      @OA\Response(
+     *          response=200,
+     *          description="Ok.",
+     *          content={
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          type="array",@OA\Items(type="json"),
+     *                          description="All models"
+     *                      ),
+     *                      example={
+     *                          {"id": 2286,"name": "Agen-La Garenne Airport"},
+     *                          {"id": 2289,"name": "Ajaccio-Napoléon Bonaparte Airport"},
+     *                          {"id": 2306,"name": "Aurillac Airport"},
+     *                          {"id": 2312,"name": "Bastia-Poretta Airport"},
+     *                          {"id": 2314,"name": "Paris Beauvais Tillé Airport"}
+     *                    }
+     *                  )
+     *              )
+     *          }
+     *      ),
+     *      @OA\Response(
+     *          response=500,
+     *          description="Internal Server Error.",
+     *          content={
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="message",
+     *                          type="string",
+     *                          description="Server message that contains the error."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="exception",
+     *                          type="string",
+     *                          description="Generated exception."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="file",
+     *                          type="string",
+     *                          description="File that throw the exception."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="line",
+     *                          type="integer",
+     *                          description="Line that throws the exception."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="trace",
+     *                          type="array",
+     *                          description="Trace route objects.",
+     *                          @OA\Items(type="object")
+     *                      ),
+     *                      example={
+     *                          "messagge": "The command failed.",
+     *                          "exception": "",
+     *                          "file": "",
+     *                          "line": 150,
+     *                          "trace": {"file":"", "line":1, "content":""}
+     *                      }
+     *                  )
+     *              )
+     *          }
+     *      ),
+     *  )
+     *
+     * @return JsonResponse
+     */
+    public static function getAirports()
+    {
+        $data = DB::table('airports')
+            ->select(['id', 'name'])->whereNotNull('airport_url')->get();
+        if (is_null($data)){
+            return null;
+        } else {
+            return response()->json($data, JsonResponse::HTTP_OK);
+        }
+    }
 }

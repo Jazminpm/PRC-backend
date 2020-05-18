@@ -121,7 +121,11 @@ class CommentController extends Controller
             ->select(['c.name as city', 'com.city_id'])
             ->join('cities as c', 'com.city_id', '=', 'c.id')
             ->groupBy('com.city_id')->get();
-        return response()->json($data, JsonResponse::HTTP_OK);
+        if (is_null($data)){
+            return null;
+        } else {
+            return response()->json($data, JsonResponse::HTTP_OK);
+        }
     }
 
     /**
@@ -216,6 +220,10 @@ class CommentController extends Controller
         $data = DB::table('comments')
             ->select(['polarity', 'sentiment', 'grade'])
             ->where('city_id', $request->city_id)->get();
-        return response()->json($data, JsonResponse::HTTP_OK);
+        if (is_null($data)){
+            return null;
+        } else {
+            return response()->json($data, JsonResponse::HTTP_OK);
+        }
     }
 }

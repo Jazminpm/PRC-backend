@@ -13,6 +13,105 @@
         "version": "1.0.0"
     },
     "paths": {
+        "/api/airports/airports": {
+            "get": {
+                "tags": [
+                    "airports"
+                ],
+                "summary": "Get all airports with URL",
+                "description": "Returns all the airports that have an URL.",
+                "operationId": "getAirports",
+                "responses": {
+                    "200": {
+                        "description": "Ok.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "": {
+                                            "description": "All models",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "json"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": [
+                                        {
+                                            "id": 2286,
+                                            "name": "Agen-La Garenne Airport"
+                                        },
+                                        {
+                                            "id": 2289,
+                                            "name": "Ajaccio-Napoléon Bonaparte Airport"
+                                        },
+                                        {
+                                            "id": 2306,
+                                            "name": "Aurillac Airport"
+                                        },
+                                        {
+                                            "id": 2312,
+                                            "name": "Bastia-Poretta Airport"
+                                        },
+                                        {
+                                            "id": 2314,
+                                            "name": "Paris Beauvais Tillé Airport"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "description": "Server message that contains the error.",
+                                            "type": "string"
+                                        },
+                                        "exception": {
+                                            "description": "Generated exception.",
+                                            "type": "string"
+                                        },
+                                        "file": {
+                                            "description": "File that throw the exception.",
+                                            "type": "string"
+                                        },
+                                        "line": {
+                                            "description": "Line that throws the exception.",
+                                            "type": "integer"
+                                        },
+                                        "trace": {
+                                            "description": "Trace route objects.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "messagge": "The command failed.",
+                                        "exception": "",
+                                        "file": "",
+                                        "line": 150,
+                                        "trace": {
+                                            "file": "",
+                                            "line": 1,
+                                            "content": ""
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/auth/register": {
             "post": {
                 "tags": [
@@ -349,6 +448,97 @@
                 }
             }
         },
+        "/api/cities/cities": {
+            "get": {
+                "tags": [
+                    "cities"
+                ],
+                "summary": "Get all cities",
+                "description": "Returns all the cities  of the database.",
+                "operationId": "getCities",
+                "responses": {
+                    "200": {
+                        "description": "Ok.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "": {
+                                            "description": "All models",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "json"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": [
+                                        {
+                                            "id": 1,
+                                            "name": "Bayman"
+                                        },
+                                        {
+                                            "id": 2,
+                                            "name": "Camp Bastion"
+                                        },
+                                        {
+                                            "id": 30,
+                                            "name": "Annaba"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "description": "Server message that contains the error.",
+                                            "type": "string"
+                                        },
+                                        "exception": {
+                                            "description": "Generated exception.",
+                                            "type": "string"
+                                        },
+                                        "file": {
+                                            "description": "File that throw the exception.",
+                                            "type": "string"
+                                        },
+                                        "line": {
+                                            "description": "Line that throws the exception.",
+                                            "type": "integer"
+                                        },
+                                        "trace": {
+                                            "description": "Trace route objects.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "messagge": "The command failed.",
+                                        "exception": "",
+                                        "file": "",
+                                        "line": 150,
+                                        "trace": {
+                                            "file": "",
+                                            "line": 1,
+                                            "content": ""
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/comments/cities": {
             "get": {
                 "tags": [
@@ -504,6 +694,105 @@
                                             "polarity": "0.62",
                                             "sentiment": "0.7875",
                                             "grade": "5.00"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "description": "Server message that contains the error.",
+                                            "type": "string"
+                                        },
+                                        "exception": {
+                                            "description": "Generated exception.",
+                                            "type": "string"
+                                        },
+                                        "file": {
+                                            "description": "File that throw the exception.",
+                                            "type": "string"
+                                        },
+                                        "line": {
+                                            "description": "Line that throws the exception.",
+                                            "type": "integer"
+                                        },
+                                        "trace": {
+                                            "description": "Trace route objects.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "messagge": "The command failed.",
+                                        "exception": "",
+                                        "file": "",
+                                        "line": 150,
+                                        "trace": {
+                                            "file": "",
+                                            "line": 1,
+                                            "content": ""
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/countries/countries": {
+            "get": {
+                "tags": [
+                    "countries"
+                ],
+                "summary": "Get all countries",
+                "description": "Returns all the countries of the database.",
+                "operationId": "getCountries",
+                "responses": {
+                    "200": {
+                        "description": "Ok.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "": {
+                                            "description": "All models",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "json"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": [
+                                        {
+                                            "id": 1,
+                                            "name": "Afghanistan"
+                                        },
+                                        {
+                                            "id": 2,
+                                            "name": "Albania"
+                                        },
+                                        {
+                                            "id": 3,
+                                            "name": "Algeria"
+                                        },
+                                        {
+                                            "id": 4,
+                                            "name": "American Samoa"
+                                        },
+                                        {
+                                            "id": 5,
+                                            "name": "Angola"
                                         }
                                     ]
                                 }
