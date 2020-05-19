@@ -107,4 +107,22 @@ class MailController extends Controller
         // return with success message
         return response()->json(["msg" => "Email sent correctly"], JsonResponse::HTTP_OK);
     }
+
+    public static function sendMailScrapers(Array $args)
+    {
+        $to_name = 'EasyTravel';
+        $to_email = 'easytraveluem@gmail.com';
+        // $data=array("name"=>$request->name, "mail"=>$request->email, "body"=>$request->message);
+        Mail::send('mail', $args, function($message) use ($to_name, $to_email){
+            $message -> to($to_email)
+                ->subject('Contact form message');
+        });
+
+        if (Mail::failures()) {
+            // return with failed message
+            return false;
+        }
+        // return with success message
+        return true;
+    }
 }
