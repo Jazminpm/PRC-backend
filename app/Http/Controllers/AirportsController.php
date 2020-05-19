@@ -56,11 +56,19 @@ class AirportsController extends Controller
     // todo: API documentation
     public static function getAirportsCoordinates()
     {
-        $data = DB::table('airports')
-            ->select(DB::raw("id as airport_id,
-            name as airport_name,
-            longitude as airport_lon,
-            latitude as airport_lat"))->whereNotNull('airport_url')->orderBy('airport_id')->get();
+        $data = DB::select(DB::raw("
+                select a.id                         as airport_id,
+                       a.name                       as airport_name,
+                       c2.name                      as airport_country,
+                       c.name                       as airport_city,
+                       a.longitude                  as airport_lon,
+                       a.latitude                   as airport_lat
+                from airports a
+                         join cities c on a.city_id = c.id
+                         join countries c2 on c.country_id = c2.id
+                where airport_url is not null
+                order by c.id, airport_country, airport_id;"
+        ));
         if (is_null($data)) {
             return null;
         } else {
