@@ -10,19 +10,19 @@ class AirportsController extends Controller
 {
     public static function insertURL($json, $airport)
     {
-        try{
+        try {
             // Get airport_id: it depends of the iata and the country
             $json['airport_id'] = DB::table('airports')
                 ->select('airports.id')
                 ->join('cities as c', 'c.id', '=', 'airports.city_id')
-                ->join ('countries as co', 'c.country_id', '=', 'co.id')
+                ->join('countries as co', 'c.country_id', '=', 'co.id')
                 ->where('iata', $json['airport_id'])
                 ->where('co.name', $airport)
                 ->first()->id;
 
             DB::table('airports')->where('id', $json['airport_id'])
                 ->update(array('airport_url' => $json['airport_url']));
-        } catch (Throwable $e){
+        } catch (Throwable $e) {
             // Do nothing
         }
 
@@ -33,7 +33,7 @@ class AirportsController extends Controller
         $url = DB::table('airports')
             ->select('airport_url')
             ->where('id', $airport_id)->first();
-        if (is_null($url)){
+        if (is_null($url)) {
             return null;
         } else {
             return $url->airport_url;
@@ -46,7 +46,7 @@ class AirportsController extends Controller
         $data = DB::table('airports')
             ->select('icao')
             ->where('id', $arg)->first();
-        if (is_null($data)){
+        if (is_null($data)) {
             return null;
         } else {
             return $data->icao;
@@ -57,8 +57,11 @@ class AirportsController extends Controller
     public static function getAirportsCoordinates()
     {
         $data = DB::table('airports')
-            ->select(['longitude', 'latitude'])->whereNotNull('airport_url')->get();
-        if (is_null($data)){
+            ->select(DB::raw("id as airport_id,
+            name as airport_name,
+            longitude as airport_lon,
+            latitude as airport_lat"))->whereNotNull('airport_url')->orderBy('airport_id')->get();
+        if (is_null($data)) {
             return null;
         } else {
             return response()->json(compact('data'), JsonResponse::HTTP_OK);
@@ -146,40 +149,10 @@ class AirportsController extends Controller
     {
         $data = DB::table('airports')
             ->select(['id', 'name'])->whereNotNull('airport_url')->get();
-        if (is_null($data)){
+        if (is_null($data)) {
             return null;
         } else {
             return response()->json($data, JsonResponse::HTTP_OK);
-        }
-    }
-
-    // todo: API documentation
-    public static function getAirportsPreview()
-    {
-        $data = DB::select(DB::raw(
-            "
-            select arp.id                                                 as airport_id,
-                   arp.name                                               as airport_name,
-                   arp.longitude                                          as airport_lon,
-                   arp.latitude                                           as airport_lat,
-                   intermediare.flight_id                                 as fligth_id,
-                   DATE_FORMAT(intermediare.schedulated_date, '%Y-%m-%d') as schedulated_date
-            from airports arp
-                     inner join
-                 (select f.id        as flight_id,
-                         f.date_time as schedulated_date,
-                         fs.name     as flight_statis
-                  from flights f
-                           join flight_statuses fs on f.delay = fs.id
-                  where DATE_FORMAT(f.date_time, '%Y-%m-%d') = CURDATE()
-                  order by f.date_time desc
-                  limit 5) intermediare
-            order by airport_id, schedulated_date;"
-        ));
-        if (is_null($data)){
-            return null;
-        } else {
-            return response()->json(compact('data'), JsonResponse::HTTP_OK);
         }
     }
 }
