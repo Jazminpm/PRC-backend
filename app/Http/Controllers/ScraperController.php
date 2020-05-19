@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use DateTime;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class ScraperController extends Controller
@@ -123,6 +126,9 @@ class ScraperController extends Controller
      */
     function weatherForecast(Request $request)
     {
+        $date = new DateTime('now');
+        $dateStr = $date->format('Y-m-d H:i:s');
+
         $validator = Validator::make($request->json()->all(), [
             'airport_id' => ['required', 'integer', 'exists:airports,id']
         ]);
@@ -145,10 +151,14 @@ class ScraperController extends Controller
                     WeatherController::insert($data);
                     $inserts += 1;
                 }
+
+                $airportName = DB::table('airports')->select(['name'])->where('id', $request->airport_id)->first()->name;
+                $message = "The weather forecast scraper launched at ".$dateStr." from the ".$airportName." airport has already finished.";
+                MailController::sendMailScrapers($date, $message);
+
                 return response()->json(["total" => $inserts], 200);
             }
         }
-
     }
 
     /**
@@ -275,6 +285,8 @@ class ScraperController extends Controller
      */
     function weatherHistory(Request $request)
     {
+        $date = new DateTime('now');
+        $dateStr = $date->format('Y-m-d H:i:s');
         $validator = Validator::make($request->json()->all(), [
             'date' => ['required', 'date', 'date_format:Y-m-d', 'before_or_equal:yesterday'],
             'airport_id' => ['required', 'integer', 'exists:airports,id']
@@ -298,6 +310,10 @@ class ScraperController extends Controller
                     WeatherController::insert($data);
                     $inserts += 1;
                 }
+
+                $airportName = DB::table('airports')->select(['name'])->where('id', $request->airport_id)->first()->name;
+                $message = "The weather history scraper launched at ".$dateStr." from the ".$airportName." airport has already finished.";
+                MailController::sendMailScrapers($date, $message);
                 return response()->json(["total" => $inserts], JsonResponse::HTTP_OK);
             }
         }
@@ -426,6 +442,8 @@ class ScraperController extends Controller
      */
     function flightsHistory(Request $request)
     {
+        $date = new DateTime('now');
+        $dateStr = $date->format('Y-m-d H:i:s');
         $validator = Validator::make($request->json()->all(), [
             'date' => ['required', 'date', 'date_format:Y-m-d', 'before_or_equal:yesterday'],
             'airport_id' => ['required', 'integer', 'exists:airports,id']
@@ -449,6 +467,10 @@ class ScraperController extends Controller
                     FlightsController::insert($data);
                     $inserts += 1;
                 }
+
+                $airportName = DB::table('airports')->select(['name'])->where('id', $request->airport_id)->first()->name;
+                $message = "The flight history scraper launched at ".$dateStr." from the ".$airportName." airport has already finished.";
+                MailController::sendMailScrapers($date, $message);
                 return response()->json(["total" => $inserts], JsonResponse::HTTP_OK);
             }
         }
@@ -568,6 +590,8 @@ class ScraperController extends Controller
      */
     function flightsForecast(Request $request)
     {
+        $date = new DateTime('now');
+        $dateStr = $date->format('Y-m-d H:i:s');
         $validator = Validator::make($request->json()->all(), [
             'airport_id' => ['required', 'integer', 'exists:airports,id']
         ]);
@@ -590,6 +614,10 @@ class ScraperController extends Controller
                     FlightsController::insert($data);
                     $inserts += 1;
                 }
+
+                $airportName = DB::table('airports')->select(['name'])->where('id', $request->airport_id)->first()->name;
+                $message = "The flight forecast scraper launched at ".$dateStr." from the ".$airportName." airport has already finished.";
+                MailController::sendMailScrapers($date, $message);
                 return response()->json(["total" => $inserts], JsonResponse::HTTP_OK);
             }
         }
@@ -708,6 +736,8 @@ class ScraperController extends Controller
      */
     function airportUrl(Request $request)
     {
+        $date = new DateTime('now');
+        $dateStr = $date->format('Y-m-d H:i:s');
         $validator = Validator::make($request->json()->all(), [
             'country_id' => ['required', 'integer', 'exists:countries,id']
         ]);
@@ -726,6 +756,10 @@ class ScraperController extends Controller
                 AirportsController::insertURL($data, $args['country_id']);
                 $inserts += 1;
             }
+
+            $countryName = DB::table('countries')->select(['name'])->where('id', $request->country_id)->first()->name;
+            $message = "The flight forecast scraper launched at ".$dateStr." from the country ".$countryName." has already finished.";
+            MailController::sendMailScrapers($date, $message);
             return response()->json(["total" => $inserts], JsonResponse::HTTP_OK);
         }
     }
@@ -843,6 +877,8 @@ class ScraperController extends Controller
      */
     function comments(Request $request)  # incluir analisis del sentimiento a cada comentario
     {
+        $date = new DateTime('now');
+        $dateStr = $date->format('Y-m-d H:i:s');
         $validator = Validator::make($request->json()->all(), [
             'city_id' => ['required', 'integer', 'exists:cities,id']
         ]);
@@ -868,6 +904,10 @@ class ScraperController extends Controller
                     CommentController::insert($data);
                     $inserts += 1;
                 }
+
+                $cityName = DB::table('cities')->select(['name'])->where('id', $request->city_id)->first()->name;
+                $message = "The comments scraper launched at ".$dateStr." from the city ".$cityName." has already finished.";
+                MailController::sendMailScrapers($date, $message);
                 return response()->json(["total" => $inserts], JsonResponse::HTTP_OK);
             }
         }

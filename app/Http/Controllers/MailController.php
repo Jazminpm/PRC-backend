@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 
 class MailController extends Controller
@@ -108,21 +110,22 @@ class MailController extends Controller
         return response()->json(["msg" => "Email sent correctly"], JsonResponse::HTTP_OK);
     }
 
-    public static function sendMailScrapers(Array $args)
+    public static function sendMailScrapers($date, $msg)
     {
+        $user = Auth::user();
+        $args = array("name"=>$user->name, "mail"=>$user->email, "body"=>$msg);
+        // dd($args);
         $to_name = 'EasyTravel';
         $to_email = 'easytraveluem@gmail.com';
         // $data=array("name"=>$request->name, "mail"=>$request->email, "body"=>$request->message);
         Mail::send('mail', $args, function($message) use ($to_name, $to_email){
             $message -> to($to_email)
-                ->subject('Contact form message');
+                ->subject('Scraper finished');
         });
 
         if (Mail::failures()) {
-            // return with failed message
             return false;
         }
-        // return with success message
         return true;
     }
 }
