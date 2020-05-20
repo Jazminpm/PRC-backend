@@ -312,4 +312,153 @@ class FlightsController extends Controller
             }
         }
     }
+
+
+    /**
+     * @OA\POST(
+     *      path="/api/flights/getGroupAirports",
+     *      operationId="getGroupAirports",
+     *      tags={"flights"},
+     *      summary="Get airports",
+     *      description="Returns airports grouped between the date given by days, weeks, months or years.",
+     *      @OA\RequestBody(
+     *          @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema(
+     *                  @OA\Property(
+     *                      property="start_date",
+     *                      type="date",
+     *                      description="Date in format Y-m-d"
+     *                  ),
+     *                  @OA\Property(
+     *                      property="end_date",
+     *                      type="date",
+     *                      description="Date in format Y-m-d"
+     *                  ),
+     *                  example={"start_date":"2019-06-10", "end_date":"2020-05-09"}
+     *              )
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Ok.",
+     *          content={
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          type="array",@OA\Items(type="json"),
+     *                          description="All models"
+     *                      ),
+     *                      example={
+     *                          {"airport_id":5306,"name":"Barcelona International Airport"},
+     *                          {"airport_id":5327,"name":"Adolfo Suárez Madrid–Barajas Airport"},
+     *                    }
+     *                  )
+     *              )
+     *          }
+     *      ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad request.",
+     *          content={
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="errors",
+     *                          type="array",
+     *                          description="List of errors.",
+     *                          @OA\Items(type="string")
+     *                      ),
+     *                      example={
+     *                          "errors": {
+     *                              "The start date field is required.",
+     *                              "The start date is not a valid date.",
+     *                              "The start date does not match the format Y-m-d.",
+     *                              "The start date must be a date before or equal to today.",
+     *                              "The end date field is required.",
+     *                              "The end date is not a valid date.",
+     *                              "The end date does not match the format Y-m-d.",
+     *                              "The end date must be a date before or equal to today.",
+     *                              "There is no data for the specified date.",
+     *                          }
+     *                      }
+     *                  )
+     *              )
+     *          }
+     *      ),
+     *      @OA\Response(
+     *          response=500,
+     *          description="Internal Server Error.",
+     *          content={
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="message",
+     *                          type="string",
+     *                          description="Server message that contains the error."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="exception",
+     *                          type="string",
+     *                          description="Generated exception."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="file",
+     *                          type="string",
+     *                          description="File that throw the exception."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="line",
+     *                          type="integer",
+     *                          description="Line that throws the exception."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="trace",
+     *                          type="array",
+     *                          description="Trace route objects.",
+     *                          @OA\Items(type="object")
+     *                      ),
+     *                      example={
+     *                          "messagge": "The command failed.",
+     *                          "exception": "",
+     *                          "file": "",
+     *                          "line": 150,
+     *                          "trace": {"file":"", "line":1, "content":""}
+     *                      }
+     *                  )
+     *              )
+     *          }
+     *      ),
+     *  )
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function getGroupAirports(Request $request){
+        $validator = Validator::make($request->json()->all(), [
+            'start_date' => ['required', 'date', 'date_format:Y-m-d', 'before_or_equal:today'],
+            'end_date' => ['required', 'date', 'date_format:Y-m-d', 'before_or_equal:today']
+        ]);
+
+        if ($validator->fails()) {
+            return failValidation($validator);
+        } else {
+            $result = DB::table('flights')
+                ->select(['airport_id', 'name'])
+                ->join('airports as a', 'a.id', '=', 'flights.airport_id')
+                ->where(DB::raw('DATE(flights.date_time)'), '>=', $request->start_date)
+                ->where(DB::raw('DATE(flights.date_time)'), '<=', $request->end_date)
+                ->groupBy('airport_id')->get();
+
+            if (is_null($result)) {
+                return response()->json(["errors" => 'There is no data for the specified date.'],
+                    JsonResponse::HTTP_BAD_REQUEST);
+            } else {
+                return response()->json($result, JsonResponse::HTTP_OK);
+            }
+        }
+    }
 }

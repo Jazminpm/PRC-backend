@@ -63,6 +63,7 @@ Route::get('/airports/airports', 'AirportsController@getAirports');
 // flights
 Route::get('/flights/dailyStats', 'FlightsController@getDailyStats');
 Route::post('/flights/groupFlights', 'FlightsController@getGroupFlights');
+Route::post('/flights/getGroupAirports', 'FlightsController@getGroupAirports');
 
 //cities -> comments
 Route::get('/cities/top', 'CommentController@getTopDestinations');
