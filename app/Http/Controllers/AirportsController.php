@@ -164,25 +164,38 @@ class AirportsController extends Controller
             return response()->json($data, JsonResponse::HTTP_OK);
         }
     }
-    public static function getAirportDescription(Request $request)
+    public static function getAirportFlights(Request $request)
     {
         $airport_id = $request->id; // obtengo el id introducido en la ruta
 
-        $data = DB::table('airports AS air')
-            ->select('air.name AS airport_name', 'ct.name AS city_name', 'c.place', 'c.title AS comment_title', 'c.original_message AS message', 'c.grade',
-                'f.id AS flight_id', 'a.name AS airline_name', 'f.date_time', 'fs.name AS status_name')
-            ->join('comments AS c', 'air.city_id', '=', 'c.city_id')
+        $flights = DB::table('airports AS air')
+            ->select('f.id', 'air.name AS airport_name', 'a.name AS airline_name', 'f.date_time', 'fs.name AS status_name')
             ->join('flights AS f', 'air.city_id', '=', 'f.city_id')
             ->join('flight_statuses AS fs', 'f.delay', '=', 'fs.id')
             ->join('airlines AS a', 'f.airline_id', '=', 'a.id')
-            ->join('cities AS ct', 'air.city_id', '=', 'ct.id')
             ->where('air.id', '=', $airport_id)
             ->limit(10)
             ->get();
-        if (is_null($data)) {
+        if (is_null($flights)) {
             return null;
         } else {
-            return response()->json($data, JsonResponse::HTTP_OK);
+            return response()->json($flights, JsonResponse::HTTP_OK);
+        }
+    }
+    public static function getAirportComments(Request $request)
+    {
+        $airport_id = $request->id; // obtengo el id introducido en la ruta
+
+        $comments = DB::table('airports AS air')
+            ->select('air.name', 'c.place', 'c.title', 'c.original_message', 'c.grade')
+            ->join('comments AS c', 'air.city_id', '=', 'c.city_id')
+            ->where('air.id', '=', $airport_id)
+            ->limit(10)
+            ->get();
+        if (is_null($comments)) {
+            return null;
+        } else {
+            return response()->json($comments, JsonResponse::HTTP_OK);
         }
     }
 }
