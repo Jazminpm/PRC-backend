@@ -899,6 +899,7 @@
                                         {
                                             "groupDate": "2019\\/10",
                                             "delay": 0,
+                                            "airport_id": 5327,
                                             "countDelay": 4809,
                                             "prediction": null,
                                             "countPrediction": 0
@@ -906,6 +907,7 @@
                                         {
                                             "groupDate": "2019\\/10",
                                             "delay": 1,
+                                            "airport_id": 5327,
                                             "countDelay": 6180,
                                             "prediction": null,
                                             "countPrediction": 0
@@ -913,6 +915,7 @@
                                         {
                                             "groupDate": "2019\\/11",
                                             "delay": 0,
+                                            "airport_id": 5327,
                                             "countDelay": 6250,
                                             "prediction": null,
                                             "countPrediction": 0
@@ -920,6 +923,7 @@
                                         {
                                             "groupDate": "2019\\/12",
                                             "delay": 0,
+                                            "airport_id": 5306,
                                             "countDelay": 4965,
                                             "prediction": null,
                                             "countPrediction": 0
@@ -927,6 +931,7 @@
                                         {
                                             "groupDate": "2019\\/12",
                                             "delay": 1,
+                                            "airport_id": 5306,
                                             "countDelay": 8567,
                                             "prediction": null,
                                             "countPrediction": 0
@@ -934,35 +939,8 @@
                                         {
                                             "groupDate": "2019\\/6",
                                             "delay": 0,
+                                            "airport_id": 5306,
                                             "countDelay": 3988,
-                                            "prediction": null,
-                                            "countPrediction": 0
-                                        },
-                                        {
-                                            "groupDate": "2019\\/6",
-                                            "delay": 1,
-                                            "countDelay": 6941,
-                                            "prediction": null,
-                                            "countPrediction": 0
-                                        },
-                                        {
-                                            "groupDate": "2019\\/7",
-                                            "delay": 0,
-                                            "countDelay": 5847,
-                                            "prediction": null,
-                                            "countPrediction": 0
-                                        },
-                                        {
-                                            "groupDate": "2019\\/7",
-                                            "delay": 1,
-                                            "countDelay": 10692,
-                                            "prediction": null,
-                                            "countPrediction": 0
-                                        },
-                                        {
-                                            "groupDate": "2019\\/8",
-                                            "delay": 0,
-                                            "countDelay": 6141,
                                             "prediction": null,
                                             "countPrediction": 0
                                         }

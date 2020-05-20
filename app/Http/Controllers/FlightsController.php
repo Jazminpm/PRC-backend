@@ -159,16 +159,12 @@ class FlightsController extends Controller
      *                          description="All models"
      *                      ),
      *                      example={
-     *                          {"groupDate":"2019\/10","delay":0,"countDelay":4809,"prediction":null,"countPrediction":0},
-     *                          {"groupDate":"2019\/10","delay":1,"countDelay":6180,"prediction":null,"countPrediction":0},
-     *                          {"groupDate":"2019\/11","delay":0,"countDelay":6250,"prediction":null,"countPrediction":0},
-     *                          {"groupDate":"2019\/12","delay":0,"countDelay":4965,"prediction":null,"countPrediction":0},
-     *                          {"groupDate":"2019\/12","delay":1,"countDelay":8567,"prediction":null,"countPrediction":0},
-     *                          {"groupDate":"2019\/6","delay":0,"countDelay":3988,"prediction":null,"countPrediction":0},
-     *                          {"groupDate":"2019\/6","delay":1,"countDelay":6941,"prediction":null,"countPrediction":0},
-     *                          {"groupDate":"2019\/7","delay":0,"countDelay":5847,"prediction":null,"countPrediction":0},
-     *                          {"groupDate":"2019\/7","delay":1,"countDelay":10692,"prediction":null,"countPrediction":0},
-     *                          {"groupDate":"2019\/8","delay":0,"countDelay":6141,"prediction":null,"countPrediction":0},
+     *                          {"groupDate":"2019\/10","delay":0,"airport_id": 5327,"countDelay":4809,"prediction":null,"countPrediction":0},
+     *                          {"groupDate":"2019\/10","delay":1,"airport_id": 5327,"countDelay":6180,"prediction":null,"countPrediction":0},
+     *                          {"groupDate":"2019\/11","delay":0,"airport_id": 5327,"countDelay":6250,"prediction":null,"countPrediction":0},
+     *                          {"groupDate":"2019\/12","delay":0,"airport_id": 5306,"countDelay":4965,"prediction":null,"countPrediction":0},
+     *                          {"groupDate":"2019\/12","delay":1,"airport_id": 5306,"countDelay":8567,"prediction":null,"countPrediction":0},
+     *                          {"groupDate":"2019\/6","delay":0,"airport_id": 5306,"countDelay":3988,"prediction":null,"countPrediction":0}
      *                    }
      *                  )
      *              )
@@ -269,38 +265,38 @@ class FlightsController extends Controller
             if ($diff_in_days <= 7) { // GROUP BY DAYS
                 $result = DB::table('flights')->
                 select(DB::raw('date(date_time) as groupDate'), 'delay', DB::raw('count(delay) as countDelay'),
-                    'prediction', DB::raw('count(prediction) as countPrediction')) //$columns
+                    'prediction','airport_id', DB::raw('count(prediction) as countPrediction')) //$columns
                 ->where(DB::raw('DATE(flights.date_time)'), '>=', $from)
                     ->where(DB::raw('DATE(flights.date_time)'), '<=', $to)
-                    ->whereIn('delay', [0, 1, 2])
-                    ->groupBy(DB::raw('date(date_time), delay, prediction'))
+                    ->whereIn('delay', [0, 1])
+                    ->groupBy(DB::raw('date(date_time), delay, prediction,airport_id'))
                     ->get();
             } else if ($diff_in_days > 7 && $diff_in_days <= 31) { // GROUP BY WEEKS
                 $result = DB::table('flights')->
                 select(DB::raw('CONCAT(YEAR(date_time), \'/\', WEEK(date_time)) as groupDate'), 'delay',
-                    DB::raw('count(delay) as countDelay'), 'prediction', DB::raw('count(prediction) as countPrediction')) //$columns
+                    DB::raw('count(delay) as countDelay'),'airport_id', 'prediction', DB::raw('count(prediction) as countPrediction')) //$columns
                 ->where(DB::raw('DATE(flights.date_time)'), '>=', $from)
                     ->where(DB::raw('DATE(flights.date_time)'), '<=', $to)
-                    ->whereIn('delay', [0, 1, 2])
-                    ->groupBy(DB::raw('CONCAT(YEAR(date_time), \'/\', WEEK(date_time)), delay, prediction'))
+                    ->whereIn('delay', [0, 1])
+                    ->groupBy(DB::raw('CONCAT(YEAR(date_time), \'/\', WEEK(date_time)), delay, prediction,airport_id'))
                     ->get();
             } else if ($diff_in_days > 31 && $diff_in_days <= 365) { // GROUP BY MONTHS
                 $result = DB::table('flights')->
                 select(DB::raw('CONCAT(YEAR(date_time), \'/\', MONTH(date_time)) as groupDate'),
-                    'delay', DB::raw('count(delay) as countDelay'), 'prediction', DB::raw('count(prediction) as countPrediction')) //$columns
+                    'delay','airport_id', DB::raw('count(delay) as countDelay'), 'prediction', DB::raw('count(prediction) as countPrediction')) //$columns
                 ->where(DB::raw('DATE(flights.date_time)'), '>=', $from)
                     ->where(DB::raw('DATE(flights.date_time)'), '<=', $to)
-                    ->whereIn('delay', [0, 1, 2])
-                    ->groupBy(DB::raw('CONCAT(YEAR(date_time), \'/\', MONTH(date_time)), delay, prediction'))
+                    ->whereIn('delay', [0, 1])
+                    ->groupBy(DB::raw('CONCAT(YEAR(date_time), \'/\', MONTH(date_time)), delay, prediction,airport_id'))
                     ->get();
             } else { // Group by year
                 $result = DB::table('flights')->
                 select(DB::raw('YEAR(date_time) as groupDate'), 'delay', DB::raw('count(delay) as countDelay'),
-                    'prediction', DB::raw('count(prediction) as countPrediction')) //$columns
+                    'prediction','airport_id', DB::raw('count(prediction) as countPrediction')) //$columns
                 ->where(DB::raw('DATE(flights.date_time)'), '>=', $from)
                     ->where(DB::raw('DATE(flights.date_time)'), '<=', $to)
-                    ->whereIn('delay', [0, 1, 2])
-                    ->groupBy(DB::raw('YEAR(date_time), delay, prediction'))
+                    ->whereIn('delay', [0, 1])
+                    ->groupBy(DB::raw('YEAR(date_time), delay, prediction,airport_id'))
                     ->get();
             }
 
@@ -451,6 +447,7 @@ class FlightsController extends Controller
                 ->join('airports as a', 'a.id', '=', 'flights.airport_id')
                 ->where(DB::raw('DATE(flights.date_time)'), '>=', $request->start_date)
                 ->where(DB::raw('DATE(flights.date_time)'), '<=', $request->end_date)
+                ->whereIn('delay', [0, 1])
                 ->groupBy('airport_id')->get();
 
             if (is_null($result)) {
