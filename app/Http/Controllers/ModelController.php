@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use DateTime;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -138,7 +139,8 @@ class ModelController extends Controller
      */
     function trainingModel(Request $request)
     {
-
+        $date = new DateTime('now');
+        $dateStr = $date->format('Y-m-d H:i:s');
         $validator = Validator::make($request->json()->all(), [
             'characteristic' => ['required', 'array'],
             'start_date' => ['required', 'date', 'date_format:Y-m-d', 'before_or_equal:yesterday'],
@@ -147,7 +149,11 @@ class ModelController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($request->characteristic, JsonResponse::HTTP_BAD_REQUEST);//failValidation($validator), request->$characteristic;
+            $validation = failValidation($validator);
+            $message = "The Train Model launched at ".$dateStr." did not finished.
+            The errors have been:";
+            MailController::emailErrors($validation, $dateStr, $message);
+            return $validation;
         } else {
             foreach ($request->characteristic as $key => $val) {
                 if (!Schema::hasColumn('flights', $val) and !Schema::hasColumn('weathers', $val) and
@@ -180,6 +186,10 @@ class ModelController extends Controller
                 $data = json_decode(executePython($script, $args)[0], true);
                 $data['airports'] = $airports;
                 DB::table('models')->Insert($data); // Insert data in the BBDD
+
+                $algorithmName = DB::table('algorithms')->select(['name'])->where('id', $request->algorithm_id)->first()->name;
+                $message = "The Train Model launched at ".$dateStr." of the ".$algorithmName." algorithm has already finished.";
+                MailController::sendMailScrapers($date, $message,'Train Model finished');
                 return response()->json([], JsonResponse::HTTP_NO_CONTENT);
             } else {
                 return response()->json(["errors" => 'There are no registered flights for these dates.'],
@@ -314,13 +324,19 @@ class ModelController extends Controller
      */
     function predictModel(Request $request)
     {
+        $date = new DateTime('now');
+        $dateStr = $date->format('Y-m-d H:i:s');
         $validator = Validator::make($request->json()->all(), [
             'start_date' => ['required', 'date', 'date_format:Y-m-d', 'before_or_equal:today'],
             'end_date' => ['required', 'date', 'date_format:Y-m-d', 'before_or_equal:today']
         ]);
 
         if ($validator->fails()) {
-            return failValidation($validator);
+            $validation = failValidation($validator);
+            $message = "The prediction launched at ".$dateStr." did not finished.
+            The errors have been:";
+            MailController::emailErrors($validation, $dateStr, $message);
+            return $validation;
         } else {
             $selectedModel = ModelController::selectedModel();
 
@@ -345,6 +361,10 @@ class ModelController extends Controller
                     FlightsController::updatePrediction($args[$i]);
                     $inserts += 1;
                 }
+
+                $algorithmName = DB::table('algorithms')->select(['name'])->where('id', $request->algorithm_id)->first()->name;
+                $message = "The prediction launched at ".$dateStr." has already finished.";
+                MailController::sendMailScrapers($date, $message,'Prediction finished');
                 return response()->json(["total" => $inserts], JsonResponse::HTTP_OK);
             } else {
                 return response()->json(["errors" => 'There are no registered flights for these dates.'],

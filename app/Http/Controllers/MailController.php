@@ -110,7 +110,7 @@ class MailController extends Controller
         return response()->json(["msg" => "Email sent correctly"], JsonResponse::HTTP_OK);
     }
 
-    public static function sendMailScrapers($date, $msg)
+    public static function sendMailScrapers($date, $msg, $subject)
     {
         $user = Auth::user();
         $args = array("name"=>$user->name, "mail"=>$user->email, "body"=>$msg);
@@ -118,14 +118,28 @@ class MailController extends Controller
         $to_name = 'EasyTravel';
         $to_email = 'easytraveluem@gmail.com';
         // $data=array("name"=>$request->name, "mail"=>$request->email, "body"=>$request->message);
-        Mail::send('mail', $args, function($message) use ($to_name, $to_email){
+        Mail::send('mail', $args, function($message) use ($subject, $to_name, $to_email){
             $message -> to($to_email)
-                ->subject('Scraper finished');
+                ->subject($subject);
         });
 
         if (Mail::failures()) {
             return false;
         }
         return true;
+    }
+
+    public static function emailErrors($validator, $dateStr, $message){
+        $errorsStr = "";
+        $arrayErrors = $validator->getData();
+        foreach ($arrayErrors as $errors){
+            foreach ($errors as $error) {
+                foreach ($error as $err) {
+                    $errorsStr = $errorsStr . substr_replace($err, "", -1) . "; ";
+                }
+            }
+        }
+        MailController::sendMailScrapers($dateStr, $message.substr_replace($errorsStr, "", -2)."."
+            ,'Scraper failed');
     }
 }

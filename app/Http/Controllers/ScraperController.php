@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use DateTime;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
@@ -134,10 +133,16 @@ class ScraperController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return failValidation($validator);
+            $validation = failValidation($validator);
+            $message = "The weather forecast scraper launched at ".$dateStr." did not finished.
+            The errors have been:";
+            MailController::emailErrors($validation, $dateStr, $message);
+            return $validation;
         } else {
             $icao = AirportsController::getAirportIcao($request->airport_id);
             if (is_null($icao)){
+                $message = "The weather history scraper launched did not finished. Error: The airport does not have ICAO.";
+                MailController::sendMailScrapers($dateStr, $message ,'Scraper failed');
                 return response()->json(["errors" => 'The airport does not have ICAO.'],
                     JsonResponse::HTTP_BAD_REQUEST);
             } else {
@@ -154,7 +159,7 @@ class ScraperController extends Controller
 
                 $airportName = DB::table('airports')->select(['name'])->where('id', $request->airport_id)->first()->name;
                 $message = "The weather forecast scraper launched at ".$dateStr." from the ".$airportName." airport has already finished.";
-                MailController::sendMailScrapers($date, $message);
+                MailController::sendMailScrapers($date, $message,'Scraper finished');
 
                 return response()->json(["total" => $inserts], 200);
             }
@@ -293,10 +298,16 @@ class ScraperController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return failValidation($validator);
+            $validation = failValidation($validator);
+            $message = "The weather history scraper launched at ".$dateStr." did not finished.
+            The errors have been: ";
+            MailController::emailErrors($validation, $dateStr, $message);
+            return $validation;
         } else {
             $icao = AirportsController::getAirportIcao($request->airport_id);
             if (is_null($icao)){
+                $message = "The weather history scraper launched did not finished. Error: The airport does not have ICAO.";
+                MailController::sendMailScrapers($dateStr, $message ,'Scraper failed');
                 return response()->json(["errors" => 'The airport does not have ICAO.'],
                     JsonResponse::HTTP_BAD_REQUEST);
             } else {
@@ -313,7 +324,7 @@ class ScraperController extends Controller
 
                 $airportName = DB::table('airports')->select(['name'])->where('id', $request->airport_id)->first()->name;
                 $message = "The weather history scraper launched at ".$dateStr." from the ".$airportName." airport has already finished.";
-                MailController::sendMailScrapers($date, $message);
+                MailController::sendMailScrapers($date, $message,'Scraper finished');
                 return response()->json(["total" => $inserts], JsonResponse::HTTP_OK);
             }
         }
@@ -450,10 +461,16 @@ class ScraperController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return failValidation($validator);
+            $validation = failValidation($validator);
+            $message = "The flight history scraper launched at ".$dateStr." did not finished.
+            The errors have been: ";
+            MailController::emailErrors($validation, $dateStr, $message);
+            return $validation;
         } else {
             $url = AirportsController::getAirportURL($request->airport_id);
             if (is_null($url)){
+                $message = "The flight forecast scraper launched did not finished. Error: The airport does not have url.";
+                MailController::sendMailScrapers($dateStr, $message ,'Scraper failed');
                 return response()->json(["errors" => 'The airport does not have url.'],
                     JsonResponse::HTTP_BAD_REQUEST);
             } else {
@@ -470,7 +487,7 @@ class ScraperController extends Controller
 
                 $airportName = DB::table('airports')->select(['name'])->where('id', $request->airport_id)->first()->name;
                 $message = "The flight history scraper launched at ".$dateStr." from the ".$airportName." airport has already finished.";
-                MailController::sendMailScrapers($date, $message);
+                MailController::sendMailScrapers($date, $message,'Scraper finished');
                 return response()->json(["total" => $inserts], JsonResponse::HTTP_OK);
             }
         }
@@ -597,10 +614,16 @@ class ScraperController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return failValidation($validator);
+            $validation = failValidation($validator);
+            $message = "The flight forecast scraper launched at ".$dateStr." did not finished.
+            The errors have been: ";
+            MailController::emailErrors($validation, $dateStr, $message);
+            return $validation;
         } else {
             $url = AirportsController::getAirportURL($request->airport_id);
             if (is_null($url)){
+                $message = "The flight forecast scraper launched did not finished. Error: The airport does not have url.";
+                MailController::sendMailScrapers($dateStr, $message ,'Scraper failed');
                 return response()->json(["errors" => 'The airport does not have url.'],
                     JsonResponse::HTTP_BAD_REQUEST);
             } else {
@@ -617,7 +640,7 @@ class ScraperController extends Controller
 
                 $airportName = DB::table('airports')->select(['name'])->where('id', $request->airport_id)->first()->name;
                 $message = "The flight forecast scraper launched at ".$dateStr." from the ".$airportName." airport has already finished.";
-                MailController::sendMailScrapers($date, $message);
+                MailController::sendMailScrapers($date, $message,'Scraper finished');
                 return response()->json(["total" => $inserts], JsonResponse::HTTP_OK);
             }
         }
@@ -743,7 +766,11 @@ class ScraperController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return failValidation($validator);
+            $validation = failValidation($validator);
+            $message = "The Airport URL scraper launched at ".$dateStr." did not finished.
+            The errors have been: ";
+            MailController::emailErrors($validation, $dateStr, $message);
+            return $validation;
         } else {
             $name = CountriesController::getCountryName($request->country_id);
             $args = $request->all();
@@ -758,8 +785,8 @@ class ScraperController extends Controller
             }
 
             $countryName = DB::table('countries')->select(['name'])->where('id', $request->country_id)->first()->name;
-            $message = "The flight forecast scraper launched at ".$dateStr." from the country ".$countryName." has already finished.";
-            MailController::sendMailScrapers($date, $message);
+            $message = "The URL Airportia scraper launched at ".$dateStr." from the country ".$countryName." has already finished.";
+            MailController::sendMailScrapers($date, $message,'Scraper finished');
             return response()->json(["total" => $inserts], JsonResponse::HTTP_OK);
         }
     }
@@ -884,10 +911,16 @@ class ScraperController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return failValidation($validator);
+            $validation = failValidation($validator);
+            $message = "The comments scraper launched at ".$dateStr." did not finished.
+            The errors have been: ";
+            MailController::emailErrors($validation, $dateStr, $message);
+            return $validation;
         } else {
             $name = CitiesController::getCityName($request->city_id);
             if (is_null($name)) {
+                $message = "The comments scraper launched did not finished. Error: The id does not have a city associated.";
+                MailController::sendMailScrapers($dateStr, $message ,'Scraper failed');
                 return response()->json(["errors" => 'The id does not have a city associated.'],
                     JsonResponse::HTTP_BAD_REQUEST);
             } else {
@@ -907,7 +940,7 @@ class ScraperController extends Controller
 
                 $cityName = DB::table('cities')->select(['name'])->where('id', $request->city_id)->first()->name;
                 $message = "The comments scraper launched at ".$dateStr." from the city ".$cityName." has already finished.";
-                MailController::sendMailScrapers($date, $message);
+                MailController::sendMailScrapers($date, $message,'Scraper finished');
                 return response()->json(["total" => $inserts], JsonResponse::HTTP_OK);
             }
         }
