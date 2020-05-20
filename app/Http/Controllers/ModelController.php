@@ -362,7 +362,6 @@ class ModelController extends Controller
                     $inserts += 1;
                 }
 
-                $algorithmName = DB::table('algorithms')->select(['name'])->where('id', $request->algorithm_id)->first()->name;
                 $message = "The prediction launched at ".$dateStr." has already finished.";
                 MailController::sendMailScrapers($date, $message,'Prediction finished');
                 return response()->json(["total" => $inserts], JsonResponse::HTTP_OK);
@@ -930,6 +929,98 @@ class ModelController extends Controller
     function deleteModel(Request $request){
         DB::table('models')->where('id',$request->model_id)->delete();
         return response()->json(null, JsonResponse::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * @OA\Get(
+     *      path="/api/models/getModelInUse",
+     *      operationId="getModelInUse",
+     *      tags={"models"},
+     *      summary="Get the model in use.",
+     *      description="It is used to get the model that is in use in the aplication.",
+     *      @OA\Response(
+     *          response=200,
+     *          description="Ok.",
+     *          content={
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="type",
+     *                          type="json",
+     *                          description="Algorithm if"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="date",
+     *                          type="json",
+     *                          description="Creation date_time"
+     *                      ),
+     *                      example={
+     *                          "type": 1,
+     *                          "date": "2020-05-19 16:18:28"
+     *                      }
+     *                  )
+     *              )
+     *          }
+     *      ),
+     *      @OA\Response(
+     *          response=500,
+     *          description="Internal Server Error.",
+     *          content={
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="message",
+     *                          type="string",
+     *                          description="Server message that contains the error."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="exception",
+     *                          type="string",
+     *                          description="Generated exception."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="file",
+     *                          type="string",
+     *                          description="File that throw the exception."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="line",
+     *                          type="integer",
+     *                          description="Line that thorws the execption."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="trace",
+     *                          type="array",
+     *                          description="Trace route objects.",
+     *                          @OA\Items(type="object")
+     *                      ),
+     *                      example={
+     *                          "messagge": "The command failed.",
+     *                          "exception": "",
+     *                          "file": "",
+     *                          "line": 150,
+     *                          "trace": {"file":"", "line":1, "content":""}
+     *                      }
+     *                  )
+     *              )
+     *          }
+     *      ),
+     *  )
+     *
+     * @param Request $request
+     * @return string
+     */
+    function getModelInUse(Request $request){
+        $data = DB::table('in_uses')
+            ->select(['type', 'date'])
+            ->join('models as m', 'm.id', '=', 'in_uses.model')->get();
+        if (is_null($data)){
+            return null;
+        } else {
+            return response()->json($data, JsonResponse::HTTP_OK);
+        }
     }
 
     //OTRAS FUNCIONES

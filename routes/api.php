@@ -45,6 +45,7 @@ Route::post('models/algorithms', 'ModelController@getAlgorithms');
 Route::post('models/models', 'ModelController@getModels');
 Route::post('models/lastModels', 'ModelController@getLastModels');
 Route::post('models/deleteModel', 'ModelController@deleteModel');
+Route::get('models/getModelInUse', 'ModelController@getModelInUse');
 
 // scrapers (admin)
 Route::post('/scrapers/weathers/forecast', 'ScraperController@weatherForecast');
