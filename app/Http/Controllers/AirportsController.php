@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -157,6 +158,27 @@ class AirportsController extends Controller
     {
         $data = DB::table('airports')
             ->select(['id', 'name'])->whereNotNull('airport_url')->get();
+        if (is_null($data)) {
+            return null;
+        } else {
+            return response()->json($data, JsonResponse::HTTP_OK);
+        }
+    }
+    public static function getAirportDescription(Request $request)
+    {
+        $airport_id = $request->id; // obtengo el id introducido en la ruta
+
+        $data = DB::table('airports AS air')
+            ->select('air.name AS airport_name', 'ct.name AS city_name', 'c.place', 'c.title AS comment_title', 'c.original_message AS message', 'c.grade',
+                'f.id AS flight_id', 'a.name AS airline_name', 'f.date_time', 'fs.name AS status_name')
+            ->join('comments AS c', 'air.city_id', '=', 'c.city_id')
+            ->join('flights AS f', 'air.city_id', '=', 'f.city_id')
+            ->join('flight_statuses AS fs', 'f.delay', '=', 'fs.id')
+            ->join('airlines AS a', 'f.airline_id', '=', 'a.id')
+            ->join('cities AS ct', 'air.city_id', '=', 'ct.id')
+            ->where('air.id', '=', $airport_id)
+            ->limit(10)
+            ->get();
         if (is_null($data)) {
             return null;
         } else {
