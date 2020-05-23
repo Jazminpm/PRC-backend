@@ -2,9 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Comments\Comment;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class CommentController extends Controller
 {
@@ -224,6 +229,34 @@ class CommentController extends Controller
             return null;
         } else {
             return response()->json($data, JsonResponse::HTTP_OK);
+        }
+    }
+    public function insertUserComment(Request $request){
+        $validator = Validator::make($request->json()->all(), [
+            'date_time' => ['required', 'date', 'date_format:Y-m-d', 'before_or_equal:today'],
+            'airport_id' => ['required', 'integer', 'exists:airports,id'],
+            'grade' => ['required', 'integer'],
+            'title' => ['required', 'string'],
+            'original_message' => ['required', 'string'],
+        ]);
+        if ($validator->fails()) {
+            return failValidation($validator);
+        } else {
+            $user = Auth::user();
+            $data=array("lib"=>1, "msg"=>$request->get('original_message'));
+            $sentimentTranslate = AnalysisController::analyze($data);
+            Comment::create([
+                'sentiment' => $sentimentTranslate["subjectivity"],
+                'polarity' => $sentimentTranslate["polarity"],
+                'grade' => $request->get('grade'),
+                'title' => $request->get('title'),
+                'original_message' => $request->get('original_message'),
+                'message' => $sentimentTranslate["message"],
+                'date_time' => $request->get('date_time'),
+                'city_id' => AirportsController::getCityID($request->get('airport_id')),
+                'user_id' => $user->id
+            ]);
+            return response()->json(null, JsonResponse::HTTP_NO_CONTENT);
         }
     }
 }

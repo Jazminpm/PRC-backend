@@ -198,4 +198,14 @@ class AirportsController extends Controller
             return response()->json($comments, JsonResponse::HTTP_OK);
         }
     }
+    public static function getCityID($airport_id){
+        $city_id = DB::table('airports')
+            ->select('city_id')
+            ->where('airports.id', '=', $airport_id)->first();
+        if (is_null($city_id)) {
+            return null;
+        } else {
+            return $city_id->city_id;
+        }
+    }
 }

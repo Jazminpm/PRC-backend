@@ -1,18 +1,17 @@
 import json
 import sys
 
-from analysis.utils import textblob_analysis, vader_analysis
+from analysis.utils import textblob_analysis, vader_analysis, textblob_comment, translate
 
 if __name__ == "__main__":
     data = json.loads(sys.argv[1])
+    traduccion = str(translate(data["msg"], 'en'))
 
-    if data['lib'] is 1:
-        sentiment = textblob_analysis(data['msg'])
-    elif data['lib'] is 2:
-        sentiment = vader_analysis(data['msg'])
+    sentiment = textblob_comment(traduccion)
     response = {
         'polarity': sentiment[0],
-        'subjectivity': sentiment[1]
+        'subjectivity': sentiment[1],
+        'message': traduccion
     }
 
     print(json.dumps(response))

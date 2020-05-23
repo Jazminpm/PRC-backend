@@ -35,6 +35,7 @@ Route::group(['middleware' => ['jwt.auth']], function () {
     Route::post('/auth/refresh', 'AuthController@refresh');
 
     // aqui van las rutas de cualquier usuario que este registrado
+    Route::post('/airports/comments/new-comment', 'CommentController@insertUserComment');
 });
 
 // Models (admin)
