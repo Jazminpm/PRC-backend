@@ -174,6 +174,7 @@ class AirportsController extends Controller
             ->join('flight_statuses AS fs', 'f.delay', '=', 'fs.id')
             ->join('airlines AS a', 'f.airline_id', '=', 'a.id')
             ->where('air.id', '=', $airport_id)
+            ->orderBy('date_time', 'DESC')
             ->get();
         if (is_null($flights)) {
             return null;
