@@ -207,7 +207,7 @@
                 }
             }
         },
-        "/airports/flights/{id}": {
+        "/api/airports/flights/{id}": {
             "get": {
                 "tags": [
                     "airports"
@@ -215,6 +215,17 @@
                 "summary": "Obtain the flights from an airport",
                 "description": "Get all the flights related with the airport_id passed in the url.",
                 "operationId": "getAirportFlights",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Airport id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Ok.",
@@ -289,7 +300,7 @@
                 }
             }
         },
-        "/airports/comments/{id}": {
+        "/api/airports/comments/{id}": {
             "get": {
                 "tags": [
                     "airports"
@@ -297,6 +308,17 @@
                 "summary": "Obtain the comments from an airport",
                 "description": "Get all the comments related with the city of the airport passed in the url.",
                 "operationId": "getAirportComments",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Airport id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Ok.",

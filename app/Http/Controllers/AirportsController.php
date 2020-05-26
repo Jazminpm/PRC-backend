@@ -240,11 +240,20 @@ class AirportsController extends Controller
     }
     /**
      * @OA\GET(
-     *      path="/airports/flights/{id}",
+     *      path="/api/airports/flights/{id}",
      *      operationId="getAirportFlights",
      *      tags={"airports"},
      *      summary="Obtain the flights from an airport",
      *      description="Get all the flights related with the airport_id passed in the url.",
+     *      @OA\Parameter(
+     *          name="id",
+     *          description="Airport id",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
      *      @OA\Response(
      *          response=200,
      *          description="Ok.",
@@ -317,7 +326,7 @@ class AirportsController extends Controller
 
         $flights = DB::table('airports AS air')
             ->select('f.id', 'air.name AS airport_name', 'a.name AS airline_name', 'f.date_time', 'fs.name AS status_name', 'f.prediction')
-            ->join('flights AS f', 'air.city_id', '=', 'f.city_id')
+            ->join('flights AS f', 'air.id', '=', 'f.airport_id')
             ->join('flight_statuses AS fs', 'f.delay', '=', 'fs.id')
             ->join('airlines AS a', 'f.airline_id', '=', 'a.id')
             ->where('air.id', '=', $airport_id)
@@ -331,11 +340,20 @@ class AirportsController extends Controller
     }
     /**
      * @OA\GET(
-     *      path="/airports/comments/{id}",
+     *      path="/api/airports/comments/{id}",
      *      operationId="getAirportComments",
      *      tags={"airports"},
      *      summary="Obtain the comments from an airport",
      *      description="Get all the comments related with the city of the airport passed in the url.",
+     *      @OA\Parameter(
+     *          name="id",
+     *          description="Airport id",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
      *      @OA\Response(
      *          response=200,
      *          description="Ok.",
