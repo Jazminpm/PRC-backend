@@ -13,6 +13,101 @@
         "version": "1.0.0"
     },
     "paths": {
+        "/api/airports/coordinates": {
+            "get": {
+                "tags": [
+                    "airports"
+                ],
+                "summary": "Get all airports coordinates with URL",
+                "description": "Returns all the airports coordinates and basic info.",
+                "operationId": "getAirportsCoordinates",
+                "responses": {
+                    "200": {
+                        "description": "Ok.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "": {
+                                            "description": "All coordinates",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "json"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": [
+                                        {
+                                            "airport_id": 216,
+                                            "airport_name": "Cootamundra Airport",
+                                            "airport_country": "Australia",
+                                            "airport_city": "",
+                                            "airport_lon": 148.028,
+                                            "airport_lat": -34.623901
+                                        },
+                                        {
+                                            "airport_id": 241,
+                                            "airport_name": "Adelaide International Airport",
+                                            "airport_country": "Australia",
+                                            "airport_city": "Adelaide",
+                                            "airport_lon": 138.53101,
+                                            "airport_lat": -34.945
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "description": "Server message that contains the error.",
+                                            "type": "string"
+                                        },
+                                        "exception": {
+                                            "description": "Generated exception.",
+                                            "type": "string"
+                                        },
+                                        "file": {
+                                            "description": "File that throw the exception.",
+                                            "type": "string"
+                                        },
+                                        "line": {
+                                            "description": "Line that throws the exception.",
+                                            "type": "integer"
+                                        },
+                                        "trace": {
+                                            "description": "Trace route objects.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "messagge": "The command failed.",
+                                        "exception": "",
+                                        "file": "",
+                                        "line": 150,
+                                        "trace": {
+                                            "file": "",
+                                            "line": 1,
+                                            "content": ""
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/airports/airports": {
             "get": {
                 "tags": [
@@ -57,6 +152,170 @@
                                         {
                                             "id": 2314,
                                             "name": "Paris Beauvais Tillé Airport"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "description": "Server message that contains the error.",
+                                            "type": "string"
+                                        },
+                                        "exception": {
+                                            "description": "Generated exception.",
+                                            "type": "string"
+                                        },
+                                        "file": {
+                                            "description": "File that throw the exception.",
+                                            "type": "string"
+                                        },
+                                        "line": {
+                                            "description": "Line that throws the exception.",
+                                            "type": "integer"
+                                        },
+                                        "trace": {
+                                            "description": "Trace route objects.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "messagge": "The command failed.",
+                                        "exception": "",
+                                        "file": "",
+                                        "line": 150,
+                                        "trace": {
+                                            "file": "",
+                                            "line": 1,
+                                            "content": ""
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/airports/flights/{id}": {
+            "get": {
+                "tags": [
+                    "airports"
+                ],
+                "summary": "Obtain the flights from an airport",
+                "description": "Get all the flights related with the airport_id passed in the url.",
+                "operationId": "getAirportFlights",
+                "responses": {
+                    "200": {
+                        "description": "Ok.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "": {
+                                            "description": "airport_id in the route",
+                                            "type": "route",
+                                            "items": {
+                                                "type": "json"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": [
+                                        {
+                                            "path": "/airports/flights/5327"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "description": "Server message that contains the error.",
+                                            "type": "string"
+                                        },
+                                        "exception": {
+                                            "description": "Generated exception.",
+                                            "type": "string"
+                                        },
+                                        "file": {
+                                            "description": "File that throw the exception.",
+                                            "type": "string"
+                                        },
+                                        "line": {
+                                            "description": "Line that throws the exception.",
+                                            "type": "integer"
+                                        },
+                                        "trace": {
+                                            "description": "Trace route objects.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "messagge": "The command failed.",
+                                        "exception": "",
+                                        "file": "",
+                                        "line": 150,
+                                        "trace": {
+                                            "file": "",
+                                            "line": 1,
+                                            "content": ""
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/airports/comments/{id}": {
+            "get": {
+                "tags": [
+                    "airports"
+                ],
+                "summary": "Obtain the comments from an airport",
+                "description": "Get all the comments related with the city of the airport passed in the url.",
+                "operationId": "getAirportComments",
+                "responses": {
+                    "200": {
+                        "description": "Ok.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "": {
+                                            "description": "airport_id in the route",
+                                            "type": "route",
+                                            "items": {
+                                                "type": "json"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": [
+                                        {
+                                            "path": "/airports/flights/5327"
                                         }
                                     ]
                                 }
@@ -484,6 +743,106 @@
                                         {
                                             "id": 30,
                                             "name": "Annaba"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "description": "Server message that contains the error.",
+                                            "type": "string"
+                                        },
+                                        "exception": {
+                                            "description": "Generated exception.",
+                                            "type": "string"
+                                        },
+                                        "file": {
+                                            "description": "File that throw the exception.",
+                                            "type": "string"
+                                        },
+                                        "line": {
+                                            "description": "Line that throws the exception.",
+                                            "type": "integer"
+                                        },
+                                        "trace": {
+                                            "description": "Trace route objects.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "messagge": "The command failed.",
+                                        "exception": "",
+                                        "file": "",
+                                        "line": 150,
+                                        "trace": {
+                                            "file": "",
+                                            "line": 1,
+                                            "content": ""
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/cities/top": {
+            "get": {
+                "tags": [
+                    "comments",
+                    "cities"
+                ],
+                "summary": "Top 4 cities by user sentients",
+                "description": "Returns the top 4 destinations in base of the sentiment average",
+                "operationId": "getAirportsCoordinates",
+                "responses": {
+                    "200": {
+                        "description": "Ok.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "": {
+                                            "description": "All coordinates",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "json"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": [
+                                        {
+                                            "city": "Madrid",
+                                            "grade": "9.463677",
+                                            "sentiment": 0.633517016156253
+                                        },
+                                        {
+                                            "city": "Burgos",
+                                            "grade": "8.724951",
+                                            "sentiment": 0.6041372706116136
+                                        },
+                                        {
+                                            "city": "Pisa",
+                                            "grade": "9.207483",
+                                            "sentiment": 0.6028689742527156
+                                        },
+                                        {
+                                            "city": "Paris",
+                                            "grade": "9.041719",
+                                            "sentiment": 0.5961088823466875
                                         }
                                     ]
                                 }

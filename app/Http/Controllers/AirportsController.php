@@ -238,6 +238,79 @@ class AirportsController extends Controller
             return response()->json($data, JsonResponse::HTTP_OK);
         }
     }
+    /**
+     * @OA\GET(
+     *      path="/airports/flights/{id}",
+     *      operationId="getAirportFlights",
+     *      tags={"airports"},
+     *      summary="Obtain the flights from an airport",
+     *      description="Get all the flights related with the airport_id passed in the url.",
+     *      @OA\Response(
+     *          response=200,
+     *          description="Ok.",
+     *          content={
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          type="route",@OA\Items(type="json"),
+     *                          description="airport_id in the route"
+     *                      ),
+     *                      example={
+     *                          {"path": "/airports/flights/5327"}
+     *                    }
+     *                  )
+     *              )
+     *          }
+     *      ),
+     *      @OA\Response(
+     *          response=500,
+     *          description="Internal Server Error.",
+     *          content={
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="message",
+     *                          type="string",
+     *                          description="Server message that contains the error."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="exception",
+     *                          type="string",
+     *                          description="Generated exception."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="file",
+     *                          type="string",
+     *                          description="File that throw the exception."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="line",
+     *                          type="integer",
+     *                          description="Line that throws the exception."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="trace",
+     *                          type="array",
+     *                          description="Trace route objects.",
+     *                          @OA\Items(type="object")
+     *                      ),
+     *                      example={
+     *                          "messagge": "The command failed.",
+     *                          "exception": "",
+     *                          "file": "",
+     *                          "line": 150,
+     *                          "trace": {"file":"", "line":1, "content":""}
+     *                      }
+     *                  )
+     *              )
+     *          }
+     *      ),
+     *  )
+     *
+     * @return JsonResponse
+     */
     public static function getAirportFlights(Request $request)
     {
         $airport_id = $request->id; // obtengo el id introducido en la ruta
@@ -256,6 +329,79 @@ class AirportsController extends Controller
             return response()->json($flights, JsonResponse::HTTP_OK);
         }
     }
+    /**
+     * @OA\GET(
+     *      path="/airports/comments/{id}",
+     *      operationId="getAirportComments",
+     *      tags={"airports"},
+     *      summary="Obtain the comments from an airport",
+     *      description="Get all the comments related with the city of the airport passed in the url.",
+     *      @OA\Response(
+     *          response=200,
+     *          description="Ok.",
+     *          content={
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          type="route",@OA\Items(type="json"),
+     *                          description="airport_id in the route"
+     *                      ),
+     *                      example={
+     *                          {"path": "/airports/flights/5327"}
+     *                    }
+     *                  )
+     *              )
+     *          }
+     *      ),
+     *      @OA\Response(
+     *          response=500,
+     *          description="Internal Server Error.",
+     *          content={
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="message",
+     *                          type="string",
+     *                          description="Server message that contains the error."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="exception",
+     *                          type="string",
+     *                          description="Generated exception."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="file",
+     *                          type="string",
+     *                          description="File that throw the exception."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="line",
+     *                          type="integer",
+     *                          description="Line that throws the exception."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="trace",
+     *                          type="array",
+     *                          description="Trace route objects.",
+     *                          @OA\Items(type="object")
+     *                      ),
+     *                      example={
+     *                          "messagge": "The command failed.",
+     *                          "exception": "",
+     *                          "file": "",
+     *                          "line": 150,
+     *                          "trace": {"file":"", "line":1, "content":""}
+     *                      }
+     *                  )
+     *              )
+     *          }
+     *      ),
+     *  )
+     *
+     * @return JsonResponse
+     */
     public static function getAirportComments(Request $request)
     {
         $airport_id = $request->id; // obtengo el id introducido en la ruta
