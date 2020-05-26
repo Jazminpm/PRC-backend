@@ -150,6 +150,32 @@ class CommentController extends Controller
      *          }
      *      ),
      *      @OA\Response(
+     *          response=400,
+     *          description="Bad request.",
+     *          content={
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="errors",
+     *                          type="array",
+     *                          description="List of errors.",
+     *                          @OA\Items(type="string")
+     *                      ),
+     *                      example={
+     *                          "errors": {
+     *                              "The date time field is required.",
+     *                              "The airport id field is required.",
+     *                              "The grade field is required.",
+     *                              "The title field is required.",
+     *                              "The original message field is required.",
+     *                          }
+     *                      }
+     *                  )
+     *              )
+     *          }
+     *      ),
+     *      @OA\Response(
      *          response=500,
      *          description="Internal Server Error.",
      *          content={
@@ -307,6 +333,86 @@ class CommentController extends Controller
             return response()->json($data, JsonResponse::HTTP_OK);
         }
     }
+    /**
+     * @OA\POST(
+     *      path="/airports/comments/new-comment",
+     *      operationId="insertNewComment",
+     *      tags={"comments"},
+     *      summary="User insert new comment",
+     *      description="Registered user send new comment from the city of the airport.",
+     *      @OA\RequestBody(
+     *          @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema(
+     *                      @OA\Property(
+     *                          type="array",@OA\Items(type="json"),
+     *                          description="Comment data"
+     *                      ),
+     *                      example={
+     *                          example={{"title": "Tryout", "original_message": "This my first comment", "grade": 4.00, "airport_id": 5327}},
+     *                          example={{"title": "Comment title", "original_message": "This a new comment", "grade": 5.00, "airport_id": 5327}},
+     *                    }
+     *                  )
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Ok.",
+     *          content={
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *              )
+     *          }
+     *      ),
+     *      @OA\Response(
+     *          response=500,
+     *          description="Internal Server Error.",
+     *          content={
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="message",
+     *                          type="string",
+     *                          description="Server message that contains the error."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="exception",
+     *                          type="string",
+     *                          description="Generated exception."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="file",
+     *                          type="string",
+     *                          description="File that throw the exception."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="line",
+     *                          type="integer",
+     *                          description="Line that throws the exception."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="trace",
+     *                          type="array",
+     *                          description="Trace route objects.",
+     *                          @OA\Items(type="object")
+     *                      ),
+     *                      example={
+     *                          "messagge": "The command failed.",
+     *                          "exception": "",
+     *                          "file": "",
+     *                          "line": 150,
+     *                          "trace": {"file":"", "line":1, "content":""}
+     *                      }
+     *                  )
+     *              )
+     *          }
+     *      ),
+     *  )
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function insertUserComment(Request $request){
         $validator = Validator::make($request->json()->all(), [
             'date_time' => ['required', 'date', 'date_format:Y-m-d', 'before_or_equal:today'],
