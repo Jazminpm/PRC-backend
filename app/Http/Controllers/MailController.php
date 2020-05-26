@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Throwable;
 
 class MailController extends Controller
 {
@@ -112,9 +113,13 @@ class MailController extends Controller
 
     public static function sendMailScrapers($date, $msg, $subject)
     {
-        $user = Auth::user();
-        $args = array("name"=>$user->name, "mail"=>$user->email, "body"=>$msg);
-        // dd($args);
+        try {
+            $user = Auth::user();
+            $args = array("name"=>$user->name, "mail"=>$user->email, "body"=>$msg);
+        } catch (Throwable $e) {
+            $args = array("name"=>'Scraper', "mail"=>'scraper@easytravel.com', "body"=>$msg);
+        }
+
         $to_name = 'EasyTravel';
         $to_email = 'easytraveluem@gmail.com';
         // $data=array("name"=>$request->name, "mail"=>$request->email, "body"=>$request->message);

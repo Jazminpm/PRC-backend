@@ -333,10 +333,11 @@ class CommentController extends Controller
             return response()->json($data, JsonResponse::HTTP_OK);
         }
     }
+
     /**
      * @OA\POST(
      *      path="/airports/comments/new-comment",
-     *      operationId="insertNewComment",
+     *      operationId="insertUserComment",
      *      tags={"comments"},
      *      summary="User insert new comment",
      *      description="Registered user send new comment from the city of the airport.",
@@ -349,8 +350,8 @@ class CommentController extends Controller
      *                          description="Comment data"
      *                      ),
      *                      example={
-     *                          example={{"title": "Tryout", "original_message": "This my first comment", "grade": 4.00, "airport_id": 5327}},
-     *                          example={{"title": "Comment title", "original_message": "This a new comment", "grade": 5.00, "airport_id": 5327}},
+     *                          {"title": "Tryout", "original_message": "This my first comment", "grade": 4.00, "airport_id": 5327},
+     *                          {"title": "Comment title", "original_message": "This a new comment", "grade": 5.00, "airport_id": 5327},
      *                    }
      *                  )
      *          )
