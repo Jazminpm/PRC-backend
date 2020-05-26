@@ -54,7 +54,81 @@ class AirportsController extends Controller
         }
     }
 
-    // todo: API documentation
+    /**
+     * @OA\GET(
+     *      path="/api/airports/coordinates",
+     *      operationId="getAirportsCoordinates",
+     *      tags={"airports"},
+     *      summary="Get all airports coordinates with URL",
+     *      description="Returns all the airports coordinates and basic info.",
+     *      @OA\Response(
+     *          response=200,
+     *          description="Ok.",
+     *          content={
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          type="array",
+     *                          @OA\Items(type="json"),
+     *                          description="All coordinates"
+     *                      ),
+     *                      example={
+     *                          {"airport_id": 216,"airport_name": "Cootamundra Airport","airport_country": "Australia","airport_city": "","airport_lon": 148.028,"airport_lat": -34.623901},
+     *                          {"airport_id": 241,"airport_name": "Adelaide International Airport","airport_country": "Australia","airport_city": "Adelaide","airport_lon": 138.53101,"airport_lat": -34.945},
+     *                      }
+     *                  )
+     *              )
+     *          }
+     *      ),
+     *      @OA\Response(
+     *          response=500,
+     *          description="Internal Server Error.",
+     *          content={
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="message",
+     *                          type="string",
+     *                          description="Server message that contains the error."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="exception",
+     *                          type="string",
+     *                          description="Generated exception."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="file",
+     *                          type="string",
+     *                          description="File that throw the exception."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="line",
+     *                          type="integer",
+     *                          description="Line that throws the exception."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="trace",
+     *                          type="array",
+     *                          description="Trace route objects.",
+     *                          @OA\Items(type="object")
+     *                      ),
+     *                      example={
+     *                          "messagge": "The command failed.",
+     *                          "exception": "",
+     *                          "file": "",
+     *                          "line": 150,
+     *                          "trace": {"file":"", "line":1, "content":""}
+     *                      }
+     *                  )
+     *              )
+     *          }
+     *      ),
+     *  )
+     *
+     * @return JsonResponse
+     */
     public static function getAirportsCoordinates()
     {
         $data = DB::select(DB::raw("

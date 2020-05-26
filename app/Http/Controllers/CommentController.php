@@ -27,6 +27,83 @@ class CommentController extends Controller
         ], $json);
     }
 
+    /**
+     * @OA\GET(
+     *      path="/api/cities/top",
+     *      operationId="getAirportsCoordinates",
+     *      tags={"comments", "cities"},
+     *      summary="Top 4 cities by user sentients",
+     *      description="Returns the top 4 destinations in base of the sentiment average",
+     *      @OA\Response(
+     *          response=200,
+     *          description="Ok.",
+     *          content={
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          type="array",
+     *                          @OA\Items(type="json"),
+     *                          description="All coordinates"
+     *                      ),
+     *                      example={
+     *                          {"city": "Madrid","grade": "9.463677","sentiment": 0.633517016156253},
+     *                          {"city": "Burgos","grade": "8.724951","sentiment": 0.6041372706116136},
+     *                          {"city": "Pisa","grade": "9.207483","sentiment": 0.6028689742527156},
+     *                          {"city": "Paris","grade": "9.041719","sentiment": 0.5961088823466875}
+     *                      }
+     *                  )
+     *              )
+     *          }
+     *      ),
+     *      @OA\Response(
+     *          response=500,
+     *          description="Internal Server Error.",
+     *          content={
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="message",
+     *                          type="string",
+     *                          description="Server message that contains the error."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="exception",
+     *                          type="string",
+     *                          description="Generated exception."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="file",
+     *                          type="string",
+     *                          description="File that throw the exception."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="line",
+     *                          type="integer",
+     *                          description="Line that throws the exception."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="trace",
+     *                          type="array",
+     *                          description="Trace route objects.",
+     *                          @OA\Items(type="object")
+     *                      ),
+     *                      example={
+     *                          "messagge": "The command failed.",
+     *                          "exception": "",
+     *                          "file": "",
+     *                          "line": 150,
+     *                          "trace": {"file":"", "line":1, "content":""}
+     *                      }
+     *                  )
+     *              )
+     *          }
+     *      ),
+     *  )
+     *
+     * @return JsonResponse
+     */
     public function getTopDestinations()
     {
         // QUERY: get best cities by grade average
@@ -40,7 +117,6 @@ class CommentController extends Controller
             ->select(['c.name as city', DB::raw('avg(com.grade)*2 as grade, avg(com.sentiment) as sentiment')])
             ->join('cities as c', 'com.city_id', '=', 'c.id')
             ->groupBy('com.city_id')->orderBy('sentiment', 'desc')->limit(4)->get();
-        // todo: grade se devuelve como string. Hay que solucionarlo
         return response()->json(compact('data'), JsonResponse::HTTP_OK);
     }
 
