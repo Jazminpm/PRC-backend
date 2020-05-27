@@ -73,8 +73,33 @@ class MailController extends Controller
      *                          type="string",
      *                          description="Server message that contains the error."
      *                      ),
+     *                      @OA\Property(
+     *                          property="exception",
+     *                          type="string",
+     *                          description="Generated exception."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="file",
+     *                          type="string",
+     *                          description="File that throw the exception."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="line",
+     *                          type="integer",
+     *                          description="Line that throws the exception."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="trace",
+     *                          type="array",
+     *                          description="Trace route objects.",
+     *                          @OA\Items(type="object")
+     *                      ),
      *                      example={
-     *                          "error": "Unable to send the message"
+     *                          "messagge": "The command failed.",
+     *                          "exception": "",
+     *                          "file": "",
+     *                          "line": 150,
+     *                          "trace": {"file":"", "line":1, "content":""}
      *                      }
      *                  )
      *              )
