@@ -266,7 +266,22 @@ class AirportsController extends Controller
      *                          description="airport_id in the route"
      *                      ),
      *                      example={
-     *                          {"path": "/airports/flights/5327"}
+     *                          {
+     *                              "id": "U27206",
+     *                              "airport_name": "Barcelona International Airport",
+     *                              "airline_name": "EasyJet (DS)",
+     *                              "date_time": "2020-05-26 22:55:00",
+     *                              "status_name": "Cancelled",
+     *                              "prediction": null
+     *                          },
+     *                          {
+     *                          "id": "U26030",
+     *                          "airport_name": "Barcelona International Airport",
+     *                          "airline_name": "EasyJet (DS)",
+     *                          "date_time": "2020-05-26 22:15:00",
+     *                          "status_name": "Cancelled",
+     *                          "prediction": null
+     *                         },
      *                    }
      *                  )
      *              )

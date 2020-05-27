@@ -244,7 +244,20 @@
                                     "type": "object",
                                     "example": [
                                         {
-                                            "path": "/airports/flights/5327"
+                                            "id": "U27206",
+                                            "airport_name": "Barcelona International Airport",
+                                            "airline_name": "EasyJet (DS)",
+                                            "date_time": "2020-05-26 22:55:00",
+                                            "status_name": "Cancelled",
+                                            "prediction": null
+                                        },
+                                        {
+                                            "id": "U26030",
+                                            "airport_name": "Barcelona International Airport",
+                                            "airline_name": "EasyJet (DS)",
+                                            "date_time": "2020-05-26 22:15:00",
+                                            "status_name": "Cancelled",
+                                            "prediction": null
                                         }
                                     ]
                                 }
@@ -970,34 +983,6 @@
                             }
                         }
                     },
-                    "400": {
-                        "description": "Bad request.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "errors": {
-                                            "description": "List of errors.",
-                                            "type": "array",
-                                            "items": {
-                                                "type": "string"
-                                            }
-                                        }
-                                    },
-                                    "type": "object",
-                                    "example": {
-                                        "errors": [
-                                            "The date time field is required.",
-                                            "The airport id field is required.",
-                                            "The grade field is required.",
-                                            "The title field is required.",
-                                            "The original message field is required."
-                                        ]
-                                    }
-                                }
-                            }
-                        }
-                    },
                     "500": {
                         "description": "Internal Server Error.",
                         "content": {
@@ -1199,10 +1184,38 @@
                     }
                 },
                 "responses": {
-                    "200": {
-                        "description": "Ok.",
+                    "204": {
+                        "description": "Ok. No content displayed.",
                         "content": {
                             "application/json": {}
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "errors": {
+                                            "description": "List of errors.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "errors": [
+                                            "The date time field is required.",
+                                            "The airport id field is required.",
+                                            "The grade field is required.",
+                                            "The title field is required.",
+                                            "The original message field is required."
+                                        ]
+                                    }
+                                }
+                            }
                         }
                     },
                     "500": {

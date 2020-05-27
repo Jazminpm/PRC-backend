@@ -150,32 +150,6 @@ class CommentController extends Controller
      *          }
      *      ),
      *      @OA\Response(
-     *          response=400,
-     *          description="Bad request.",
-     *          content={
-     *              @OA\MediaType(
-     *                  mediaType="application/json",
-     *                  @OA\Schema(
-     *                      @OA\Property(
-     *                          property="errors",
-     *                          type="array",
-     *                          description="List of errors.",
-     *                          @OA\Items(type="string")
-     *                      ),
-     *                      example={
-     *                          "errors": {
-     *                              "The date time field is required.",
-     *                              "The airport id field is required.",
-     *                              "The grade field is required.",
-     *                              "The title field is required.",
-     *                              "The original message field is required.",
-     *                          }
-     *                      }
-     *                  )
-     *              )
-     *          }
-     *      ),
-     *      @OA\Response(
      *          response=500,
      *          description="Internal Server Error.",
      *          content={
@@ -357,11 +331,37 @@ class CommentController extends Controller
      *          )
      *      ),
      *      @OA\Response(
-     *          response=200,
-     *          description="Ok.",
+     *          response=204,
+     *          description="Ok. No content displayed.",
      *          content={
      *              @OA\MediaType(
      *                  mediaType="application/json",
+     *              )
+     *          }
+     *      ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad request.",
+     *          content={
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="errors",
+     *                          type="array",
+     *                          description="List of errors.",
+     *                          @OA\Items(type="string")
+     *                      ),
+     *                      example={
+     *                          "errors": {
+     *                              "The date time field is required.",
+     *                              "The airport id field is required.",
+     *                              "The grade field is required.",
+     *                              "The title field is required.",
+     *                              "The original message field is required.",
+     *                          }
+     *                      }
+     *                  )
      *              )
      *          }
      *      ),
