@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use DateTime;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -239,6 +240,7 @@ class AirportsController extends Controller
             return response()->json($data, JsonResponse::HTTP_OK);
         }
     }
+
     /**
      * @OA\GET(
      *      path="/api/airports/flights/{id}",
@@ -334,16 +336,22 @@ class AirportsController extends Controller
      *      ),
      *  )
      *
+     * @param Request $request
      * @return JsonResponse
      */
     public static function getAirportFlights(Request $request)
     {
-        $validator = Validator::make($request->json()->all(), [
-            'airport_id' => ['required', 'integer', 'exists:airports,id'],
+        $validator = Validator::make(array("id" => $request->id), [
+            'id' => ['required', 'integer', 'exists:airports,id'],
         ]);
         if ($validator->fails()) {
             return failValidation($validator);
         } else {
+            $date = new DateTime('now');
+            $todayStr = $date->format('Y-m-d H:i:s');
+            $date = \Carbon\Carbon::today()->subDays(5);
+            $dateStr = $date->format('Y-m-d H:i:s');
+
             $airport_id = $request->id; // obtengo el id introducido en la ruta
 
             $flights = DB::table('airports AS air')
@@ -351,6 +359,8 @@ class AirportsController extends Controller
                 ->join('flights AS f', 'air.id', '=', 'f.airport_id')
                 ->join('flight_statuses AS fs', 'f.delay', '=', 'fs.id')
                 ->join('airlines AS a', 'f.airline_id', '=', 'a.id')
+                ->where('f.date_time', '<=', $todayStr)
+                ->where('f.date_time', '>=', $dateStr)
                 ->where('air.id', '=', $airport_id)
                 ->orderBy('date_time', 'DESC')
                 ->get();
@@ -361,6 +371,7 @@ class AirportsController extends Controller
             }
         }
     }
+
     /**
      * @OA\GET(
      *      path="/api/airports/comments/{id}",
@@ -441,12 +452,13 @@ class AirportsController extends Controller
      *      ),
      *  )
      *
+     * @param Request $request
      * @return JsonResponse
      */
     public static function getAirportComments(Request $request)
     {
-        $validator = Validator::make($request->json()->all(), [
-            'airport_id' => ['required', 'integer', 'exists:airports,id'],
+        $validator = Validator::make(array("id" => $request->id), [
+            'id' => ['required', 'integer', 'exists:airports,id'],
         ]);
         if ($validator->fails()) {
             return failValidation($validator);
