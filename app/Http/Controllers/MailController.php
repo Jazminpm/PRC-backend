@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Validator;
 use Throwable;
 
 class MailController extends Controller
@@ -56,6 +57,31 @@ class MailController extends Controller
      *                      ),
      *                      example={
      *                          "msg": "Email sent correctly"
+     *                      }
+     *                  )
+     *              )
+     *          }
+     *      ),
+     *     @OA\Response(
+     *          response=400,
+     *          description="Bad request.",
+     *          content={
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="errors",
+     *                          type="array",
+     *                          description="List of errors.",
+     *                          @OA\Items(type="string")
+     *                      ),
+     *                      example={
+     *                          "errors": {
+     *                              "The name field is required.",
+     *                              "The email field is required.",
+     *                              "The message field is required.",
+     *                              "The email must be a valid email address.",
+     *                          }
      *                      }
      *                  )
      *              )
@@ -116,24 +142,29 @@ class MailController extends Controller
      */
     public function sendMail(Request $request)
     {
-        //$name = 'User name';
-        //$email = 'pruebaLaravel@gmail.com';
-        //$content = 'Este es el mensaje del correo, usando controlador y variables.';
+        $validator = Validator::make($request->json()->all(), [
+            'name' => ['required', 'string'],
+            'email' => ['required', 'email'],
+            'message' => ['required', 'string'],
+        ]);
+        if ($validator->fails()) {
+            return failValidation($validator);
+        } else {
+            $to_name = 'EasyTravel';
+            $to_email = 'easytraveluem@gmail.com';
+            $data=array("name"=>$request->name, "mail"=>$request->email, "body"=>$request->message);
+            Mail::send('mail', $data, function($message) use ($to_name, $to_email){
+                $message -> to($to_email)
+                    ->subject('Contact form message');
+            });
 
-        $to_name = 'EasyTravel';
-        $to_email = 'easytraveluem@gmail.com';
-        $data=array("name"=>$request->name, "mail"=>$request->email, "body"=>$request->message);
-        Mail::send('mail', $data, function($message) use ($to_name, $to_email){
-            $message -> to($to_email)
-                ->subject('Contact form message');
-        });
-
-        if (Mail::failures()) {
-            // return with failed message
-            return response()->json(["error" => "Unable to send the message"], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+            if (Mail::failures()) {
+                // return with failed message
+                return response()->json(["error" => "Unable to send the message"], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+            }
+            // return with success message
+            return response()->json(null, JsonResponse::HTTP_NO_CONTENT);
         }
-        // return with success message
-        return response()->json(null, JsonResponse::HTTP_NO_CONTENT);
     }
 
     public static function sendMailScrapers($date, $msg, $subject)

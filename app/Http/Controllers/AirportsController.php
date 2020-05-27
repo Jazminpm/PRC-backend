@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 use Throwable;
 
 class AirportsController extends Controller
@@ -337,20 +338,27 @@ class AirportsController extends Controller
      */
     public static function getAirportFlights(Request $request)
     {
-        $airport_id = $request->id; // obtengo el id introducido en la ruta
-
-        $flights = DB::table('airports AS air')
-            ->select('f.id', 'air.name AS airport_name', 'a.name AS airline_name', 'f.date_time', 'fs.name AS status_name', 'f.prediction')
-            ->join('flights AS f', 'air.id', '=', 'f.airport_id')
-            ->join('flight_statuses AS fs', 'f.delay', '=', 'fs.id')
-            ->join('airlines AS a', 'f.airline_id', '=', 'a.id')
-            ->where('air.id', '=', $airport_id)
-            ->orderBy('date_time', 'DESC')
-            ->get();
-        if (is_null($flights)) {
-            return null;
+        $validator = Validator::make($request->json()->all(), [
+            'airport_id' => ['required', 'integer', 'exists:airports,id'],
+        ]);
+        if ($validator->fails()) {
+            return failValidation($validator);
         } else {
-            return response()->json($flights, JsonResponse::HTTP_OK);
+            $airport_id = $request->id; // obtengo el id introducido en la ruta
+
+            $flights = DB::table('airports AS air')
+                ->select('f.id', 'air.name AS airport_name', 'a.name AS airline_name', 'f.date_time', 'fs.name AS status_name', 'f.prediction')
+                ->join('flights AS f', 'air.id', '=', 'f.airport_id')
+                ->join('flight_statuses AS fs', 'f.delay', '=', 'fs.id')
+                ->join('airlines AS a', 'f.airline_id', '=', 'a.id')
+                ->where('air.id', '=', $airport_id)
+                ->orderBy('date_time', 'DESC')
+                ->get();
+            if (is_null($flights)) {
+                return null;
+            } else {
+                return response()->json($flights, JsonResponse::HTTP_OK);
+            }
         }
     }
     /**
@@ -437,19 +445,26 @@ class AirportsController extends Controller
      */
     public static function getAirportComments(Request $request)
     {
-        $airport_id = $request->id; // obtengo el id introducido en la ruta
-
-        $comments = DB::table('airports AS air')
-            ->select('air.name AS airport_name', 'ct.name AS city_name', 'c.place', 'c.title', 'c.date_time', 'c.original_message', 'c.grade')
-            ->join('comments AS c', 'air.city_id', '=', 'c.city_id')
-            ->join('cities AS ct', 'air.city_id', '=', 'ct.id')
-            ->where('air.id', '=', $airport_id)
-            ->orderBy('date_time', 'DESC')
-            ->get();
-        if (is_null($comments)) {
-            return null;
+        $validator = Validator::make($request->json()->all(), [
+            'airport_id' => ['required', 'integer', 'exists:airports,id'],
+        ]);
+        if ($validator->fails()) {
+            return failValidation($validator);
         } else {
-            return response()->json($comments, JsonResponse::HTTP_OK);
+            $airport_id = $request->id; // obtengo el id introducido en la ruta
+
+            $comments = DB::table('airports AS air')
+                ->select('air.name AS airport_name', 'ct.name AS city_name', 'c.place', 'c.title', 'c.date_time', 'c.original_message', 'c.grade')
+                ->join('comments AS c', 'air.city_id', '=', 'c.city_id')
+                ->join('cities AS ct', 'air.city_id', '=', 'ct.id')
+                ->where('air.id', '=', $airport_id)
+                ->orderBy('date_time', 'DESC')
+                ->get();
+            if (is_null($comments)) {
+                return null;
+            } else {
+                return response()->json($comments, JsonResponse::HTTP_OK);
+            }
         }
     }
     public static function getCityID($airport_id){
