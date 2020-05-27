@@ -230,7 +230,7 @@ def weather_for_you(airport_id, icao):
 
 
 def select_historical_date(str_date, url, airport_id):
-    today = date.today()
+    '''today = date.today()
     str_date = datetime.strptime(str_date, '%Y-%m-%d')
 
     day = int(str_date.strftime('%d'))
@@ -247,8 +247,8 @@ def select_historical_date(str_date, url, airport_id):
         date_list = [(select_date + timedelta(days=d)).strftime("%Y-%m-%d")
                      for d in range((today - select_date).days)]
 
-    for dat in date_list:
-        asyncio.get_event_loop().run_until_complete(select_url(dat[8:10], dat[5:7], dat[0:4], url, airport_id))
+    for dat in date_list:'''
+    asyncio.get_event_loop().run_until_complete(select_url(str_date[8:10], str_date[5:7], str_date[0:4], url, airport_id))
 
 
 def select_future_date(url, airport_id):
