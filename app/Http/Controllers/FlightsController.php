@@ -47,10 +47,9 @@ class FlightsController extends Controller
         ->join('weathers as w', 'w.airport_id', '=', 'flights.airport_id', 'right outer')
             ->where(DB::raw('DATE(flights.date_time)'), '>=', $init_date)
             ->where(DB::raw('DATE(flights.date_time)'), '<=', $final_date)
-            ->where(DB::raw('DATE(w.date_time)'), DB::raw('DATE(flights.date_time)'))
-            //->where(DB::raw('(extract(minute from time(w.date_time) - time(flights.date_time)))'),'>=', '0')
-            //->where(DB::raw('(extract(minute from time(w.date_time) - time(flights.date_time)))'),'<', '60')
-            ->where(DB::raw('HOUR(w.date_time)'), DB::raw('HOUR(flights.date_time)'))
+            ->where(DB::raw('DATE(flights.date_time)'),'=', DB::raw('DATE(w.date_time)'))
+            ->where(DB::raw('HOUR(flights.date_time)'),'=', DB::raw('HOUR(w.date_time)'))
+            ->where(DB::raw('MINUTE(w.date_time)'), '0')
             ->whereIn('delay', [0, 1])
             ->get(), True);
     }

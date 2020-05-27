@@ -61,21 +61,21 @@ def import_model(select_classifier, data_train):
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20)
 
     # -------------4. Select, create and train the Algorithm
-    if select_classifier == 1:
+    if select_classifier == 0:
         classifier = GaussianNB()
         model_name = 'naive_bayes'
-    elif select_classifier == 2:
+    elif select_classifier == 1:
         classifier = RandomForestClassifier(n_estimators=3,
                                             random_state=0)
         model_name = 'random_forest'
-    elif select_classifier == 3:
+    elif select_classifier == 2:
         classifier = GradientBoostingClassifier(n_estimators=3, learning_rate=0.5, max_features=2, max_depth=2,
                                                 random_state=0)
         model_name = 'gradient_boosting'
-    elif select_classifier == 4:
+    elif select_classifier == 3:
         classifier = tree.DecisionTreeClassifier()
         model_name = 'decision_tree'
-    elif select_classifier == 5:
+    elif select_classifier == 4:
         classifier = KNeighborsClassifier()
         model_name = 'k-nn'
     else:
@@ -137,7 +137,7 @@ def save_model(classifier, model_name, le):
 def prediction(num_model, model_date, data_test):
     os.chdir(os.path.dirname(__file__))
 
-    model_name = ['', 'naive_bayes', 'random_forest', 'gradient_boosting', 'decision_tree', 'k-nn',
+    model_name = ['naive_bayes', 'random_forest', 'gradient_boosting', 'decision_tree', 'k-nn',
     'logistic_regression']
 
     # 1. Import from directories
