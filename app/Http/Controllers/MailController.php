@@ -108,7 +108,7 @@ class MailController extends Controller
             return response()->json(["error" => "Unable to send the message"], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
         // return with success message
-        return response()->json(["msg" => "Email sent correctly"], JsonResponse::HTTP_OK);
+        return response()->json(null, JsonResponse::HTTP_NO_CONTENT);
     }
 
     public static function sendMailScrapers($date, $msg, $subject)
