@@ -362,7 +362,7 @@ class AirportsController extends Controller
                 ->where('f.date_time', '<=', $todayStr)
                 ->where('f.date_time', '>=', $dateStr)
                 ->where('air.id', '=', $airport_id)
-                ->orderBy('date_time', 'DESC')
+                ->orderBy('date_time', 'asc')
                 ->get();
             if (is_null($flights)) {
                 return null;

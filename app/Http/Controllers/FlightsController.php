@@ -85,13 +85,15 @@ class FlightsController extends Controller
         $characteristic = FlightsController::prepareCharacteristic($characteristic);
         return json_decode(DB::table('flights')->select($characteristic) //$columns
         ->join('weathers as w', 'w.airport_id', '=', 'flights.airport_id', 'right outer')
-            ->where(DB::raw('DATE(flights.date_time)'), '>=', $init_date)
-            ->where(DB::raw('DATE(flights.date_time)'), '<=', $final_date)
-            ->where(DB::raw('DATE(w.date_time)'), DB::raw('DATE(flights.date_time)'))
-            ->whereIn('flights.airport_id', $airports)
-            ->where(DB::raw('HOUR(w.date_time)'), DB::raw('HOUR(flights.date_time)'))
-            ->whereIn('delay', [0, 1])
-            ->get(), True);
+        ->where(DB::raw('DATE(flights.date_time)'), '>=', $init_date)
+        ->where(DB::raw('DATE(flights.date_time)'), '<=', $final_date)
+        ->where(DB::raw('DATE(flights.date_time)'),'=', DB::raw('DATE(w.date_time)'))
+        ->where(DB::raw('HOUR(flights.date_time)'),'=', DB::raw('HOUR(w.date_time)'))
+        ->where(DB::raw('MINUTE(w.date_time)'), '0')
+        ->whereIn('flights.airport_id', $airports)
+        ->whereIn('delay', [0, 1])
+        ->orderBy('flights.date_time', 'asc')
+        ->get(), True);
     }
 
 
