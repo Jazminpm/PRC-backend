@@ -132,6 +132,9 @@ class ModelController extends Controller
      *              )
      *          }
      *      ),
+     *      security={
+     *         {"bearer": {}}
+     *     }
      *  )
      *
      * @param Request $request
@@ -317,6 +320,9 @@ class ModelController extends Controller
      *              )
      *          }
      *      ),
+     *      security={
+     *         {"bearer": {}}
+     *     }
      *  )
      *
      * @param Request $request
@@ -463,6 +469,9 @@ class ModelController extends Controller
      *              )
      *          }
      *      ),
+     *      security={
+     *         {"bearer": {}}
+     *     }
      *  )
      *
      * @param Request $request
@@ -575,6 +584,9 @@ class ModelController extends Controller
      *              )
      *          }
      *      ),
+     *      security={
+     *         {"bearer": {}}
+     *     }
      *  )
      *
      * @param Request $request
@@ -699,6 +711,9 @@ class ModelController extends Controller
      *              )
      *          }
      *      ),
+     *      security={
+     *         {"bearer": {}}
+     *     }
      *  )
      *
      * @param Request $request
@@ -839,6 +854,9 @@ class ModelController extends Controller
      *              )
      *          }
      *      ),
+     *      security={
+     *         {"bearer": {}}
+     *     }
      *  )
      *
      * @param Request $request
@@ -921,6 +939,9 @@ class ModelController extends Controller
      *              )
      *          }
      *      ),
+     *      security={
+     *         {"bearer": {}}
+     *     }
      *  )
      *
      * @param Request $request
@@ -1007,6 +1028,9 @@ class ModelController extends Controller
      *              )
      *          }
      *      ),
+     *      security={
+     *         {"bearer": {}}
+     *     }
      *  )
      *
      * @param Request $request

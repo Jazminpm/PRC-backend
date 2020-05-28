@@ -91,6 +91,9 @@ class CitiesController extends Controller
      *              )
      *          }
      *      ),
+     *      security={
+     *         {"bearer": {}}
+     *     }
      *  )
      *
      * @return JsonResponse

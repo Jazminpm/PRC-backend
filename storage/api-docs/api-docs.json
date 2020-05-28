@@ -739,7 +739,99 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/auth/logout": {
+            "post": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Log out.",
+                "description": "Log out.",
+                "operationId": "logout",
+                "responses": {
+                    "200": {
+                        "description": "Ok.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "access_token": {
+                                            "description": "User name.",
+                                            "type": "string"
+                                        },
+                                        "token_type": {
+                                            "description": "User surnames.",
+                                            "type": "string"
+                                        },
+                                        "expires_in": {
+                                            "description": "Alive time of the token in seconds. Default 3600s",
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC9sb2NhbGhvc3Q6ODAwMFwvYXBpXC9hdXRoXC9yZWdpc3RlciIsImlhdCI6MTU4ODQ5Mjk5MSwiZXhwIjoxNTg4NDk2NTkxLCJuYmYiOjE1ODg0OTI5OTEsImp0aSI6ImRMWjNQcmN0Tm5UUEdtanMiLCJzdWIiOjUsInBydiI6Ijg3ZTBhZjFlZjlmZDE1ODEyZmRlYzk3MTUzYTE0ZTBiMDQ3NTQ2YWEifQ.mNh-Rfalspe1SBH_ltfz_ErIAhExJwDIA8td69fZvWA",
+                                        "token_type": "bearer",
+                                        "expires_in": 3600
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "errors": {
+                                            "description": "List of errors.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "errors": "Invalid credentials."
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "errors": {
+                                            "description": "Token error.",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "errors": "Could not create access token."
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
             }
         },
         "/api/cities/cities": {
@@ -830,7 +922,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
             }
         },
         "/api/cities/top": {
@@ -1264,7 +1361,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
             }
         },
         "/api/countries/countries": {
@@ -1969,7 +2071,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
             }
         },
         "/api/models/predict": {
@@ -2101,7 +2208,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
             }
         },
         "/api/models/updateModel": {
@@ -2205,7 +2317,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
             }
         },
         "/api/models/algorithms": {
@@ -2314,7 +2431,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
             }
         },
         "/api/models/models": {
@@ -2438,7 +2560,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
             }
         },
         "/api/models/lastModels": {
@@ -2579,7 +2706,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
             }
         },
         "/api/models/deleteModel": {
@@ -2657,7 +2789,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
             }
         },
         "/api/models/getModelInUse": {
@@ -2739,7 +2876,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
             }
         },
         "/api/scrapers/weathers/forecast": {
@@ -2861,7 +3003,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
             }
         },
         "/api/scrapers/weathers/history": {
@@ -2992,7 +3139,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
             }
         },
         "/api/scrapers/flights/history": {
@@ -3123,7 +3275,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
             }
         },
         "/api/scrapers/flights/forecast": {
@@ -3366,7 +3523,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
             }
         },
         "/api/scrapers/comments": {
@@ -3489,7 +3651,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
             }
         }
     },
@@ -3502,5 +3669,16 @@
             "name": "auth",
             "description": "Authentication operations."
         }
-    ]
+    ],
+    "components": {
+        "securitySchemes": {
+            "bearer": {
+                "type": "http",
+                "description": "Authorization token obtained from logging in.",
+                "name": "Authorization",
+                "in": "header",
+                "scheme": "bearer"
+            }
+        }
+    }
 }

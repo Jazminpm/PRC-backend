@@ -409,6 +409,9 @@ class CommentController extends Controller
      *              )
      *          }
      *      ),
+     *      security={
+     *         {"bearer": {}}
+     *     }
      *  )
      *
      * @param Request $request

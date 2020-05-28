@@ -118,6 +118,9 @@ class ScraperController extends Controller
      *              )
      *          }
      *      ),
+      *     security={
+      *         {"bearer": {}}
+      *     }
      *  )
      *
      * @param Request $request
@@ -283,6 +286,9 @@ class ScraperController extends Controller
      *              )
      *          }
      *      ),
+     *     security={
+     *         {"bearer": {}}
+     *     }
      *  )
      *
      * @param Request $request
@@ -446,6 +452,9 @@ class ScraperController extends Controller
      *              )
      *          }
      *      ),
+     *     security={
+     *         {"bearer": {}}
+     *     }
      *  )
      *
      * @param Request $request
@@ -752,6 +761,9 @@ class ScraperController extends Controller
      *              )
      *          }
      *      ),
+     *     security={
+     *         {"bearer": {}}
+     *     }
      *  )
      *
      * @param Request $request
@@ -897,6 +909,9 @@ class ScraperController extends Controller
      *              )
      *          }
      *      ),
+     *     security={
+     *         {"bearer": {}}
+     *     }
      *  )
      *
      * @param Request $request
