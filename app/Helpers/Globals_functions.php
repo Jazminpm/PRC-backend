@@ -19,7 +19,7 @@ function executePython($script, $request) {
     // dd($cmd.' '.$script." '".$args."'");
     // Iniciamos el proceso
     $process = new Process([$cmd, $script, $args]);
-    $process->setTimeout(3600);
+    $process->setTimeout(100000);
     $process->run();
 
     // executes after the command finishes

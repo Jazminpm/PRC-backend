@@ -11398,6 +11398,16 @@ class AirlinesTableSeeder extends Seeder
             "country_id" => 221
         ]);
 
+        Airline::create([
+            'id' => 17012,
+            'name' => "Anisec Luftfahrt",
+            "alias" => null,
+            'iata' => "VK",
+            'icao' => "FOO",
+            "callsign" => "",
+            "country_id" => 13
+        ]);
+
         // Airportia pone destinos de aerolineas que son aeropuertos
         Airline::create([
             'id' => 18000,

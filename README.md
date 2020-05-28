@@ -28,6 +28,11 @@ cp .env.example .env
 php artisan key:generate
 ```
 
+##### Generate a new jwt secret
+```shell script
+php artisan jwt:secret
+```
+
 ##### Run npm dependencies
 ```shell script
 npm install
@@ -38,18 +43,9 @@ npm install
 # create the virtual environment for Linux
 virtualenv -p python3 --no-site-packages vendor/python/venv
 # install requirements
-$ vendor/python/venv/bin/python -m pip install -r storage/app/python/requirements.txt
+$ vendor/python/venv/bin/python -m pip install -r app/python/requirements.txt
 
 # create the virtual environment for Windows
 virtualenv -p python3 vendor/python/venv
-vendor\python\venv\Scripts\python -m pip install -r storage/app/python/requirements.txt
-```
-
-###Laravel authentication
-```shell script
-#Install the Vue scaffolding provided by Laravel
-composer require laravel/ui
-php artisan ui vue --auth
-npm install
-npm run dev
+vendor\python\venv\Scripts\python -m pip install -r /app/python/requirements.txt
 ```

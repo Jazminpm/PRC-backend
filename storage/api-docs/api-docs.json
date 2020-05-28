@@ -13,6 +13,399 @@
         "version": "1.0.0"
     },
     "paths": {
+        "/api/airports/coordinates": {
+            "get": {
+                "tags": [
+                    "airports"
+                ],
+                "summary": "Get all airports coordinates with URL",
+                "description": "Returns all the airports coordinates and basic info.",
+                "operationId": "getAirportsCoordinates",
+                "responses": {
+                    "200": {
+                        "description": "Ok.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "": {
+                                            "description": "All coordinates",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "json"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": [
+                                        {
+                                            "airport_id": 216,
+                                            "airport_name": "Cootamundra Airport",
+                                            "airport_country": "Australia",
+                                            "airport_city": "",
+                                            "airport_lon": 148.028,
+                                            "airport_lat": -34.623901
+                                        },
+                                        {
+                                            "airport_id": 241,
+                                            "airport_name": "Adelaide International Airport",
+                                            "airport_country": "Australia",
+                                            "airport_city": "Adelaide",
+                                            "airport_lon": 138.53101,
+                                            "airport_lat": -34.945
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "description": "Server message that contains the error.",
+                                            "type": "string"
+                                        },
+                                        "exception": {
+                                            "description": "Generated exception.",
+                                            "type": "string"
+                                        },
+                                        "file": {
+                                            "description": "File that throw the exception.",
+                                            "type": "string"
+                                        },
+                                        "line": {
+                                            "description": "Line that throws the exception.",
+                                            "type": "integer"
+                                        },
+                                        "trace": {
+                                            "description": "Trace route objects.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "messagge": "The command failed.",
+                                        "exception": "",
+                                        "file": "",
+                                        "line": 150,
+                                        "trace": {
+                                            "file": "",
+                                            "line": 1,
+                                            "content": ""
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/airports/airports": {
+            "get": {
+                "tags": [
+                    "airports"
+                ],
+                "summary": "Get all airports with URL",
+                "description": "Returns all the airports that have an URL.",
+                "operationId": "getAirports",
+                "responses": {
+                    "200": {
+                        "description": "Ok.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "": {
+                                            "description": "All models",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "json"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": [
+                                        {
+                                            "id": 2286,
+                                            "name": "Agen-La Garenne Airport"
+                                        },
+                                        {
+                                            "id": 2289,
+                                            "name": "Ajaccio-Napoléon Bonaparte Airport"
+                                        },
+                                        {
+                                            "id": 2306,
+                                            "name": "Aurillac Airport"
+                                        },
+                                        {
+                                            "id": 2312,
+                                            "name": "Bastia-Poretta Airport"
+                                        },
+                                        {
+                                            "id": 2314,
+                                            "name": "Paris Beauvais Tillé Airport"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "description": "Server message that contains the error.",
+                                            "type": "string"
+                                        },
+                                        "exception": {
+                                            "description": "Generated exception.",
+                                            "type": "string"
+                                        },
+                                        "file": {
+                                            "description": "File that throw the exception.",
+                                            "type": "string"
+                                        },
+                                        "line": {
+                                            "description": "Line that throws the exception.",
+                                            "type": "integer"
+                                        },
+                                        "trace": {
+                                            "description": "Trace route objects.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "messagge": "The command failed.",
+                                        "exception": "",
+                                        "file": "",
+                                        "line": 150,
+                                        "trace": {
+                                            "file": "",
+                                            "line": 1,
+                                            "content": ""
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/airports/flights/{id}": {
+            "get": {
+                "tags": [
+                    "airports"
+                ],
+                "summary": "Obtain the flights from an airport",
+                "description": "Get all the flights related with the airport_id passed in the url.",
+                "operationId": "getAirportFlights",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Airport id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ok.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "": {
+                                            "description": "airport_id in the route",
+                                            "type": "route",
+                                            "items": {
+                                                "type": "json"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": [
+                                        {
+                                            "id": "U27206",
+                                            "airport_name": "Barcelona International Airport",
+                                            "airline_name": "EasyJet (DS)",
+                                            "date_time": "2020-05-26 22:55:00",
+                                            "status_name": "Cancelled",
+                                            "prediction": null
+                                        },
+                                        {
+                                            "id": "U26030",
+                                            "airport_name": "Barcelona International Airport",
+                                            "airline_name": "EasyJet (DS)",
+                                            "date_time": "2020-05-26 22:15:00",
+                                            "status_name": "Cancelled",
+                                            "prediction": null
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "description": "Server message that contains the error.",
+                                            "type": "string"
+                                        },
+                                        "exception": {
+                                            "description": "Generated exception.",
+                                            "type": "string"
+                                        },
+                                        "file": {
+                                            "description": "File that throw the exception.",
+                                            "type": "string"
+                                        },
+                                        "line": {
+                                            "description": "Line that throws the exception.",
+                                            "type": "integer"
+                                        },
+                                        "trace": {
+                                            "description": "Trace route objects.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "messagge": "The command failed.",
+                                        "exception": "",
+                                        "file": "",
+                                        "line": 150,
+                                        "trace": {
+                                            "file": "",
+                                            "line": 1,
+                                            "content": ""
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/airports/comments/{id}": {
+            "get": {
+                "tags": [
+                    "airports"
+                ],
+                "summary": "Obtain the comments from an airport",
+                "description": "Get all the comments related with the city of the airport passed in the url.",
+                "operationId": "getAirportComments",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Airport id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ok.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "": {
+                                            "description": "airport_id in the route",
+                                            "type": "route",
+                                            "items": {
+                                                "type": "json"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": [
+                                        {
+                                            "path": "/airports/flights/5327"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "description": "Server message that contains the error.",
+                                            "type": "string"
+                                        },
+                                        "exception": {
+                                            "description": "Generated exception.",
+                                            "type": "string"
+                                        },
+                                        "file": {
+                                            "description": "File that throw the exception.",
+                                            "type": "string"
+                                        },
+                                        "line": {
+                                            "description": "Line that throws the exception.",
+                                            "type": "integer"
+                                        },
+                                        "trace": {
+                                            "description": "Trace route objects.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "messagge": "The command failed.",
+                                        "exception": "",
+                                        "file": "",
+                                        "line": 150,
+                                        "trace": {
+                                            "file": "",
+                                            "line": 1,
+                                            "content": ""
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/auth/register": {
             "post": {
                 "tags": [
@@ -346,6 +739,1190 @@
                             }
                         }
                     }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/auth/logout": {
+            "post": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Log out.",
+                "description": "Log out.",
+                "operationId": "logout",
+                "responses": {
+                    "200": {
+                        "description": "Ok.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "access_token": {
+                                            "description": "User name.",
+                                            "type": "string"
+                                        },
+                                        "token_type": {
+                                            "description": "User surnames.",
+                                            "type": "string"
+                                        },
+                                        "expires_in": {
+                                            "description": "Alive time of the token in seconds. Default 3600s",
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC9sb2NhbGhvc3Q6ODAwMFwvYXBpXC9hdXRoXC9yZWdpc3RlciIsImlhdCI6MTU4ODQ5Mjk5MSwiZXhwIjoxNTg4NDk2NTkxLCJuYmYiOjE1ODg0OTI5OTEsImp0aSI6ImRMWjNQcmN0Tm5UUEdtanMiLCJzdWIiOjUsInBydiI6Ijg3ZTBhZjFlZjlmZDE1ODEyZmRlYzk3MTUzYTE0ZTBiMDQ3NTQ2YWEifQ.mNh-Rfalspe1SBH_ltfz_ErIAhExJwDIA8td69fZvWA",
+                                        "token_type": "bearer",
+                                        "expires_in": 3600
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "errors": {
+                                            "description": "List of errors.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "errors": "Invalid credentials."
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "errors": {
+                                            "description": "Token error.",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "errors": "Could not create access token."
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/cities/cities": {
+            "get": {
+                "tags": [
+                    "cities"
+                ],
+                "summary": "Get all cities",
+                "description": "Returns all the cities  of the database.",
+                "operationId": "getCities",
+                "responses": {
+                    "200": {
+                        "description": "Ok.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "": {
+                                            "description": "All models",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "json"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": [
+                                        {
+                                            "id": 1,
+                                            "name": "Bayman"
+                                        },
+                                        {
+                                            "id": 2,
+                                            "name": "Camp Bastion"
+                                        },
+                                        {
+                                            "id": 30,
+                                            "name": "Annaba"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "description": "Server message that contains the error.",
+                                            "type": "string"
+                                        },
+                                        "exception": {
+                                            "description": "Generated exception.",
+                                            "type": "string"
+                                        },
+                                        "file": {
+                                            "description": "File that throw the exception.",
+                                            "type": "string"
+                                        },
+                                        "line": {
+                                            "description": "Line that throws the exception.",
+                                            "type": "integer"
+                                        },
+                                        "trace": {
+                                            "description": "Trace route objects.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "messagge": "The command failed.",
+                                        "exception": "",
+                                        "file": "",
+                                        "line": 150,
+                                        "trace": {
+                                            "file": "",
+                                            "line": 1,
+                                            "content": ""
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/cities/top": {
+            "get": {
+                "tags": [
+                    "comments",
+                    "cities"
+                ],
+                "summary": "Top 4 cities by user sentients",
+                "description": "Returns the top 4 destinations in base of the sentiment average",
+                "operationId": "getAirportsCoordinates",
+                "responses": {
+                    "200": {
+                        "description": "Ok.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "": {
+                                            "description": "All coordinates",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "json"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": [
+                                        {
+                                            "city": "Madrid",
+                                            "grade": "9.463677",
+                                            "sentiment": 0.633517016156253
+                                        },
+                                        {
+                                            "city": "Burgos",
+                                            "grade": "8.724951",
+                                            "sentiment": 0.6041372706116136
+                                        },
+                                        {
+                                            "city": "Pisa",
+                                            "grade": "9.207483",
+                                            "sentiment": 0.6028689742527156
+                                        },
+                                        {
+                                            "city": "Paris",
+                                            "grade": "9.041719",
+                                            "sentiment": 0.5961088823466875
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "description": "Server message that contains the error.",
+                                            "type": "string"
+                                        },
+                                        "exception": {
+                                            "description": "Generated exception.",
+                                            "type": "string"
+                                        },
+                                        "file": {
+                                            "description": "File that throw the exception.",
+                                            "type": "string"
+                                        },
+                                        "line": {
+                                            "description": "Line that throws the exception.",
+                                            "type": "integer"
+                                        },
+                                        "trace": {
+                                            "description": "Trace route objects.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "messagge": "The command failed.",
+                                        "exception": "",
+                                        "file": "",
+                                        "line": 150,
+                                        "trace": {
+                                            "file": "",
+                                            "line": 1,
+                                            "content": ""
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/comments/cities": {
+            "get": {
+                "tags": [
+                    "comments"
+                ],
+                "summary": "Get cities with comment",
+                "description": "Returns all the cities that have a comment.",
+                "operationId": "getCities",
+                "responses": {
+                    "200": {
+                        "description": "Ok.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "": {
+                                            "description": "All models",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "json"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": [
+                                        {
+                                            "city": "Paris",
+                                            "city_id": 2296
+                                        },
+                                        {
+                                            "city": "Pisa",
+                                            "city_id": 3336
+                                        },
+                                        {
+                                            "city": "Barcelona",
+                                            "city_id": 5029
+                                        },
+                                        {
+                                            "city": "Burgos",
+                                            "city_id": 5031
+                                        },
+                                        {
+                                            "city": "Madrid",
+                                            "city_id": 5049
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "description": "Server message that contains the error.",
+                                            "type": "string"
+                                        },
+                                        "exception": {
+                                            "description": "Generated exception.",
+                                            "type": "string"
+                                        },
+                                        "file": {
+                                            "description": "File that throw the exception.",
+                                            "type": "string"
+                                        },
+                                        "line": {
+                                            "description": "Line that throws the exception.",
+                                            "type": "integer"
+                                        },
+                                        "trace": {
+                                            "description": "Trace route objects.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "messagge": "The command failed.",
+                                        "exception": "",
+                                        "file": "",
+                                        "line": 150,
+                                        "trace": {
+                                            "file": "",
+                                            "line": 1,
+                                            "content": ""
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/comments/data": {
+            "post": {
+                "tags": [
+                    "comments"
+                ],
+                "summary": "Get polarity and grade",
+                "description": "Returns the sentiment, polarity and the grades of all comments from a specific city.",
+                "operationId": "getCityData",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "city_id": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "city_id": 5049
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ok.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "": {
+                                            "description": "All models",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "json"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": [
+                                        {
+                                            "polarity": "0.78",
+                                            "sentiment": "0.91428571428571",
+                                            "grade": "5.00"
+                                        },
+                                        {
+                                            "polarity": "0.53",
+                                            "sentiment": "0.77",
+                                            "grade": "5.00"
+                                        },
+                                        {
+                                            "polarity": "0.62",
+                                            "sentiment": "0.7875",
+                                            "grade": "5.00"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "description": "Server message that contains the error.",
+                                            "type": "string"
+                                        },
+                                        "exception": {
+                                            "description": "Generated exception.",
+                                            "type": "string"
+                                        },
+                                        "file": {
+                                            "description": "File that throw the exception.",
+                                            "type": "string"
+                                        },
+                                        "line": {
+                                            "description": "Line that throws the exception.",
+                                            "type": "integer"
+                                        },
+                                        "trace": {
+                                            "description": "Trace route objects.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "messagge": "The command failed.",
+                                        "exception": "",
+                                        "file": "",
+                                        "line": 150,
+                                        "trace": {
+                                            "file": "",
+                                            "line": 1,
+                                            "content": ""
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/airports/comments/new-comment": {
+            "post": {
+                "tags": [
+                    "comments"
+                ],
+                "summary": "User insert new comment",
+                "description": "Registered user send new comment from the city of the airport.",
+                "operationId": "insertUserComment",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "": {
+                                        "description": "Comment data",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "json"
+                                        }
+                                    }
+                                },
+                                "type": "object",
+                                "example": [
+                                    {
+                                        "title": "Tryout",
+                                        "original_message": "This my first comment",
+                                        "grade": 4,
+                                        "airport_id": 5327
+                                    },
+                                    {
+                                        "title": "Comment title",
+                                        "original_message": "This a new comment",
+                                        "grade": 5,
+                                        "airport_id": 5327
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "Ok. No content displayed.",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "errors": {
+                                            "description": "List of errors.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "errors": [
+                                            "The date time field is required.",
+                                            "The airport id field is required.",
+                                            "The grade field is required.",
+                                            "The title field is required.",
+                                            "The original message field is required."
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "description": "Server message that contains the error.",
+                                            "type": "string"
+                                        },
+                                        "exception": {
+                                            "description": "Generated exception.",
+                                            "type": "string"
+                                        },
+                                        "file": {
+                                            "description": "File that throw the exception.",
+                                            "type": "string"
+                                        },
+                                        "line": {
+                                            "description": "Line that throws the exception.",
+                                            "type": "integer"
+                                        },
+                                        "trace": {
+                                            "description": "Trace route objects.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "messagge": "The command failed.",
+                                        "exception": "",
+                                        "file": "",
+                                        "line": 150,
+                                        "trace": {
+                                            "file": "",
+                                            "line": 1,
+                                            "content": ""
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/countries/countries": {
+            "get": {
+                "tags": [
+                    "countries"
+                ],
+                "summary": "Get all countries",
+                "description": "Returns all the countries of the database.",
+                "operationId": "getCountries",
+                "responses": {
+                    "200": {
+                        "description": "Ok.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "": {
+                                            "description": "All models",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "json"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": [
+                                        {
+                                            "id": 1,
+                                            "name": "Afghanistan"
+                                        },
+                                        {
+                                            "id": 2,
+                                            "name": "Albania"
+                                        },
+                                        {
+                                            "id": 3,
+                                            "name": "Algeria"
+                                        },
+                                        {
+                                            "id": 4,
+                                            "name": "American Samoa"
+                                        },
+                                        {
+                                            "id": 5,
+                                            "name": "Angola"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "description": "Server message that contains the error.",
+                                            "type": "string"
+                                        },
+                                        "exception": {
+                                            "description": "Generated exception.",
+                                            "type": "string"
+                                        },
+                                        "file": {
+                                            "description": "File that throw the exception.",
+                                            "type": "string"
+                                        },
+                                        "line": {
+                                            "description": "Line that throws the exception.",
+                                            "type": "integer"
+                                        },
+                                        "trace": {
+                                            "description": "Trace route objects.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "messagge": "The command failed.",
+                                        "exception": "",
+                                        "file": "",
+                                        "line": 150,
+                                        "trace": {
+                                            "file": "",
+                                            "line": 1,
+                                            "content": ""
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/flights/groupFlights": {
+            "post": {
+                "tags": [
+                    "flights"
+                ],
+                "summary": "Get flights data (Group by)",
+                "description": "Returns flights grouped between the date given by days, weeks, months or years.",
+                "operationId": "getGroupFlights",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "start_date": {
+                                        "description": "Date in format Y-m-d",
+                                        "type": "date"
+                                    },
+                                    "end_date": {
+                                        "description": "Date in format Y-m-d",
+                                        "type": "date"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "start_date": "2019-06-10",
+                                    "end_date": "2020-05-09"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ok.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "": {
+                                            "description": "All models",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "json"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": [
+                                        {
+                                            "groupDate": "2019\\/10",
+                                            "delay": 0,
+                                            "airport_id": 5327,
+                                            "countDelay": 4809,
+                                            "prediction": null,
+                                            "countPrediction": 0
+                                        },
+                                        {
+                                            "groupDate": "2019\\/10",
+                                            "delay": 1,
+                                            "airport_id": 5327,
+                                            "countDelay": 6180,
+                                            "prediction": null,
+                                            "countPrediction": 0
+                                        },
+                                        {
+                                            "groupDate": "2019\\/11",
+                                            "delay": 0,
+                                            "airport_id": 5327,
+                                            "countDelay": 6250,
+                                            "prediction": null,
+                                            "countPrediction": 0
+                                        },
+                                        {
+                                            "groupDate": "2019\\/12",
+                                            "delay": 0,
+                                            "airport_id": 5306,
+                                            "countDelay": 4965,
+                                            "prediction": null,
+                                            "countPrediction": 0
+                                        },
+                                        {
+                                            "groupDate": "2019\\/12",
+                                            "delay": 1,
+                                            "airport_id": 5306,
+                                            "countDelay": 8567,
+                                            "prediction": null,
+                                            "countPrediction": 0
+                                        },
+                                        {
+                                            "groupDate": "2019\\/6",
+                                            "delay": 0,
+                                            "airport_id": 5306,
+                                            "countDelay": 3988,
+                                            "prediction": null,
+                                            "countPrediction": 0
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "errors": {
+                                            "description": "List of errors.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "errors": [
+                                            "The start date field is required.",
+                                            "The start date is not a valid date.",
+                                            "The start date does not match the format Y-m-d.",
+                                            "The start date must be a date before or equal to today.",
+                                            "The end date field is required.",
+                                            "The end date is not a valid date.",
+                                            "The end date does not match the format Y-m-d.",
+                                            "The end date must be a date before or equal to today.",
+                                            "There is no data for the specified date."
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "description": "Server message that contains the error.",
+                                            "type": "string"
+                                        },
+                                        "exception": {
+                                            "description": "Generated exception.",
+                                            "type": "string"
+                                        },
+                                        "file": {
+                                            "description": "File that throw the exception.",
+                                            "type": "string"
+                                        },
+                                        "line": {
+                                            "description": "Line that throws the exception.",
+                                            "type": "integer"
+                                        },
+                                        "trace": {
+                                            "description": "Trace route objects.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "messagge": "The command failed.",
+                                        "exception": "",
+                                        "file": "",
+                                        "line": 150,
+                                        "trace": {
+                                            "file": "",
+                                            "line": 1,
+                                            "content": ""
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/flights/getGroupAirports": {
+            "post": {
+                "tags": [
+                    "flights"
+                ],
+                "summary": "Get airports",
+                "description": "Returns airports grouped between the date given by days, weeks, months or years.",
+                "operationId": "getGroupAirports",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "start_date": {
+                                        "description": "Date in format Y-m-d",
+                                        "type": "date"
+                                    },
+                                    "end_date": {
+                                        "description": "Date in format Y-m-d",
+                                        "type": "date"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "start_date": "2019-06-10",
+                                    "end_date": "2020-05-09"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ok.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "": {
+                                            "description": "All models",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "json"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": [
+                                        {
+                                            "airport_id": 5306,
+                                            "name": "Barcelona International Airport"
+                                        },
+                                        {
+                                            "airport_id": 5327,
+                                            "name": "Adolfo Suárez Madrid–Barajas Airport"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "errors": {
+                                            "description": "List of errors.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "errors": [
+                                            "The start date field is required.",
+                                            "The start date is not a valid date.",
+                                            "The start date does not match the format Y-m-d.",
+                                            "The start date must be a date before or equal to today.",
+                                            "The end date field is required.",
+                                            "The end date is not a valid date.",
+                                            "The end date does not match the format Y-m-d.",
+                                            "The end date must be a date before or equal to today.",
+                                            "There is no data for the specified date."
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "description": "Server message that contains the error.",
+                                            "type": "string"
+                                        },
+                                        "exception": {
+                                            "description": "Generated exception.",
+                                            "type": "string"
+                                        },
+                                        "file": {
+                                            "description": "File that throw the exception.",
+                                            "type": "string"
+                                        },
+                                        "line": {
+                                            "description": "Line that throws the exception.",
+                                            "type": "integer"
+                                        },
+                                        "trace": {
+                                            "description": "Trace route objects.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "messagge": "The command failed.",
+                                        "exception": "",
+                                        "file": "",
+                                        "line": 150,
+                                        "trace": {
+                                            "file": "",
+                                            "line": 1,
+                                            "content": ""
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/send-mail": {
+            "post": {
+                "tags": [
+                    "mail"
+                ],
+                "summary": "Send a mail",
+                "description": "After filling the contact form, it sends an email to our group Gmail account",
+                "operationId": "sendMail",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "description": "name and surname",
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "description": "personal mail",
+                                        "type": "string"
+                                    },
+                                    "message": {
+                                        "description": "The message you want to send on the mail",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object",
+                                "example": [
+                                    {
+                                        "name": "Name Surname",
+                                        "email": "test@mail.com",
+                                        "message": "Test message"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ok.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "output": {
+                                            "description": "Email sent correctly",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "msg": "Email sent correctly"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "errors": {
+                                            "description": "List of errors.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "errors": [
+                                            "The name field is required.",
+                                            "The email field is required.",
+                                            "The message field is required.",
+                                            "The email must be a valid email address."
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "description": "Server message that contains the error.",
+                                            "type": "string"
+                                        },
+                                        "exception": {
+                                            "description": "Generated exception.",
+                                            "type": "string"
+                                        },
+                                        "file": {
+                                            "description": "File that throw the exception.",
+                                            "type": "string"
+                                        },
+                                        "line": {
+                                            "description": "Line that throws the exception.",
+                                            "type": "integer"
+                                        },
+                                        "trace": {
+                                            "description": "Trace route objects.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "messagge": "The command failed.",
+                                        "exception": "",
+                                        "file": "",
+                                        "line": 150,
+                                        "trace": {
+                                            "file": "",
+                                            "line": 1,
+                                            "content": ""
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         },
@@ -494,7 +2071,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
             }
         },
         "/api/models/predict": {
@@ -626,7 +2208,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
             }
         },
         "/api/models/updateModel": {
@@ -730,7 +2317,571 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/models/algorithms": {
+            "post": {
+                "tags": [
+                    "models"
+                ],
+                "summary": "Get all algorithms",
+                "description": "It is used to get all information of each algorithm of the database.",
+                "operationId": "getAlgorithms",
+                "responses": {
+                    "200": {
+                        "description": "Ok.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "response": {
+                                            "description": "All algorithms",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "json"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": [
+                                        {
+                                            "id": 0,
+                                            "name": "Naive Bayes",
+                                            "description": "It is a supervised classification and prediction technique that classifies a case maximizing the probability that it will occur under certain conditions. For example, if we want to classify whether we have a pair or a trio in our deck, the algorithm will determine what we are most likely to find in each of our 5-card hands. With Bayes' Theorem we can find the probability that A (hypothesis) will occur, given that B (evidence) has occurred."
+                                        },
+                                        {
+                                            "id": 1,
+                                            "name": "Random Forest",
+                                            "description": "Random forest is an Artificial Intelligence algorithm that combines many independent decision trees on random data sets with the same distribution."
+                                        },
+                                        {
+                                            "id": 2,
+                                            "name": "Gradient Boosting",
+                                            "description": "Gradient Boosted Tree produces a predictive model in the form of a set of weak decision trees. Construct the model in a staggered fashion like other boosting methods do, and generalize them by allowing arbitrary optimization of a differentiable loss function."
+                                        },
+                                        {
+                                            "id": 3,
+                                            "name": "Decision Tree",
+                                            "description": "The goal of this algorithm is to find the simplest tree that best separates the examples. This algorithm is used for classification and regression. It is a supervised learning system and when implemented the 'divide and conquer' strategy is applied."
+                                        },
+                                        {
+                                            "id": 4,
+                                            "name": "k-nn",
+                                            "description": "The k-NN algorithm is based on comparing an unknown example with the training examples that are the closest neighbors of the unknown example."
+                                        },
+                                        {
+                                            "id": 5,
+                                            "name": "Logistic Regression",
+                                            "description": "Logistic regression is a statistical method of analyzing a data set in which there are one or more independent variables that determine an outcome. The result is measured with a binomial variable Predicts the probability of occurrence of an event by fitting the data to a logit function."
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "description": "Server message that contains the error.",
+                                            "type": "string"
+                                        },
+                                        "exception": {
+                                            "description": "Generated exception.",
+                                            "type": "string"
+                                        },
+                                        "file": {
+                                            "description": "File that throw the exception.",
+                                            "type": "string"
+                                        },
+                                        "line": {
+                                            "description": "Line that thorws the execption.",
+                                            "type": "integer"
+                                        },
+                                        "trace": {
+                                            "description": "Trace route objects.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "messagge": "The command failed.",
+                                        "exception": "",
+                                        "file": "",
+                                        "line": 150,
+                                        "trace": {
+                                            "file": "",
+                                            "line": 1,
+                                            "content": ""
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/models/models": {
+            "post": {
+                "tags": [
+                    "models"
+                ],
+                "summary": "Get all models",
+                "description": "It is used to get all information of each model of the database.",
+                "operationId": "getModels",
+                "responses": {
+                    "200": {
+                        "description": "Ok.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "response": {
+                                            "description": "All models",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "json"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": [
+                                        {
+                                            "id": 1,
+                                            "type": 1,
+                                            "date": "2020-05-05 01:34:45",
+                                            "report_num_rows": 179,
+                                            "report_precision_0": "1.00",
+                                            "report_precision_1": "1.00",
+                                            "report_recall_0": "1.00",
+                                            "report_recall_1": "1.00",
+                                            "report_f1_score_0": "1.00",
+                                            "report_f1_score_1": "1.00",
+                                            "report_accuracy_precision": "1.00",
+                                            "report_accuracy_recall": "1.00",
+                                            "report_accuracy_f1_score": "1.00"
+                                        },
+                                        {
+                                            "id": 3,
+                                            "type": 2,
+                                            "date": "2020-05-08 23:55:21",
+                                            "report_num_rows": 27,
+                                            "report_precision_0": "1.00",
+                                            "report_precision_1": "1.00",
+                                            "report_recall_0": "1.00",
+                                            "report_recall_1": "1.00",
+                                            "report_f1_score_0": "1.00",
+                                            "report_f1_score_1": "1.00",
+                                            "report_accuracy_precision": "1.00",
+                                            "report_accuracy_recall": "1.00",
+                                            "report_accuracy_f1_score": "1.00"
+                                        },
+                                        {
+                                            "id": 4,
+                                            "type": 2,
+                                            "date": "2020-05-08 23:56:48",
+                                            "report_num_rows": 27,
+                                            "report_precision_0": "1.00",
+                                            "report_precision_1": "1.00",
+                                            "report_recall_0": "1.00",
+                                            "report_recall_1": "1.00",
+                                            "report_f1_score_0": "1.00",
+                                            "report_f1_score_1": "1.00",
+                                            "report_accuracy_precision": "1.00",
+                                            "report_accuracy_recall": "1.00",
+                                            "report_accuracy_f1_score": "1.00"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "description": "Server message that contains the error.",
+                                            "type": "string"
+                                        },
+                                        "exception": {
+                                            "description": "Generated exception.",
+                                            "type": "string"
+                                        },
+                                        "file": {
+                                            "description": "File that throw the exception.",
+                                            "type": "string"
+                                        },
+                                        "line": {
+                                            "description": "Line that thorws the execption.",
+                                            "type": "integer"
+                                        },
+                                        "trace": {
+                                            "description": "Trace route objects.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "messagge": "The command failed.",
+                                        "exception": "",
+                                        "file": "",
+                                        "line": 150,
+                                        "trace": {
+                                            "file": "",
+                                            "line": 1,
+                                            "content": ""
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/models/lastModels": {
+            "post": {
+                "tags": [
+                    "models"
+                ],
+                "summary": "Get info about last models",
+                "description": "It is used to get all information for get the last models created in the database.",
+                "operationId": "getLastModels",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "model_id": {
+                                        "type": "int"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "model_id": 3
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ok.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "response": {
+                                            "description": "All models",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "json"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": [
+                                        {
+                                            "id": 8,
+                                            "type": 1,
+                                            "date": "2020-05-05 01:34:45",
+                                            "report_num_rows": 179,
+                                            "report_precision_0": "1.00",
+                                            "report_precision_1": "1.00",
+                                            "report_recall_0": "1.00",
+                                            "report_recall_1": "1.00",
+                                            "report_f1_score_0": "1.00",
+                                            "report_f1_score_1": "1.00",
+                                            "report_accuracy_precision": "1.00",
+                                            "report_accuracy_recall": "1.00",
+                                            "report_accuracy_f1_score": "1.00"
+                                        },
+                                        {
+                                            "id": 9,
+                                            "type": 2,
+                                            "date": "2020-05-08 23:55:21",
+                                            "report_num_rows": 27,
+                                            "report_precision_0": "1.00",
+                                            "report_precision_1": "1.00",
+                                            "report_recall_0": "1.00",
+                                            "report_recall_1": "1.00",
+                                            "report_f1_score_0": "1.00",
+                                            "report_f1_score_1": "1.00",
+                                            "report_accuracy_precision": "1.00",
+                                            "report_accuracy_recall": "1.00",
+                                            "report_accuracy_f1_score": "1.00"
+                                        },
+                                        {
+                                            "id": 10,
+                                            "type": 2,
+                                            "date": "2020-05-08 23:56:48",
+                                            "report_num_rows": 27,
+                                            "report_precision_0": "1.00",
+                                            "report_precision_1": "1.00",
+                                            "report_recall_0": "1.00",
+                                            "report_recall_1": "1.00",
+                                            "report_f1_score_0": "1.00",
+                                            "report_f1_score_1": "1.00",
+                                            "report_accuracy_precision": "1.00",
+                                            "report_accuracy_recall": "1.00",
+                                            "report_accuracy_f1_score": "1.00"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "description": "Server message that contains the error.",
+                                            "type": "string"
+                                        },
+                                        "exception": {
+                                            "description": "Generated exception.",
+                                            "type": "string"
+                                        },
+                                        "file": {
+                                            "description": "File that throw the exception.",
+                                            "type": "string"
+                                        },
+                                        "line": {
+                                            "description": "Line that thorws the execption.",
+                                            "type": "integer"
+                                        },
+                                        "trace": {
+                                            "description": "Trace route objects.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "messagge": "The command failed.",
+                                        "exception": "",
+                                        "file": "",
+                                        "line": 150,
+                                        "trace": {
+                                            "file": "",
+                                            "line": 1,
+                                            "content": ""
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/models/deleteModel": {
+            "post": {
+                "tags": [
+                    "models"
+                ],
+                "summary": "Delete a selected model",
+                "description": "It is used for delete a model in the database.",
+                "operationId": "deleteModel",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "model_id": {
+                                        "type": "int"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "model_id": 1
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "Ok. No Content."
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "description": "Server message that contains the error.",
+                                            "type": "string"
+                                        },
+                                        "exception": {
+                                            "description": "Generated exception.",
+                                            "type": "string"
+                                        },
+                                        "file": {
+                                            "description": "File that throw the exception.",
+                                            "type": "string"
+                                        },
+                                        "line": {
+                                            "description": "Line that thorws the execption.",
+                                            "type": "integer"
+                                        },
+                                        "trace": {
+                                            "description": "Trace route objects.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "messagge": "The command failed.",
+                                        "exception": "",
+                                        "file": "",
+                                        "line": 150,
+                                        "trace": {
+                                            "file": "",
+                                            "line": 1,
+                                            "content": ""
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/models/getModelInUse": {
+            "get": {
+                "tags": [
+                    "models"
+                ],
+                "summary": "Get the model in use.",
+                "description": "It is used to get the model that is in use in the aplication.",
+                "operationId": "getModelInUse",
+                "responses": {
+                    "200": {
+                        "description": "Ok.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "type": {
+                                            "description": "Algorithm if",
+                                            "type": "json"
+                                        },
+                                        "date": {
+                                            "description": "Creation date_time",
+                                            "type": "json"
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "type": 1,
+                                        "date": "2020-05-19 16:18:28"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "description": "Server message that contains the error.",
+                                            "type": "string"
+                                        },
+                                        "exception": {
+                                            "description": "Generated exception.",
+                                            "type": "string"
+                                        },
+                                        "file": {
+                                            "description": "File that throw the exception.",
+                                            "type": "string"
+                                        },
+                                        "line": {
+                                            "description": "Line that thorws the execption.",
+                                            "type": "integer"
+                                        },
+                                        "trace": {
+                                            "description": "Trace route objects.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "messagge": "The command failed.",
+                                        "exception": "",
+                                        "file": "",
+                                        "line": 150,
+                                        "trace": {
+                                            "file": "",
+                                            "line": 1,
+                                            "content": ""
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
             }
         },
         "/api/scrapers/weathers/forecast": {
@@ -852,7 +3003,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
             }
         },
         "/api/scrapers/weathers/history": {
@@ -983,7 +3139,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
             }
         },
         "/api/scrapers/flights/history": {
@@ -1114,7 +3275,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
             }
         },
         "/api/scrapers/flights/forecast": {
@@ -1357,7 +3523,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
             }
         },
         "/api/scrapers/comments": {
@@ -1480,7 +3651,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
             }
         }
     },
@@ -1493,5 +3669,16 @@
             "name": "auth",
             "description": "Authentication operations."
         }
-    ]
+    ],
+    "components": {
+        "securitySchemes": {
+            "bearer": {
+                "type": "http",
+                "description": "Authorization token obtained from logging in.",
+                "name": "Authorization",
+                "in": "header",
+                "scheme": "bearer"
+            }
+        }
+    }
 }

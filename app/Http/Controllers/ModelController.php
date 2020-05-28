@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use DateTime;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
 
 class ModelController extends Controller
 {
@@ -133,34 +132,42 @@ class ModelController extends Controller
      *              )
      *          }
      *      ),
+     *      security={
+     *         {"bearer": {}}
+     *     }
      *  )
      *
      * @param Request $request
      * @return string
      */
-    function trainingModel(Request $request){
-
+    function trainingModel(Request $request)
+    {
+        $date = new DateTime('now');
+        $dateStr = $date->format('Y-m-d H:i:s');
         $validator = Validator::make($request->json()->all(), [
-            'characteristic' => ['required','array'],
+            'characteristic' => ['required', 'array'],
             'start_date' => ['required', 'date', 'date_format:Y-m-d', 'before_or_equal:yesterday'],
             'end_date' => ['required', 'date', 'date_format:Y-m-d', 'before_or_equal:today'],
             'algorithm_id' => ['required', 'integer', 'exists:algorithms,id']
         ]);
 
         if ($validator->fails()) {
-            return failValidation($validator);
+            $validation = failValidation($validator);
+            $message = "The Train Model launched at ".$dateStr." did not finished.
+            The errors have been:";
+            MailController::emailErrors($validation, $dateStr, $message);
+            return $validation;
         } else {
-            foreach($request->characteristic as $key => $val)
-            {
+            foreach ($request->characteristic as $key => $val) {
                 if (!Schema::hasColumn('flights', $val) and !Schema::hasColumn('weathers', $val) and
-                    $val != 'date' and $val != 'time')  {
+                    $val != 'date' and $val != 'time') {
                     return response()->json(["errors" => 'Not all characteristic exists.'],
                         JsonResponse::HTTP_BAD_REQUEST);
                 }
             }
 
             $characteristic = $request->characteristic;
-            if (in_array("airport_id", $characteristic)){
+            if (in_array("airport_id", $characteristic)) {
                 $pos = array_keys($characteristic, "airport_id")[0];
                 $characteristic[$pos] = "airport_id";
             } else {
@@ -168,20 +175,25 @@ class ModelController extends Controller
             }
 
             $args = FlightsController::getModelDataTrain($characteristic, $request->start_date, $request->end_date);
-
             if (sizeof($args) > 0) {
-                $data = ModelController::getData($args, $characteristic);
-                $airports = collect(array_unique($data['airport_id']))->implode('-');
-                if (!in_array("airport_id", $request->characteristic)){
-                    unset($data['airport_id']);
+                ModelController::export($args, $characteristic, '../storage/modelsData/dataTrain.csv');
+                $airports['airport_id'] = [];
+                foreach ($args as $arg) {
+                    array_push($airports['airport_id'], $arg['airport_id']);
                 }
+                $airports = collect(array_unique($airports['airport_id']))->implode('-');
+
                 $args = $request->all();
-                array_push($args, $data);
                 $script = config('python.scripts') . 'model_1.py';
+
                 $data = json_decode(executePython($script, $args)[0], true);
                 $data['airports'] = $airports;
                 DB::table('models')->Insert($data); // Insert data in the BBDD
-                return response()->json([],JsonResponse::HTTP_NO_CONTENT);
+
+                $algorithmName = DB::table('algorithms')->select(['name'])->where('id', $request->algorithm_id)->first()->name;
+                $message = "The Train Model launched at ".$dateStr." of the ".$algorithmName." algorithm has already finished.";
+                MailController::sendMailScrapers($date, $message,'Train Model finished');
+                return response()->json([], JsonResponse::HTTP_NO_CONTENT);
             } else {
                 return response()->json(["errors" => 'There are no registered flights for these dates.'],
                     JsonResponse::HTTP_BAD_REQUEST);
@@ -308,66 +320,56 @@ class ModelController extends Controller
      *              )
      *          }
      *      ),
+     *      security={
+     *         {"bearer": {}}
+     *     }
      *  )
      *
      * @param Request $request
      * @return string
      */
-    function predictModel(Request $request){
+    function predictModel(Request $request)
+    {
+        $date = new DateTime('now');
+        $dateStr = $date->format('Y-m-d H:i:s');
         $validator = Validator::make($request->json()->all(), [
             'start_date' => ['required', 'date', 'date_format:Y-m-d', 'before_or_equal:today'],
             'end_date' => ['required', 'date', 'date_format:Y-m-d', 'before_or_equal:today']
         ]);
 
         if ($validator->fails()) {
-            return failValidation($validator);
+            $validation = failValidation($validator);
+            $message = "The prediction launched at ".$dateStr." did not finished.
+            The errors have been:";
+            MailController::emailErrors($validation, $dateStr, $message);
+            return $validation;
         } else {
             $selectedModel = ModelController::selectedModel();
-            // Attributes that we need for save de prediction.
-            $select_id = ($selectedModel->attribute_id == 1);
-            $select_date = ($selectedModel->attribute_date == 1);
-            $select_time = ($selectedModel->attribute_time == 1);
-
 
             $airports = array_map('intval', explode('-', $selectedModel->airports));
             $characteristic = ModelController::getCharacteristic($selectedModel);
 
             $args = FlightsController::getModelDataPredict($characteristic, $request->start_date, $request->end_date, $airports);
+
             if (sizeof($args) > 0) {
-                $data = ModelController::getData($args, $characteristic);
+                modelController::export($args, $characteristic, '../storage/modelsData/dataPredict.csv');
 
-                # Copy keys.
-                $id = $data['id'];
-                $date = $data['date'];
-                $time = $data['time'];
-                if ($select_id == False){
-                    unset($data['id']);
-                }
-                if ($select_date == False){
-                    unset($data['date']);
-                }
-                if ($select_time == False){
-                    unset($data['time']);
-                }
-
-                $args = $request->all();
-                array_push($args, $selectedModel->type);
-                array_push($args, $selectedModel->date);
-                array_push($args, $data);
-
+                $data = $request->all();
+                array_push($data, $selectedModel->type);
+                array_push($data, $selectedModel->date);
                 $script = config('python.scripts') . 'model_2.py';
-                $result = executePython($script, $args);
+
+                $result = executePython($script, $data);
                 preg_match_all('!\d!', $result[0], $matches);
                 $inserts = 0;
-
-                for ($i=0; $i<sizeof($matches[0]); $i++){
-                    $data = [$matches[0][$i]];
-                    array_push($data, $id[$i]);
-                    array_push($data, $date[$i]);
-                    array_push($data, $time[$i]);
-                    FlightsController::updatePrediction($data);
+                for ($i = 0; $i < sizeof($matches[0]); $i++) {
+                    $args[$i]['prediction'] =  $matches[0][$i];
+                    FlightsController::updatePrediction($args[$i]);
                     $inserts += 1;
                 }
+
+                $message = "The prediction launched at ".$dateStr." has already finished.";
+                MailController::sendMailScrapers($date, $message,'Prediction finished');
                 return response()->json(["total" => $inserts], JsonResponse::HTTP_OK);
             } else {
                 return response()->json(["errors" => 'There are no registered flights for these dates.'],
@@ -467,12 +469,16 @@ class ModelController extends Controller
      *              )
      *          }
      *      ),
+     *      security={
+     *         {"bearer": {}}
+     *     }
      *  )
      *
      * @param Request $request
      * @return string
      */
-    function updateModelInUse(Request $request){
+    function updateModelInUse(Request $request)
+    {
         $validator = Validator::make($request->json()->all(), [
             'model' => ['required', 'integer', 'exists:models,id']
         ]);
@@ -481,7 +487,7 @@ class ModelController extends Controller
             return failValidation($validator);
         } else {
             $model = DB::table('in_uses')->select('model')->first();
-            if (is_null($model)){
+            if (is_null($model)) {
                 DB::table('in_uses')->insert(['model' => $request->model, 'analysis' => 0]);
             } else {
                 DB::table('in_uses')->where('model', $model->model)
@@ -489,28 +495,561 @@ class ModelController extends Controller
             }
         }
 
-        return response()->json([],JsonResponse::HTTP_NO_CONTENT);
+        return response()->json([], JsonResponse::HTTP_NO_CONTENT);
     }
 
-
-    function getData($args, $characteristics){
-        $data_structure = "{";
-        foreach ($characteristics as $characteristic) {
-            $data_structure .= '"'.$characteristic.'":[],';
-        }
-        $data_structure = substr($data_structure, 0, -1)."}";
-        $data  = json_decode($data_structure, true);
-
-        foreach ($args as $arg) {
-            foreach ($characteristics as $characteristic) {
-                array_push($data[$characteristic], $arg[$characteristic]);
-            }
-        }
-        return $data;
+    /**
+     * @OA\Post(
+     *      path="/api/models/algorithms",
+     *      operationId="getAlgorithms",
+     *      tags={"models"},
+     *      summary="Get all algorithms",
+     *      description="It is used to get all information of each algorithm of the database.",
+     *      @OA\Response(
+     *          response=200,
+     *          description="Ok.",
+     *          content={
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="response",
+     *                          type="array",@OA\Items(type="json"),
+     *                          description="All algorithms"
+     *                      ),
+     *                      example={{"id": 0,
+     *                              "name": "Naive Bayes",
+     *                              "description": "It is a supervised classification and prediction technique that classifies a case maximizing the probability that it will occur under certain conditions. For example, if we want to classify whether we have a pair or a trio in our deck, the algorithm will determine what we are most likely to find in each of our 5-card hands. With Bayes' Theorem we can find the probability that A (hypothesis) will occur, given that B (evidence) has occurred."},
+     *                              {"id": 1,
+     *                              "name": "Random Forest",
+     *                              "description": "Random forest is an Artificial Intelligence algorithm that combines many independent decision trees on random data sets with the same distribution."},
+     *                              {"id": 2,
+     *                              "name": "Gradient Boosting",
+     *                              "description": "Gradient Boosted Tree produces a predictive model in the form of a set of weak decision trees. Construct the model in a staggered fashion like other boosting methods do, and generalize them by allowing arbitrary optimization of a differentiable loss function."},
+     *                              {"id": 3,
+     *                              "name": "Decision Tree",
+     *                              "description": "The goal of this algorithm is to find the simplest tree that best separates the examples. This algorithm is used for classification and regression. It is a supervised learning system and when implemented the 'divide and conquer' strategy is applied."},
+     *                             {"id": 4,
+     *                              "name": "k-nn",
+     *                              "description": "The k-NN algorithm is based on comparing an unknown example with the training examples that are the closest neighbors of the unknown example."},
+     *                              {"id": 5,
+     *                              "name": "Logistic Regression",
+     *                              "description": "Logistic regression is a statistical method of analyzing a data set in which there are one or more independent variables that determine an outcome. The result is measured with a binomial variable Predicts the probability of occurrence of an event by fitting the data to a logit function."}
+     *                      }
+     *                  )
+     *              )
+     *          }
+     *      ),
+     *      @OA\Response(
+     *          response=500,
+     *          description="Internal Server Error.",
+     *          content={
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="message",
+     *                          type="string",
+     *                          description="Server message that contains the error."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="exception",
+     *                          type="string",
+     *                          description="Generated exception."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="file",
+     *                          type="string",
+     *                          description="File that throw the exception."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="line",
+     *                          type="integer",
+     *                          description="Line that thorws the execption."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="trace",
+     *                          type="array",
+     *                          description="Trace route objects.",
+     *                          @OA\Items(type="object")
+     *                      ),
+     *                      example={
+     *                          "messagge": "The command failed.",
+     *                          "exception": "",
+     *                          "file": "",
+     *                          "line": 150,
+     *                          "trace": {"file":"", "line":1, "content":""}
+     *                      }
+     *                  )
+     *              )
+     *          }
+     *      ),
+     *      security={
+     *         {"bearer": {}}
+     *     }
+     *  )
+     *
+     * @param Request $request
+     * @return string
+     */
+    function getAlgorithms()
+    {
+        return response()->json(json_decode(DB::table('algorithms')->select('*')->get(),
+            JsonResponse::HTTP_OK));
     }
 
+    /**
+     * @OA\Post(
+     *      path="/api/models/models",
+     *      operationId="getModels",
+     *      tags={"models"},
+     *      summary="Get all models",
+     *      description="It is used to get all information of each model of the database.",
+     *      @OA\Response(
+     *          response=200,
+     *          description="Ok.",
+     *          content={
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="response",
+     *                          type="array",@OA\Items(type="json"),
+     *                          description="All models"
+     *                      ),
+     *                      example={{
+     *                          "id": 1,
+     *                          "type": 1,
+     *                          "date": "2020-05-05 01:34:45",
+     *                          "report_num_rows": 179,
+     *                          "report_precision_0": "1.00",
+     *                          "report_precision_1": "1.00",
+     *                          "report_recall_0": "1.00",
+     *                          "report_recall_1": "1.00",
+     *                          "report_f1_score_0": "1.00",
+     *                          "report_f1_score_1": "1.00",
+     *                          "report_accuracy_precision": "1.00",
+     *                          "report_accuracy_recall": "1.00",
+     *                          "report_accuracy_f1_score": "1.00"
+     *                          },
+     *                          {
+     *                          "id": 3,
+     *                          "type": 2,
+     *                          "date": "2020-05-08 23:55:21",
+     *                          "report_num_rows": 27,
+     *                          "report_precision_0": "1.00",
+     *                          "report_precision_1": "1.00",
+     *                          "report_recall_0": "1.00",
+     *                          "report_recall_1": "1.00",
+     *                          "report_f1_score_0": "1.00",
+     *                          "report_f1_score_1": "1.00",
+     *                          "report_accuracy_precision": "1.00",
+     *                          "report_accuracy_recall": "1.00",
+     *                          "report_accuracy_f1_score": "1.00"
+     *                          },
+     *                          {
+     *                          "id": 4,
+     *                          "type": 2,
+     *                          "date": "2020-05-08 23:56:48",
+     *                          "report_num_rows": 27,
+     *                          "report_precision_0": "1.00",
+     *                          "report_precision_1": "1.00",
+     *                          "report_recall_0": "1.00",
+     *                          "report_recall_1": "1.00",
+     *                          "report_f1_score_0": "1.00",
+     *                          "report_f1_score_1": "1.00",
+     *                          "report_accuracy_precision": "1.00",
+     *                          "report_accuracy_recall": "1.00",
+     *                          "report_accuracy_f1_score": "1.00"
+     *                          }
+     *                      }
+     *                  )
+     *              )
+     *          }
+     *      ),
+     *      @OA\Response(
+     *          response=500,
+     *          description="Internal Server Error.",
+     *          content={
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="message",
+     *                          type="string",
+     *                          description="Server message that contains the error."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="exception",
+     *                          type="string",
+     *                          description="Generated exception."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="file",
+     *                          type="string",
+     *                          description="File that throw the exception."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="line",
+     *                          type="integer",
+     *                          description="Line that thorws the execption."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="trace",
+     *                          type="array",
+     *                          description="Trace route objects.",
+     *                          @OA\Items(type="object")
+     *                      ),
+     *                      example={
+     *                          "messagge": "The command failed.",
+     *                          "exception": "",
+     *                          "file": "",
+     *                          "line": 150,
+     *                          "trace": {"file":"", "line":1, "content":""}
+     *                      }
+     *                  )
+     *              )
+     *          }
+     *      ),
+     *      security={
+     *         {"bearer": {}}
+     *     }
+     *  )
+     *
+     * @param Request $request
+     * @return string
+     */
+    function getModels()
+    {
+        $columns = ["id", "type", "date",
+            "report_num_rows", "report_precision_0", "report_precision_1", "report_recall_0", "report_recall_1",
+            "report_f1_score_0", "report_f1_score_1", "report_accuracy_precision", "report_accuracy_recall",
+            "report_accuracy_f1_score"];
+        return response()->json(json_decode(DB::table('models')->select($columns)->get(),
+            JsonResponse::HTTP_OK));
+    }
 
-    function getCharacteristic($data){
+    /**
+     * @OA\Post(
+     *      path="/api/models/lastModels",
+     *      operationId="getLastModels",
+     *      tags={"models"},
+     *      summary="Get info about last models",
+     *      description="It is used to get all information for get the last models created in the database.",
+     *      @OA\RequestBody(
+     *          @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema(
+     *                  @OA\Property(
+     *                      property="model_id",
+     *                      type="int",
+     *                  ),
+     *                  example={"model_id":3}
+     *              )
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Ok.",
+     *          content={
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="response",
+     *                          type="array",@OA\Items(type="json"),
+     *                          description="All models"
+     *                      ),
+     *                      example={{
+     *                          "id": 8,
+     *                          "type": 1,
+     *                          "date": "2020-05-05 01:34:45",
+     *                          "report_num_rows": 179,
+     *                          "report_precision_0": "1.00",
+     *                          "report_precision_1": "1.00",
+     *                          "report_recall_0": "1.00",
+     *                          "report_recall_1": "1.00",
+     *                          "report_f1_score_0": "1.00",
+     *                          "report_f1_score_1": "1.00",
+     *                          "report_accuracy_precision": "1.00",
+     *                          "report_accuracy_recall": "1.00",
+     *                          "report_accuracy_f1_score": "1.00"
+     *                          },
+     *                          {
+     *                          "id": 9,
+     *                          "type": 2,
+     *                          "date": "2020-05-08 23:55:21",
+     *                          "report_num_rows": 27,
+     *                          "report_precision_0": "1.00",
+     *                          "report_precision_1": "1.00",
+     *                          "report_recall_0": "1.00",
+     *                          "report_recall_1": "1.00",
+     *                          "report_f1_score_0": "1.00",
+     *                          "report_f1_score_1": "1.00",
+     *                          "report_accuracy_precision": "1.00",
+     *                          "report_accuracy_recall": "1.00",
+     *                          "report_accuracy_f1_score": "1.00"
+     *                          },
+     *                          {
+     *                          "id": 10,
+     *                          "type": 2,
+     *                          "date": "2020-05-08 23:56:48",
+     *                          "report_num_rows": 27,
+     *                          "report_precision_0": "1.00",
+     *                          "report_precision_1": "1.00",
+     *                          "report_recall_0": "1.00",
+     *                          "report_recall_1": "1.00",
+     *                          "report_f1_score_0": "1.00",
+     *                          "report_f1_score_1": "1.00",
+     *                          "report_accuracy_precision": "1.00",
+     *                          "report_accuracy_recall": "1.00",
+     *                          "report_accuracy_f1_score": "1.00"
+     *                          }
+     *                      }
+     *                  )
+     *              )
+     *          }
+     *      ),
+     *      @OA\Response(
+     *          response=500,
+     *          description="Internal Server Error.",
+     *          content={
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="message",
+     *                          type="string",
+     *                          description="Server message that contains the error."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="exception",
+     *                          type="string",
+     *                          description="Generated exception."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="file",
+     *                          type="string",
+     *                          description="File that throw the exception."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="line",
+     *                          type="integer",
+     *                          description="Line that thorws the execption."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="trace",
+     *                          type="array",
+     *                          description="Trace route objects.",
+     *                          @OA\Items(type="object")
+     *                      ),
+     *                      example={
+     *                          "messagge": "The command failed.",
+     *                          "exception": "",
+     *                          "file": "",
+     *                          "line": 150,
+     *                          "trace": {"file":"", "line":1, "content":""}
+     *                      }
+     *                  )
+     *              )
+     *          }
+     *      ),
+     *      security={
+     *         {"bearer": {}}
+     *     }
+     *  )
+     *
+     * @param Request $request
+     * @return string
+     */
+    function getLastModels(Request $request){
+        $columns = ["id", "type", "date",
+            "report_num_rows", "report_precision_0", "report_precision_1", "report_recall_0", "report_recall_1",
+            "report_f1_score_0", "report_f1_score_1", "report_accuracy_precision", "report_accuracy_recall",
+            "report_accuracy_f1_score"];
+        return response()->json(json_decode(DB::table('models')->select($columns)->
+            where('id', '>' ,$request->model_id)->get(),
+            JsonResponse::HTTP_OK));
+    }
+
+    /**
+     * @OA\Post(
+     *      path="/api/models/deleteModel",
+     *      operationId="deleteModel",
+     *      tags={"models"},
+     *      summary="Delete a selected model",
+     *      description="It is used for delete a model in the database.",
+     *      @OA\RequestBody(
+     *          @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema(
+     *                  @OA\Property(
+     *                      property="model_id",
+     *                      type="int",
+     *                  ),
+     *                  example={"model_id":1}
+     *              )
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=204,
+     *          description="Ok. No Content."
+     *      ),
+     *      @OA\Response(
+     *          response=500,
+     *          description="Internal Server Error.",
+     *          content={
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="message",
+     *                          type="string",
+     *                          description="Server message that contains the error."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="exception",
+     *                          type="string",
+     *                          description="Generated exception."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="file",
+     *                          type="string",
+     *                          description="File that throw the exception."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="line",
+     *                          type="integer",
+     *                          description="Line that thorws the execption."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="trace",
+     *                          type="array",
+     *                          description="Trace route objects.",
+     *                          @OA\Items(type="object")
+     *                      ),
+     *                      example={
+     *                          "messagge": "The command failed.",
+     *                          "exception": "",
+     *                          "file": "",
+     *                          "line": 150,
+     *                          "trace": {"file":"", "line":1, "content":""}
+     *                      }
+     *                  )
+     *              )
+     *          }
+     *      ),
+     *      security={
+     *         {"bearer": {}}
+     *     }
+     *  )
+     *
+     * @param Request $request
+     * @return string
+     */
+    function deleteModel(Request $request){
+        DB::table('models')->where('id',$request->model_id)->delete();
+        return response()->json(null, JsonResponse::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * @OA\Get(
+     *      path="/api/models/getModelInUse",
+     *      operationId="getModelInUse",
+     *      tags={"models"},
+     *      summary="Get the model in use.",
+     *      description="It is used to get the model that is in use in the aplication.",
+     *      @OA\Response(
+     *          response=200,
+     *          description="Ok.",
+     *          content={
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="type",
+     *                          type="json",
+     *                          description="Algorithm if"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="date",
+     *                          type="json",
+     *                          description="Creation date_time"
+     *                      ),
+     *                      example={
+     *                          "type": 1,
+     *                          "date": "2020-05-19 16:18:28"
+     *                      }
+     *                  )
+     *              )
+     *          }
+     *      ),
+     *      @OA\Response(
+     *          response=500,
+     *          description="Internal Server Error.",
+     *          content={
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="message",
+     *                          type="string",
+     *                          description="Server message that contains the error."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="exception",
+     *                          type="string",
+     *                          description="Generated exception."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="file",
+     *                          type="string",
+     *                          description="File that throw the exception."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="line",
+     *                          type="integer",
+     *                          description="Line that thorws the execption."
+     *                      ),
+     *                      @OA\Property(
+     *                          property="trace",
+     *                          type="array",
+     *                          description="Trace route objects.",
+     *                          @OA\Items(type="object")
+     *                      ),
+     *                      example={
+     *                          "messagge": "The command failed.",
+     *                          "exception": "",
+     *                          "file": "",
+     *                          "line": 150,
+     *                          "trace": {"file":"", "line":1, "content":""}
+     *                      }
+     *                  )
+     *              )
+     *          }
+     *      ),
+     *      security={
+     *         {"bearer": {}}
+     *     }
+     *  )
+     *
+     * @param Request $request
+     * @return string
+     */
+    function getModelInUse(Request $request){
+        $data = DB::table('in_uses')
+            ->select(['type', 'date'])
+            ->join('models as m', 'm.id', '=', 'in_uses.model')->get();
+        if (is_null($data)){
+            return null;
+        } else {
+            return response()->json($data, JsonResponse::HTTP_OK);
+        }
+    }
+
+    //OTRAS FUNCIONES
+    function getCharacteristic($data)
+    {
         $characteristic = [];
 
         array_push($characteristic, 'date');
@@ -545,9 +1084,10 @@ class ModelController extends Controller
         return $characteristic;
     }
 
-    function selectedModel() {
+    function selectedModel()
+    {
         $selectModel = DB::table('in_uses')->select('model')->first();
-        if (!is_null($selectModel)){
+        if (!is_null($selectModel)) {
             $data = DB::table("models")->select(DB::raw('*'))
                 ->where('id', $selectModel->model)->first();
 
@@ -557,4 +1097,16 @@ class ModelController extends Controller
         }
     }
 
+    public function export($args, $characteristic, $name)
+    {
+        $fp = fopen($name, 'w');
+
+        fputcsv($fp, $characteristic);
+        foreach ($args as $campos) {
+            fputcsv($fp, $campos);
+        }
+
+        fclose($fp);
+    }
 }
+

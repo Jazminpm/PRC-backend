@@ -12,8 +12,8 @@ class FlightStatusSeeder extends Seeder
      */
     public function run()
     {
-        FlightStatuses::create(['id' => 0, 'name' => "Landed"]);
-        FlightStatuses::create(['id' => 1, 'name' => "Landed Late"]);
+        FlightStatuses::create(['id' => 0, 'name' => "In time"]);
+        FlightStatuses::create(['id' => 1, 'name' => "Delayed"]);
         FlightStatuses::create(['id' => 2, 'name' => "Cancelled"]);
         FlightStatuses::create(['id' => 3, 'name' => "Scheduled"]);
         FlightStatuses::create(['id' => 4, 'name' => "Unknown"]);
