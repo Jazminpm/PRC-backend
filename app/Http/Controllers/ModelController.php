@@ -361,6 +361,7 @@ class ModelController extends Controller
 
                 $result = executePython($script, $data);
                 preg_match_all('!\d!', $result[0], $matches);
+
                 $inserts = 0;
                 for ($i = 0; $i < sizeof($matches[0]); $i++) {
                     $args[$i]['prediction'] =  $matches[0][$i];
