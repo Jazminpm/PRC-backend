@@ -359,7 +359,6 @@ class AirportsController extends Controller
                 ->join('flights AS f', 'air.id', '=', 'f.airport_id')
                 ->join('flight_statuses AS fs', 'f.delay', '=', 'fs.id')
                 ->join('airlines AS a', 'f.airline_id', '=', 'a.id')
-                ->where('f.date_time', '<=', $todayStr)
                 ->where('f.date_time', '>=', $dateStr)
                 ->where('air.id', '=', $airport_id)
                 ->orderBy('date_time', 'asc')
