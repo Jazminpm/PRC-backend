@@ -271,15 +271,17 @@ class FlightsController extends Controller
                     ->where(DB::raw('DATE(flights.date_time)'), '<=', $to)
                     ->whereIn('delay', [0, 1])
                     ->groupBy(DB::raw('date(date_time), delay, prediction,airport_id'))
+                    ->orderBy('groupDate')
                     ->get();
             } else if ($diff_in_days > 7 && $diff_in_days <= 31) { // GROUP BY WEEKS
                 $result = DB::table('flights')->
                 select(DB::raw('CONCAT(YEAR(date_time), \'/\', WEEK(date_time)) as groupDate'), 'delay',
                     DB::raw('count(delay) as countDelay'),'airport_id', 'prediction', DB::raw('count(prediction) as countPrediction')) //$columns
-                ->where(DB::raw('DATE(flights.date_time)'), '>=', $from)
+                    ->where(DB::raw('DATE(flights.date_time)'), '>=', $from)
                     ->where(DB::raw('DATE(flights.date_time)'), '<=', $to)
                     ->whereIn('delay', [0, 1])
                     ->groupBy(DB::raw('CONCAT(YEAR(date_time), \'/\', WEEK(date_time)), delay, prediction,airport_id'))
+                    ->orderBy('groupDate')
                     ->get();
             } else if ($diff_in_days > 31 && $diff_in_days <= 365) { // GROUP BY MONTHS
                 $result = DB::table('flights')->
@@ -289,6 +291,7 @@ class FlightsController extends Controller
                     ->where(DB::raw('DATE(flights.date_time)'), '<=', $to)
                     ->whereIn('delay', [0, 1])
                     ->groupBy(DB::raw('CONCAT(YEAR(date_time), \'/\', MONTH(date_time)), delay, prediction,airport_id'))
+                    ->orderBy('groupDate')
                     ->get();
             } else { // Group by year
                 $result = DB::table('flights')->
@@ -298,6 +301,7 @@ class FlightsController extends Controller
                     ->where(DB::raw('DATE(flights.date_time)'), '<=', $to)
                     ->whereIn('delay', [0, 1])
                     ->groupBy(DB::raw('YEAR(date_time), delay, prediction,airport_id'))
+                    ->orderBy('groupDate')
                     ->get();
             }
 
