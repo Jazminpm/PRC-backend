@@ -359,7 +359,6 @@ class AirportsController extends Controller
                 ->join('flights AS f', 'air.id', '=', 'f.airport_id')
                 ->join('flight_statuses AS fs', 'f.delay', '=', 'fs.id')
                 ->join('airlines AS a', 'f.airline_id', '=', 'a.id')
-                ->where('f.date_time', '<=', $todayStr)
                 ->where('f.date_time', '>=', $dateStr)
                 ->where('air.id', '=', $airport_id)
                 ->orderBy('date_time', 'asc')
@@ -466,7 +465,7 @@ class AirportsController extends Controller
             $airport_id = $request->id; // obtengo el id introducido en la ruta
 
             $comments = DB::table('airports AS air')
-                ->select('air.name AS airport_name', 'ct.name AS city_name', 'c.place', 'c.title', 'c.date_time', 'c.original_message', 'c.grade')
+                ->select('air.name AS airport_name', 'ct.name AS city_name', 'c.place', 'c.title', 'c.date_time', 'c.message', 'c.grade')
                 ->join('comments AS c', 'air.city_id', '=', 'c.city_id')
                 ->join('cities AS ct', 'air.city_id', '=', 'ct.id')
                 ->where('air.id', '=', $airport_id)

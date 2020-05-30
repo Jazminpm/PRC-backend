@@ -113,7 +113,7 @@
                 "tags": [
                     "airports"
                 ],
-                "summary": "Get all airports with URL",
+                "summary": "No hay parametros melon!.",
                 "description": "Returns all the airports that have an URL.",
                 "operationId": "getAirports",
                 "responses": {
