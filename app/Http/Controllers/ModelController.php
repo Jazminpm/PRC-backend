@@ -360,13 +360,23 @@ class ModelController extends Controller
                 $script = config('python.scripts') . 'model_2.py';
 
                 $result = executePython($script, $data);
-                preg_match_all('!\d!', $result[0], $matches);
+
+                $matches = [];
+                for ($i = 0; $i < sizeof($result); $i++) {
+                    $values = [];
+                    preg_match_all('!\d!', $result[$i], $values);
+                    for ($z = 0; $z < sizeof($values); $z++) {
+                        array_push($matches, $values[$z]);
+                    }
+                }
 
                 $inserts = 0;
-                for ($i = 0; $i < sizeof($matches[0]); $i++) {
-                    $args[$i]['prediction'] =  $matches[0][$i];
-                    FlightsController::updatePrediction($args[$i]);
-                    $inserts += 1;
+                for ($i = 0; $i < sizeof($matches); $i++) {
+                    for ($j = 0; $j < sizeof($matches[$i]); $j++) {
+                        $args[$inserts]['prediction'] = $matches[$i][$j];
+                        FlightsController::updatePrediction($args[$j]);
+                        $inserts += 1;
+                    }
                 }
 
                 $message = "The prediction launched at ".$dateStr." has already finished.";
