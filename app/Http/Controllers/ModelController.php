@@ -374,7 +374,7 @@ class ModelController extends Controller
                 for ($i = 0; $i < sizeof($matches); $i++) {
                     for ($j = 0; $j < sizeof($matches[$i]); $j++) {
                         $args[$inserts]['prediction'] = $matches[$i][$j];
-                        FlightsController::updatePrediction($args[$j]);
+                        FlightsController::updatePrediction($args[$inserts]);
                         $inserts += 1;
                     }
                 }
